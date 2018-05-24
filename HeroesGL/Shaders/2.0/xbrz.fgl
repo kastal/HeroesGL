@@ -1,6 +1,7 @@
 /*
 	xBRz fragment shader GLSL v1.10
 	based on libretro xBRZ freescale shader
+	https://github.com/libretro/glsl-shaders/blob/master/xbrz/shaders/xbrz-freescale.glsl
 
 	MIT License
 
