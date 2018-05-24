@@ -1,0 +1,59 @@
+/*
+	MIT License
+
+	Copyright (c) 2018 Oleksiy Ryabchun
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
+*/
+
+#pragma once
+
+//#define IDR_20_LINEAR_VERTEX		20
+//#define IDR_20_LINEAR_FRAGMENT		21
+//#define IDR_20_XBRZ_VERTEX			22
+//#define IDR_20_XBRZ_FRAGMENT		23
+
+#define IDR_30_LINEAR_VERTEX		30
+#define IDR_30_LINEAR_FRAGMENT		31
+#define IDR_30_XBRZ_VERTEX			32
+#define IDR_30_XBRZ_FRAGMENT		33
+
+#define IDM_ENGLISH					100
+#define IDM_RUSSIAN					101
+
+#define IDM_RES_640_480				40005
+#define IDM_RES_800_600				40006
+#define IDM_RES_1024_768			40007
+#define IDM_RES_1280_1024			40008
+#define IDM_RES_FULL_SCREEN			40009
+
+#define IDM_ASPECT_RATIO			20010
+
+#define IDM_FILT_OFF				20000
+#define IDM_FILT_LINEAR				20001
+#define IDM_FILT_XRBZ				20002
+
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_NEXT_RESOURCE_VALUE        101
+#define _APS_NEXT_COMMAND_VALUE         40001
+#define _APS_NEXT_CONTROL_VALUE         1001
+#define _APS_NEXT_SYMED_VALUE           101
+#endif
+#endif
