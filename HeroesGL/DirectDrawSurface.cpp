@@ -132,7 +132,7 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lpDDSrcSur
 			*dest++ = *src++;
 		} while (--count);
 	}
-	else if (width & 4)
+	else if (!(width % 4))
 	{
 		for (DWORD j = lpSrcRect->top, y = py; j < lpSrcRect->bottom; ++j, ++y)
 		{
@@ -142,7 +142,7 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lpDDSrcSur
 				*dest++ = *src++;
 		}
 	}
-	else if (width & 2)
+	else if (!(width % 2))
 	{
 		for (DWORD j = lpSrcRect->top, y = py; j < lpSrcRect->bottom; ++j, ++y)
 		{

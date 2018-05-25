@@ -67,7 +67,7 @@ IDR_30_XBRZ_FRAGMENT		RCDATA		".\\Shaders\\3.0\\xbrz.fgl"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2018,5,24,21
+ FILEVERSION 2018,5,25,22
  PRODUCTVERSION 1,0,4,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
@@ -84,7 +84,7 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "Heroes I & II - OpenGL wrapper"
-            VALUE "FileVersion", "2018.05.24.021"
+            VALUE "FileVersion", "2018.05.25.022"
             VALUE "LegalCopyright", "© 2018 Verok"
             VALUE "OriginalFilename", "WING.dll"
             VALUE "ProductVersion", "1.0.4"
