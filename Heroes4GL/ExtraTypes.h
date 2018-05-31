@@ -22,15 +22,82 @@
 	SOFTWARE.
 */
 
-#version 110
+#pragma once
+#include "windows.h"
+#include "GLib.h"
 
-uniform mat4 mvp;
+struct Rect
+{
+	INT x;
+	INT y;
+	INT width;
+	INT height;
+};
 
-attribute vec2 vCoord;
-attribute vec2 vTexCoord;
-varying vec2 fTexCoord;
+struct VecSize
+{
+	INT width;
+	INT height;
+};
 
-void main() {
-	gl_Position = mvp * vec4(vCoord, 0.0, 1.0);
-	fTexCoord = vTexCoord;
-}
+struct TexSize
+{
+	FLOAT width;
+	FLOAT height;
+};
+
+struct Frame
+{
+	GLuint id;
+	Rect rect;
+	VecSize vSize;
+	TexSize tSize;
+};
+
+struct Viewport
+{
+	BOOL refresh;
+	INT width;
+	INT height;
+	Rect rectangle;
+	POINTFLOAT viewFactor;
+	POINTFLOAT clipFactor;
+};
+
+enum WindowState
+{
+	WinStateNone = 0,
+	WinStateFullScreen,
+	WinStateWindowed
+};
+
+enum ImageFilter
+{
+	FilterNearest = 0,
+	FilterLinear,
+	FilterXRBZ
+};
+
+struct DisplayMode
+{
+	DWORD width;
+	DWORD height;
+	union
+	{
+		DWORD bpp;
+		BOOL isExists;
+	};
+};
+
+enum FpsState
+{
+	FpsDisabled = 0,
+	FpsNormal,
+	FpsBenchmark
+};
+
+struct RGNRECTDATA
+{
+	RGNDATAHEADER   rdh;
+	RECT            rect;
+};

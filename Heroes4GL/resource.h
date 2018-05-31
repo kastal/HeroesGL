@@ -23,27 +23,15 @@
 */
 
 #pragma once
-#include "ddraw.h"
 
-class DirectDraw;
+#define IDR_30_LINEAR_VERTEX		30
+#define IDR_30_LINEAR_FRAGMENT		31
 
-class DirectDrawClipper : IDirectDrawClipper
-{
-public:
-	DirectDrawClipper* last;
-	DirectDraw* ddraw;
-
-	DirectDrawClipper(DirectDraw*);
-
-	// Inherited via IDirectDrawClipper
-	HRESULT __stdcall QueryInterface(REFIID riid, LPVOID * ppvObj);
-	ULONG __stdcall AddRef();
-	ULONG __stdcall Release();
-	HRESULT __stdcall GetClipList(LPRECT, LPRGNDATA, LPDWORD);
-	HRESULT __stdcall GetHWnd(HWND *);
-	HRESULT __stdcall Initialize(LPDIRECTDRAW, DWORD);
-	HRESULT __stdcall IsClipListChanged(BOOL *);
-	HRESULT __stdcall SetClipList(LPRGNDATA, DWORD);
-	HRESULT __stdcall SetHWnd(DWORD, HWND);
-};
-
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_NEXT_RESOURCE_VALUE        101
+#define _APS_NEXT_COMMAND_VALUE         40001
+#define _APS_NEXT_CONTROL_VALUE         1001
+#define _APS_NEXT_SYMED_VALUE           101
+#endif
+#endif

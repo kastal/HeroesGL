@@ -22,28 +22,14 @@
 	SOFTWARE.
 */
 
-#pragma once
-#include "ddraw.h"
+#version 130
+precision lowp float;
 
-class DirectDraw;
+uniform sampler2D tex01;
 
-class DirectDrawClipper : IDirectDrawClipper
-{
-public:
-	DirectDrawClipper* last;
-	DirectDraw* ddraw;
+in vec2 fTexCoord;
+out vec4 fragColor;
 
-	DirectDrawClipper(DirectDraw*);
-
-	// Inherited via IDirectDrawClipper
-	HRESULT __stdcall QueryInterface(REFIID riid, LPVOID * ppvObj);
-	ULONG __stdcall AddRef();
-	ULONG __stdcall Release();
-	HRESULT __stdcall GetClipList(LPRECT, LPRGNDATA, LPDWORD);
-	HRESULT __stdcall GetHWnd(HWND *);
-	HRESULT __stdcall Initialize(LPDIRECTDRAW, DWORD);
-	HRESULT __stdcall IsClipListChanged(BOOL *);
-	HRESULT __stdcall SetClipList(LPRGNDATA, DWORD);
-	HRESULT __stdcall SetHWnd(DWORD, HWND);
-};
-
+void main(void) {
+	fragColor = texture(tex01, fTexCoord);
+}

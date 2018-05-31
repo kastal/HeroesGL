@@ -26,17 +26,31 @@
 #include "stdio.h"
 #include "math.h"
 #include "Main.h"
-#include "Hooks.h"
 
 DirectDraw* ddrawList;
 
+DisplayMode modesList[3] = {
+	800, 600, FALSE,
+	1024, 768, FALSE,
+	1280, 1024, FALSE
+};
+
 namespace Main
 {
-	HRESULT __stdcall DirectDrawCreate(GUID* lpGUID, LPDIRECTDRAW* lplpDD, IUnknown* pUnkOuter)
+	HRESULT __stdcall DirectDrawCreateEx(GUID* lpGuid, LPVOID* lplpDD, REFIID iid, IUnknown* pUnkOuter)
 	{
-		ddrawList = new DirectDraw(ddrawList);
-		*(DirectDraw**)lplpDD = ddrawList;
-		return DD_OK;
+		if (!lpGuid)
+		{
+			IID IID_IDirectDraw7 = { 0x15e65ec0, 0x3b9c, 0x11d2, 0xb9, 0x2f, 0x00, 0x60, 0x97, 0x97, 0xea, 0x5b };
+			if (iid == IID_IDirectDraw7)
+			{
+				ddrawList = new DirectDraw(ddrawList);
+				*(DirectDraw**)lplpDD = ddrawList;
+				return DD_OK;
+			}
+		}
+
+		return ((HRESULT(__stdcall *)(GUID*, LPVOID*, REFIID, IUnknown*))pDirectDrawCreateEx)(lpGuid, lplpDD, iid, pUnkOuter);
 	}
 
 	DirectDraw* __fastcall FindDirectDrawByWindow(HWND hWnd)

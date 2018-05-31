@@ -22,12 +22,4 @@
 	SOFTWARE.
 */
 
-#version 110
-
-uniform sampler2D tex01;
-
-varying vec2 fTexCoord;
-
-void main(void) {
-	gl_FragColor = texture2D(tex01, fTexCoord);
-}
+#include "StdAfx.h"

@@ -25,14 +25,16 @@
 #pragma once
 #include "ddraw.h"
 
+class DirectDraw;
+
 class DirectDrawPalette : IDirectDrawPalette
 {
 public:
 	DirectDrawPalette* last;
-	LPDIRECTDRAW ddraw;
+	DirectDraw* ddraw;
 	PALETTEENTRY entries[256];
 
-	DirectDrawPalette(LPDIRECTDRAW);
+	DirectDrawPalette(DirectDraw*);
 
 	// Inherited via IDirectDrawPalette
 	HRESULT __stdcall QueryInterface(REFIID riid, LPVOID * ppvObj);

@@ -92,7 +92,10 @@ typedef char GLchar;
 #define GL_ELEMENT_ARRAY_BUFFER 0x8893
 #define GL_STATIC_DRAW 0x88E4
 
-#define GL_SHARED_TEXTURE_PALETTE_EXT 0x81FB
+#define GL_BGRA 0x80E1
+#define GL_UNSIGNED_SHORT_5_6_5 0x8363
+//#define GL_UNSIGNED_SHORT_5_5_5_1 0x8034
+#define GL_UNSIGNED_SHORT_1_5_5_5_REV 0x8366
 
 #define ERROR_INVALID_VERSION_ARB 0x2095
 #define ERROR_INVALID_PROFILE_ARB 0x2096
@@ -129,7 +132,6 @@ typedef GLenum(__stdcall *GLGENTEXTURES)(GLsizei n, GLuint* textures);
 typedef VOID(__stdcall *GLGETINTEGERV)(GLenum pname, GLint* data);
 typedef VOID(__stdcall *GLCLEAR)(GLbitfield mask);
 typedef VOID(__stdcall *GLCLEARCOLOR)(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
-typedef VOID(__stdcall *GLCOLORTABLE)(GLenum target, GLenum internalFormat, GLsizei width, GLenum format, GLenum type, const GLvoid *data);
 typedef VOID(__stdcall *GLPIXELSTOREI)(GLenum pname, GLint param);
 
 
@@ -207,7 +209,6 @@ extern GLGENTEXTURES GLGenTextures;
 extern GLGETINTEGERV GLGetIntegerv;
 extern GLCLEAR GLClear;
 extern GLCLEARCOLOR GLClearColor;
-extern GLCOLORTABLE GLColorTable;
 extern GLPIXELSTOREI GLPixelStorei;
 
 #ifdef _DEBUG
@@ -252,7 +253,6 @@ extern HMODULE hModule;
 
 extern WORD glVersion;
 extern DWORD glCapsClampToEdge;
-extern BOOL glCapsSharedPalette;
 
 namespace GL
 {

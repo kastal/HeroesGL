@@ -78,6 +78,13 @@ enum ImageFilter
 	FilterXRBZ
 };
 
+enum FpsState
+{
+	FpsDisabled = 0,
+	FpsNormal,
+	FpsBenchmark
+};
+
 struct AddressSpace
 {
 	DWORD style_check;

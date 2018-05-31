@@ -24,6 +24,7 @@
 
 #pragma once
 #include "ddraw.h"
+#include "ExtraTypes.h"
 
 class DirectDraw;
 
@@ -32,6 +33,8 @@ class DirectDrawClipper : IDirectDrawClipper
 public:
 	DirectDrawClipper* last;
 	DirectDraw* ddraw;
+
+	RGNRECTDATA rgnData;
 
 	DirectDrawClipper(DirectDraw*);
 
@@ -46,4 +49,3 @@ public:
 	HRESULT __stdcall SetClipList(LPRGNDATA, DWORD);
 	HRESULT __stdcall SetHWnd(DWORD, HWND);
 };
-

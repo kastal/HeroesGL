@@ -26,17 +26,15 @@
 #include "ddraw.h"
 #include "ExtraTypes.h"
 
-class DirectDrawSurface;
-class DirectDrawPalette;
 class DirectDrawClipper;
+class DirectDrawSurface;
 
-class DirectDraw : IDirectDraw
+class DirectDraw : IDirectDraw7
 {
 public:
 	DirectDraw* last;
 
 	DirectDrawSurface* surfaceEntries;
-	DirectDrawPalette* paletteEntries;
 	DirectDrawClipper* clipperEntries;
 
 	DirectDrawSurface* attachedSurface;
@@ -45,8 +43,7 @@ public:
 	HWND hDraw;
 	HDC hDc;
 
-	DWORD width;
-	DWORD height;
+	DisplayMode* mode;
 
 	BOOL isFinish;
 
@@ -55,16 +52,12 @@ public:
 
 	Viewport viewport;
 	WindowState windowState;
-	ImageFilter imageFilter;
-	BOOL imageAspect;
 	BOOL isStateChanged;
 
 	DirectDraw(DirectDraw* lastObj);
 	~DirectDraw();
 
 	BOOL CheckView();
-	VOID __fastcall ScaleMouse(LPPOINT p);
-	VOID __fastcall CheckMenu(HMENU hMenu);
 
 	VOID RenderStart();
 	VOID RenderStop();
@@ -72,28 +65,35 @@ public:
 	VOID RenderOld(DWORD glMaxTexSize);
 	VOID RenderNew();
 
-	// Inherited via  IDirectDraw
+	// Inherited via IDirectDraw7
 	HRESULT __stdcall QueryInterface(REFIID riid, LPVOID * ppvObj);
 	ULONG __stdcall AddRef();
 	ULONG __stdcall Release();
 	HRESULT __stdcall Compact();
 	HRESULT __stdcall CreateClipper(DWORD, LPDIRECTDRAWCLIPPER *, IUnknown *);
 	HRESULT __stdcall CreatePalette(DWORD, LPPALETTEENTRY, LPDIRECTDRAWPALETTE *, IUnknown *);
-	HRESULT __stdcall CreateSurface(LPDDSURFACEDESC, LPDIRECTDRAWSURFACE *, IUnknown *);
-	HRESULT __stdcall DuplicateSurface(LPDIRECTDRAWSURFACE, LPDIRECTDRAWSURFACE *);
-	HRESULT __stdcall EnumDisplayModes(DWORD, LPDDSURFACEDESC, LPVOID, LPDDENUMMODESCALLBACK);
-	HRESULT __stdcall EnumSurfaces(DWORD, LPDDSURFACEDESC, LPVOID, LPDDENUMSURFACESCALLBACK);
+	HRESULT __stdcall CreateSurface(LPDDSURFACEDESC2, LPDIRECTDRAWSURFACE7 *, IUnknown *);
+	HRESULT __stdcall DuplicateSurface(LPDIRECTDRAWSURFACE7, LPDIRECTDRAWSURFACE7 *);
+	HRESULT __stdcall EnumDisplayModes(DWORD, LPDDSURFACEDESC2, LPVOID, LPDDENUMMODESCALLBACK2);
+	HRESULT __stdcall EnumSurfaces(DWORD, LPDDSURFACEDESC2, LPVOID, LPDDENUMSURFACESCALLBACK7);
 	HRESULT __stdcall FlipToGDISurface();
 	HRESULT __stdcall GetCaps(LPDDCAPS, LPDDCAPS);
-	HRESULT __stdcall GetDisplayMode(LPDDSURFACEDESC);
+	HRESULT __stdcall GetDisplayMode(LPDDSURFACEDESC2);
 	HRESULT __stdcall GetFourCCCodes(LPDWORD, LPDWORD);
-	HRESULT __stdcall GetGDISurface(LPDIRECTDRAWSURFACE *);
+	HRESULT __stdcall GetGDISurface(LPDIRECTDRAWSURFACE7 *);
 	HRESULT __stdcall GetMonitorFrequency(LPDWORD);
 	HRESULT __stdcall GetScanLine(LPDWORD);
 	HRESULT __stdcall GetVerticalBlankStatus(LPBOOL);
 	HRESULT __stdcall Initialize(GUID *);
 	HRESULT __stdcall RestoreDisplayMode();
 	HRESULT __stdcall SetCooperativeLevel(HWND, DWORD);
-	HRESULT __stdcall SetDisplayMode(DWORD, DWORD, DWORD);
+	HRESULT __stdcall SetDisplayMode(DWORD, DWORD, DWORD, DWORD, DWORD);
 	HRESULT __stdcall WaitForVerticalBlank(DWORD, HANDLE);
+	HRESULT __stdcall GetAvailableVidMem(LPDDSCAPS2, LPDWORD, LPDWORD);
+	HRESULT __stdcall GetSurfaceFromDC(HDC, LPDIRECTDRAWSURFACE7 *);
+	HRESULT __stdcall RestoreAllSurfaces();
+	HRESULT __stdcall TestCooperativeLevel();
+	HRESULT __stdcall GetDeviceIdentifier(LPDDDEVICEIDENTIFIER2, DWORD);
+	HRESULT __stdcall StartModeTest(LPSIZE, DWORD, DWORD);
+	HRESULT __stdcall EvaluateMode(DWORD, DWORD *);
 };

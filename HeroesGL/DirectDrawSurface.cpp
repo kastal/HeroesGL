@@ -62,11 +62,11 @@ HRESULT DirectDrawSurface::GetDC(HDC* hDc) { return DD_OK; }
 HRESULT DirectDrawSurface::Unlock(LPVOID) { return DD_OK; }
 #pragma endregion
 
-DirectDrawSurface::DirectDrawSurface(LPDIRECTDRAW lpDD, DWORD index)
+DirectDrawSurface::DirectDrawSurface(DirectDraw* lpDD, DWORD index)
 {
 	this->ddraw = lpDD;
+	this->last = lpDD->surfaceEntries;
 	this->index = index;
-	this->last = (DirectDrawSurface*)((DirectDraw*)this->ddraw)->surfaceEntries;
 
 	this->attachedPallete = NULL;
 	this->attachedClipper = NULL;
@@ -74,21 +74,17 @@ DirectDrawSurface::DirectDrawSurface(LPDIRECTDRAW lpDD, DWORD index)
 
 ULONG DirectDrawSurface::Release()
 {
-	DirectDraw* mdraw = (DirectDraw*)this->ddraw;
-	if (mdraw->attachedSurface == this)
+	if (this->ddraw->attachedSurface == this)
 	{
-		mdraw->isFinish = TRUE;
-		SetEvent(mdraw->hDrawEvent);
-		WaitForSingleObject(mdraw->hDrawThread, INFINITE);
-		mdraw->hDrawThread = NULL;
-		mdraw->attachedSurface = NULL;
+		this->ddraw->RenderStop();
+		this->ddraw->attachedSurface = NULL;
 	}
 
-	if (mdraw->surfaceEntries == this)
-		mdraw->surfaceEntries = NULL;
+	if (this->ddraw->surfaceEntries == this)
+		this->ddraw->surfaceEntries = NULL;
 	else
 	{
-		DirectDrawSurface* entry = (DirectDrawSurface*)mdraw->surfaceEntries;
+		DirectDrawSurface* entry = this->ddraw->surfaceEntries;
 		while (entry)
 		{
 			if (entry->last == this)
@@ -107,12 +103,11 @@ ULONG DirectDrawSurface::Release()
 
 HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lpDDSrcSurface, LPRECT lpSrcRect, DWORD dwFlags, LPDDBLTFX lpDDBltFx)
 {
-	DirectDraw* mdraw = (DirectDraw*)this->ddraw;
 	RECT rect;
-	GetClientRect(mdraw->hWnd, &rect);
+	GetClientRect(this->ddraw->hWnd, &rect);
 
 	POINT p = { lpDestRect->left, lpDestRect->top };
-	ScreenToClient(mdraw->hWnd, &p);
+	ScreenToClient(this->ddraw->hWnd, &p);
 
 	DWORD px = (FLOAT)640 * (FLOAT)p.x / (FLOAT)(rect.right - rect.left);
 	DWORD py = (FLOAT)480 * (FLOAT)p.y / (FLOAT)(rect.bottom - rect.top);
@@ -128,9 +123,8 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lpDDSrcSur
 		DWORD* dest = (DWORD*)this->indexBuffer;
 		DWORD count = 640 * 480 / 4;
 		do
-		{
 			*dest++ = *src++;
-		} while (--count);
+		while (--count);
 	}
 	else if (!(width % 4))
 	{
@@ -163,7 +157,7 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lpDDSrcSur
 		}
 	}
 
-	SetEvent(mdraw->hDrawEvent);
+	SetEvent(this->ddraw->hDrawEvent);
 
 	return DD_OK;
 }

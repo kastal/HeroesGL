@@ -22,15 +22,21 @@
 	SOFTWARE.
 */
 
-#version 110
+#pragma once
 
-uniform mat4 mvp;
+#include "DirectDraw.h"
 
-attribute vec2 vCoord;
-attribute vec2 vTexCoord;
-varying vec2 fTexCoord;
+namespace Main
+{
+	HRESULT __stdcall DirectDrawCreate(GUID* lpGUID, LPDIRECTDRAW* lplpDD, IUnknown* pUnkOuter);
 
-void main() {
-	gl_Position = mvp * vec4(vCoord, 0.0, 1.0);
-	fTexCoord = vTexCoord * 1.0001;
+	DirectDraw* __fastcall FindDirectDrawByWindow(HWND hWnd);
+
+	VOID __fastcall ShowError(CHAR* message, CHAR* file, DWORD line);
+
+	INT __fastcall Round(FLOAT number);
+
+#ifdef _DEBUG
+	VOID __fastcall CheckError(CHAR* file, DWORD line);
+#endif
 }

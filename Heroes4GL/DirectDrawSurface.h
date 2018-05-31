@@ -24,40 +24,48 @@
 
 #pragma once
 #include "ddraw.h"
-#include "DirectDrawPalette.h"
 #include "DirectDrawClipper.h"
 #include "GLib.h"
 
-class DirectDrawSurface : IDirectDrawSurface
+class DirectDraw;
+
+class DirectDrawSurface : IDirectDrawSurface7
 {
 public:
 	DirectDrawSurface* last;
 	DirectDraw* ddraw;
 	DWORD index;
+	DWORD width;
+	DWORD height;
 
-	DirectDrawPalette* attachedPallete;
 	DirectDrawClipper* attachedClipper;
 
-	BYTE indexBuffer[640 * 480];
+	BYTE* indexBuffer;
+	HBITMAP hBmp;
+	HDC hDc;
 
 	DirectDrawSurface(DirectDraw*, DWORD);
+	~DirectDrawSurface();
 
-	// Inherited via IDirectDrawSurface
+	VOID CreateBuffer(DWORD, DWORD);
+	VOID ReleaseBuffer();
+
+	// Inherited via IDirectDrawSurface7
 	HRESULT __stdcall QueryInterface(REFIID riid, LPVOID * ppvObj);
 	ULONG __stdcall AddRef();
 	ULONG __stdcall Release();
-	HRESULT __stdcall AddAttachedSurface(LPDIRECTDRAWSURFACE);
+	HRESULT __stdcall AddAttachedSurface(LPDIRECTDRAWSURFACE7);
 	HRESULT __stdcall AddOverlayDirtyRect(LPRECT);
-	HRESULT __stdcall Blt(LPRECT, LPDIRECTDRAWSURFACE, LPRECT, DWORD, LPDDBLTFX);
+	HRESULT __stdcall Blt(LPRECT, LPDIRECTDRAWSURFACE7, LPRECT, DWORD, LPDDBLTFX);
 	HRESULT __stdcall BltBatch(LPDDBLTBATCH, DWORD, DWORD);
-	HRESULT __stdcall BltFast(DWORD, DWORD, LPDIRECTDRAWSURFACE, LPRECT, DWORD);
-	HRESULT __stdcall DeleteAttachedSurface(DWORD, LPDIRECTDRAWSURFACE);
-	HRESULT __stdcall EnumAttachedSurfaces(LPVOID, LPDDENUMSURFACESCALLBACK);
-	HRESULT __stdcall EnumOverlayZOrders(DWORD, LPVOID, LPDDENUMSURFACESCALLBACK);
-	HRESULT __stdcall Flip(LPDIRECTDRAWSURFACE, DWORD);
-	HRESULT __stdcall GetAttachedSurface(LPDDSCAPS, LPDIRECTDRAWSURFACE *);
+	HRESULT __stdcall BltFast(DWORD, DWORD, LPDIRECTDRAWSURFACE7, LPRECT, DWORD);
+	HRESULT __stdcall DeleteAttachedSurface(DWORD, LPDIRECTDRAWSURFACE7);
+	HRESULT __stdcall EnumAttachedSurfaces(LPVOID, LPDDENUMSURFACESCALLBACK7);
+	HRESULT __stdcall EnumOverlayZOrders(DWORD, LPVOID, LPDDENUMSURFACESCALLBACK7);
+	HRESULT __stdcall Flip(LPDIRECTDRAWSURFACE7, DWORD);
+	HRESULT __stdcall GetAttachedSurface(LPDDSCAPS2, LPDIRECTDRAWSURFACE7 *);
 	HRESULT __stdcall GetBltStatus(DWORD);
-	HRESULT __stdcall GetCaps(LPDDSCAPS);
+	HRESULT __stdcall GetCaps(LPDDSCAPS2);
 	HRESULT __stdcall GetClipper(LPDIRECTDRAWCLIPPER *);
 	HRESULT __stdcall GetColorKey(DWORD, LPDDCOLORKEY);
 	HRESULT __stdcall GetDC(HDC *);
@@ -65,19 +73,31 @@ public:
 	HRESULT __stdcall GetOverlayPosition(LPLONG, LPLONG);
 	HRESULT __stdcall GetPalette(LPDIRECTDRAWPALETTE *);
 	HRESULT __stdcall GetPixelFormat(LPDDPIXELFORMAT);
-	HRESULT __stdcall GetSurfaceDesc(LPDDSURFACEDESC);
-	HRESULT __stdcall Initialize(LPDIRECTDRAW, LPDDSURFACEDESC);
+	HRESULT __stdcall GetSurfaceDesc(LPDDSURFACEDESC2);
+	HRESULT __stdcall Initialize(LPDIRECTDRAW, LPDDSURFACEDESC2);
 	HRESULT __stdcall IsLost();
-	HRESULT __stdcall Lock(LPRECT, LPDDSURFACEDESC, DWORD, HANDLE);
+	HRESULT __stdcall Lock(LPRECT, LPDDSURFACEDESC2, DWORD, HANDLE);
 	HRESULT __stdcall ReleaseDC(HDC);
 	HRESULT __stdcall Restore();
 	HRESULT __stdcall SetClipper(LPDIRECTDRAWCLIPPER);
 	HRESULT __stdcall SetColorKey(DWORD, LPDDCOLORKEY);
 	HRESULT __stdcall SetOverlayPosition(LONG, LONG);
 	HRESULT __stdcall SetPalette(LPDIRECTDRAWPALETTE);
-	HRESULT __stdcall Unlock(LPVOID);
-	HRESULT __stdcall UpdateOverlay(LPRECT, LPDIRECTDRAWSURFACE, LPRECT, DWORD, LPDDOVERLAYFX);
+	HRESULT __stdcall Unlock(LPRECT);
+	HRESULT __stdcall UpdateOverlay(LPRECT, LPDIRECTDRAWSURFACE7, LPRECT, DWORD, LPDDOVERLAYFX);
 	HRESULT __stdcall UpdateOverlayDisplay(DWORD);
-	HRESULT __stdcall UpdateOverlayZOrder(DWORD, LPDIRECTDRAWSURFACE);
+	HRESULT __stdcall UpdateOverlayZOrder(DWORD, LPDIRECTDRAWSURFACE7);
+	HRESULT __stdcall GetDDInterface(LPVOID *);
+	HRESULT __stdcall PageLock(DWORD);
+	HRESULT __stdcall PageUnlock(DWORD);
+	HRESULT __stdcall SetSurfaceDesc(LPDDSURFACEDESC2, DWORD);
+	HRESULT __stdcall SetPrivateData(REFGUID, LPVOID, DWORD, DWORD);
+	HRESULT __stdcall GetPrivateData(REFGUID, LPVOID, LPDWORD);
+	HRESULT __stdcall FreePrivateData(REFGUID);
+	HRESULT __stdcall GetUniquenessValue(LPDWORD);
+	HRESULT __stdcall ChangeUniquenessValue();
+	HRESULT __stdcall SetPriority(DWORD);
+	HRESULT __stdcall GetPriority(LPDWORD);
+	HRESULT __stdcall SetLOD(DWORD);
+	HRESULT __stdcall GetLOD(LPDWORD);
 };
-

@@ -60,7 +60,6 @@ GLGENTEXTURES GLGenTextures;
 GLGETINTEGERV GLGetIntegerv;
 GLCLEAR GLClear;
 GLCLEARCOLOR GLClearColor;
-GLCOLORTABLE GLColorTable;
 GLPIXELSTOREI GLPixelStorei;
 
 #ifdef _DEBUG
@@ -109,7 +108,6 @@ HMODULE hModule;
 
 WORD glVersion;
 DWORD glCapsClampToEdge;
-BOOL glCapsSharedPalette;
 
 namespace GL
 {
@@ -227,7 +225,6 @@ namespace GL
 		LoadGLFunction(buffer, PREFIX_GL, "GetIntegerv", (PROC*)&GLGetIntegerv);
 		LoadGLFunction(buffer, PREFIX_GL, "Clear", (PROC*)&GLClear);
 		LoadGLFunction(buffer, PREFIX_GL, "ClearColor", (PROC*)&GLClearColor);
-		LoadGLFunction(buffer, PREFIX_GL, "ColorTable", (PROC*)&GLColorTable, "EXT");
 		LoadGLFunction(buffer, PREFIX_GL, "PixelStorei", (PROC*)&GLPixelStorei);
 
 #ifdef _DEBUG
@@ -312,12 +309,6 @@ namespace GL
 
 		if (!glVersion)
 			glVersion = GL_VER_1_1;
-
-		if (GLColorTable && !strstr((const CHAR*)extensions, "GL_EXT_paletted_texture"))
-			GLColorTable = NULL;
-
-		if (GLColorTable)
-			glCapsSharedPalette = strstr((const CHAR*)extensions, "GL_EXT_shared_texture_palette") != NULL;
 	}
 
 	LRESULT __stdcall DummyWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

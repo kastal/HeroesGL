@@ -25,19 +25,27 @@
 #include "stdafx.h"
 #include "DirectDrawClipper.h"
 
+#pragma region Not Implemented
 HRESULT DirectDrawClipper::QueryInterface(REFIID riid, LPVOID* ppvObj) { return DD_OK; }
 ULONG DirectDrawClipper::AddRef() { return 0; }
-HRESULT DirectDrawClipper::GetClipList(LPRECT, LPRGNDATA, LPDWORD) { return DD_OK; }
 HRESULT DirectDrawClipper::GetHWnd(HWND*) { return DD_OK; }
 HRESULT DirectDrawClipper::Initialize(LPDIRECTDRAW, DWORD) { return DD_OK; }
 HRESULT DirectDrawClipper::IsClipListChanged(BOOL*) { return DD_OK; }
 HRESULT DirectDrawClipper::SetClipList(LPRGNDATA, DWORD) { return DD_OK; }
 HRESULT DirectDrawClipper::SetHWnd(DWORD, HWND) { return DD_OK; }
+#pragma endregion
 
 DirectDrawClipper::DirectDrawClipper(DirectDraw* lpDD)
 {
 	this->ddraw = lpDD;
 	this->last = lpDD->clipperEntries;
+
+	memset(&this->rgnData, NULL, sizeof(RGNRECTDATA));
+
+	this->rgnData.rdh.dwSize = sizeof(RGNDATAHEADER);
+	this->rgnData.rdh.iType = RDH_RECTANGLES;
+	this->rgnData.rdh.nCount = 1;
+	this->rgnData.rdh.nRgnSize = sizeof(RECT);
 }
 
 ULONG DirectDrawClipper::Release()
@@ -61,4 +69,40 @@ ULONG DirectDrawClipper::Release()
 
 	delete this;
 	return 0;
+}
+
+HRESULT DirectDrawClipper::GetClipList(LPRECT lpRect, LPRGNDATA lpClipList, LPDWORD lpdwSize)
+{
+	*lpdwSize = sizeof(RGNRECTDATA);
+
+	if (lpClipList)
+	{
+		this->rgnData.rdh.rcBound = *lpRect;
+		this->rgnData.rect = *lpRect;
+
+		*(RGNRECTDATA*)lpClipList = this->rgnData;
+
+		DWORD width = lpRect->right - lpRect->left;
+		if (!this->ddraw->mode || this->ddraw->mode->width != width)
+		{
+			DWORD height = lpRect->bottom - lpRect->top;
+
+			DisplayMode* mode = modesList;
+			DWORD count = 3;
+			do
+			{
+				if (mode->width == width && mode->height == height && mode->bpp)
+				{
+					this->ddraw->mode = mode;
+					this->ddraw->RenderStop();
+					this->ddraw->RenderStart();
+					break;
+				}
+
+				++mode;
+			} while (--count);
+		}
+	}
+
+	return DD_OK;
 }

@@ -33,19 +33,19 @@ HRESULT DirectDrawPalette::GetEntries(DWORD, DWORD, DWORD, LPPALETTEENTRY) { ret
 HRESULT DirectDrawPalette::Initialize(LPDIRECTDRAW, DWORD, LPPALETTEENTRY) { return DD_OK; }
 #pragma endregion
 
-DirectDrawPalette::DirectDrawPalette(LPDIRECTDRAW lpDD)
+DirectDrawPalette::DirectDrawPalette(DirectDraw* lpDD)
 {
 	this->ddraw = lpDD;
-	this->last = (DirectDrawPalette*)((DirectDraw*)this->ddraw)->paletteEntries;
+	this->last = lpDD->paletteEntries;
 }
 
 ULONG DirectDrawPalette::Release()
 {
-	if (((DirectDraw*)this->ddraw)->paletteEntries == this)
-		((DirectDraw*)this->ddraw)->paletteEntries = NULL;
+	if (this->ddraw->paletteEntries == this)
+		this->ddraw->paletteEntries = NULL;
 	else
 	{
-		DirectDrawPalette* entry = (DirectDrawPalette*)((DirectDraw*)this->ddraw)->paletteEntries;
+		DirectDrawPalette* entry = this->ddraw->paletteEntries;
 		while (entry)
 		{
 			if (entry->last == this)
@@ -68,8 +68,7 @@ HRESULT DirectDrawPalette::SetEntries(DWORD dwFlags, DWORD dwStartingEntry, DWOR
 	while (dwCount--)
 		*dest++ = *lpEntries++;
 
-	DirectDraw* mdraw = (DirectDraw*)this->ddraw;
-	SetEvent(mdraw->hDrawEvent);
+	SetEvent(this->ddraw->hDrawEvent);
 
 	return DD_OK;
 }

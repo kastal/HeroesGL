@@ -23,27 +23,14 @@
 */
 
 #pragma once
-#include "ddraw.h"
+#define WIN32_LEAN_AND_MEAN
 
-class DirectDraw;
+#include "windows.h"
+#include "stdlib.h"
+#include "stdio.h"
+#include "DirectDraw.h"
 
-class DirectDrawClipper : IDirectDrawClipper
-{
-public:
-	DirectDrawClipper* last;
-	DirectDraw* ddraw;
-
-	DirectDrawClipper(DirectDraw*);
-
-	// Inherited via IDirectDrawClipper
-	HRESULT __stdcall QueryInterface(REFIID riid, LPVOID * ppvObj);
-	ULONG __stdcall AddRef();
-	ULONG __stdcall Release();
-	HRESULT __stdcall GetClipList(LPRECT, LPRGNDATA, LPDWORD);
-	HRESULT __stdcall GetHWnd(HWND *);
-	HRESULT __stdcall Initialize(LPDIRECTDRAW, DWORD);
-	HRESULT __stdcall IsClipListChanged(BOOL *);
-	HRESULT __stdcall SetClipList(LPRGNDATA, DWORD);
-	HRESULT __stdcall SetHWnd(DWORD, HWND);
-};
-
+extern HMODULE hDllModule;
+extern DirectDraw* ddrawList;
+extern DisplayMode modesList[3];
+extern DWORD pDirectDrawCreateEx;

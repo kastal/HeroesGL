@@ -22,28 +22,16 @@
 	SOFTWARE.
 */
 
-#pragma once
-#include "ddraw.h"
+#version 130
+precision lowp float;
 
-class DirectDraw;
+uniform mat4 mvp;
 
-class DirectDrawClipper : IDirectDrawClipper
-{
-public:
-	DirectDrawClipper* last;
-	DirectDraw* ddraw;
+in vec2 vCoord;
+in vec2 vTexCoord;
+out vec2 fTexCoord;
 
-	DirectDrawClipper(DirectDraw*);
-
-	// Inherited via IDirectDrawClipper
-	HRESULT __stdcall QueryInterface(REFIID riid, LPVOID * ppvObj);
-	ULONG __stdcall AddRef();
-	ULONG __stdcall Release();
-	HRESULT __stdcall GetClipList(LPRECT, LPRGNDATA, LPDWORD);
-	HRESULT __stdcall GetHWnd(HWND *);
-	HRESULT __stdcall Initialize(LPDIRECTDRAW, DWORD);
-	HRESULT __stdcall IsClipListChanged(BOOL *);
-	HRESULT __stdcall SetClipList(LPRGNDATA, DWORD);
-	HRESULT __stdcall SetHWnd(DWORD, HWND);
-};
-
+void main() {
+	gl_Position = mvp * vec4(vCoord, 0.0, 1.0);
+	fTexCoord = vTexCoord;
+}

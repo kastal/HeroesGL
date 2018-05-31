@@ -23,27 +23,17 @@
 */
 
 #pragma once
-#include "ddraw.h"
 
-class DirectDraw;
+#include "ExtraTypes.h"
 
-class DirectDrawClipper : IDirectDrawClipper
-{
-public:
-	DirectDrawClipper* last;
-	DirectDraw* ddraw;
+#define FPS_X 0
+#define FPS_Y 4
+#define FPS_WIDTH 14
+#define FPS_HEIGHT 24
+#define FPS_STEP 4
+#define FPS_COUNT 120
 
-	DirectDrawClipper(DirectDraw*);
+extern FpsState fpsState;
+extern BOOL isFpsChanged;
 
-	// Inherited via IDirectDrawClipper
-	HRESULT __stdcall QueryInterface(REFIID riid, LPVOID * ppvObj);
-	ULONG __stdcall AddRef();
-	ULONG __stdcall Release();
-	HRESULT __stdcall GetClipList(LPRECT, LPRGNDATA, LPDWORD);
-	HRESULT __stdcall GetHWnd(HWND *);
-	HRESULT __stdcall Initialize(LPDIRECTDRAW, DWORD);
-	HRESULT __stdcall IsClipListChanged(BOOL *);
-	HRESULT __stdcall SetClipList(LPRGNDATA, DWORD);
-	HRESULT __stdcall SetHWnd(DWORD, HWND);
-};
-
+extern const bool counters[10][FPS_HEIGHT][FPS_WIDTH];

@@ -23,6 +23,9 @@
 */
 
 #pragma once
+
+#include "ExtraTypes.h"
+
 #define FPS_X 0
 #define FPS_Y 4
 #define FPS_WIDTH 14
@@ -30,7 +33,7 @@
 #define FPS_STEP sizeof(DWORD)
 #define FPS_COUNT 120
 
-extern BOOL isFpsEnabled;
+extern FpsState fpsState;
 extern BOOL isFpsChanged;
 
 extern const bool counters[10][FPS_HEIGHT][FPS_WIDTH];
