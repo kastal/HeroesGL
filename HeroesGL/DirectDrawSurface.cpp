@@ -67,9 +67,16 @@ DirectDrawSurface::DirectDrawSurface(DirectDraw* lpDD, DWORD index)
 	this->ddraw = lpDD;
 	this->last = lpDD->surfaceEntries;
 	this->index = index;
+	this->pixelBuffer = index ? NULL : (DWORD*)malloc(640 * 480 * sizeof(DWORD));
 
 	this->attachedPallete = NULL;
 	this->attachedClipper = NULL;
+}
+
+DirectDrawSurface::~DirectDrawSurface()
+{
+	if (this->pixelBuffer)
+		free(this->pixelBuffer);
 }
 
 ULONG DirectDrawSurface::Release()
@@ -109,54 +116,38 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lpDDSrcSur
 	POINT p = { lpDestRect->left, lpDestRect->top };
 	ScreenToClient(this->ddraw->hWnd, &p);
 
-	DWORD px = (FLOAT)640 * (FLOAT)p.x / (FLOAT)(rect.right - rect.left);
-	DWORD py = (FLOAT)480 * (FLOAT)p.y / (FLOAT)(rect.bottom - rect.top);
+	DWORD px = DWORD((FLOAT)640 * (FLOAT)p.x / (FLOAT)(rect.right - rect.left));
+	DWORD py = DWORD((FLOAT)480 * (FLOAT)p.y / (FLOAT)(rect.bottom - rect.top));
 
 	DirectDrawSurface* surface = (DirectDrawSurface*)lpDDSrcSurface;
+
+	BYTE* source = surface->indexBuffer + lpSrcRect->top * 640 + lpSrcRect->left;
+	BYTE* destination = this->indexBuffer + py * 640 + px;
+	DWORD* pixels = this->pixelBuffer + py * 640 + px;
 
 	DWORD width = lpSrcRect->right - lpSrcRect->left;
 	DWORD height = lpSrcRect->bottom - lpSrcRect->top;
 
-	if (width == 640 && height == 480)
+	do
 	{
-		DWORD* src = (DWORD*)surface->indexBuffer;
-		DWORD* dest = (DWORD*)this->indexBuffer;
-		DWORD count = 640 * 480 / 4;
-		do
-			*dest++ = *src++;
-		while (--count);
-	}
-	else if (!(width % 4))
-	{
-		for (DWORD j = lpSrcRect->top, y = py; j < lpSrcRect->bottom; ++j, ++y)
-		{
-			DWORD* src = (DWORD*)(surface->indexBuffer + j * 640 + lpSrcRect->left);
-			DWORD* dest = (DWORD*)(this->indexBuffer + y * 640 + px);
-			for (DWORD i = lpSrcRect->left; i < lpSrcRect->right; i += sizeof(DWORD))
-				*dest++ = *src++;
-		}
-	}
-	else if (!(width % 2))
-	{
-		for (DWORD j = lpSrcRect->top, y = py; j < lpSrcRect->bottom; ++j, ++y)
-		{
-			WORD* src = (WORD*)(surface->indexBuffer + j * 640 + lpSrcRect->left);
-			WORD* dest = (WORD*)(this->indexBuffer + y * 640 + px);
-			for (DWORD i = lpSrcRect->left; i < lpSrcRect->right; i += sizeof(WORD))
-				*dest++ = *src++;
-		}
-	}
-	else
-	{
-		for (DWORD j = lpSrcRect->top, y = py; j < lpSrcRect->bottom; ++j, ++y)
-		{
-			BYTE* src = surface->indexBuffer + j * 640 + lpSrcRect->left;
-			BYTE* dest = this->indexBuffer + y * 640 + px;
-			for (DWORD i = lpSrcRect->left; i < lpSrcRect->right; ++i)
-				*dest++ = *src++;
-		}
-	}
+		BYTE* src = source;
+		source += 640;
 
+		BYTE* dest = destination;
+		destination += 640;
+
+		DWORD* pix = pixels;
+		pixels += 640;
+			
+		DWORD count = width;
+		do
+		{
+			*pix++ = *(DWORD*)&this->attachedPallete->entries[*src];
+			*dest++ = *src++;
+		}
+		while (--count);
+	} while (--height);
+	
 	SetEvent(this->ddraw->hDrawEvent);
 
 	return DD_OK;

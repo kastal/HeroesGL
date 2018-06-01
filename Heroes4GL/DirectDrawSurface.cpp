@@ -114,7 +114,7 @@ VOID DirectDrawSurface::CreateBuffer(DWORD width, DWORD height)
 	{
 		bmi->bmiHeader.biSize = sizeof(BITMAPINFO) + 8; // 108
 		bmi->bmiHeader.biWidth = width;
-		bmi->bmiHeader.biHeight = -height;
+		bmi->bmiHeader.biHeight = -*(LONG*)&height;
 		bmi->bmiHeader.biPlanes = 1;
 		bmi->bmiHeader.biBitCount = 16;
 		bmi->bmiHeader.biCompression = BI_BITFIELDS;
@@ -225,28 +225,41 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE7 lpDDSrcSu
 	else
 		dWidth = this->width;
 
-	DWORD width = lpSrcRect->right - lpSrcRect->left;
-	if (!(width % 2))
-	{
-		for (DWORD j = lpSrcRect->top, y = lpDestRect->top; j < lpSrcRect->bottom; ++j, ++y)
-		{
-			DWORD* src = (DWORD*)((WORD*)surface->indexBuffer + j * sWidth + lpSrcRect->left);
-			DWORD* dest = (DWORD*)((WORD*)this->indexBuffer + y * dWidth + lpDestRect->left);
+	WORD* source = surface->indexBuffer + lpSrcRect->top * sWidth + lpSrcRect->left;
+	WORD* destination = this->indexBuffer + lpDestRect->top * dWidth + lpDestRect->left;
 
-			for (DWORD i = lpSrcRect->left; i < lpSrcRect->right; i += 2)
+	INT width = lpSrcRect->right - lpSrcRect->left;
+	INT height = lpSrcRect->bottom - lpSrcRect->top;
+	if (width & 1)
+	{
+		do
+		{
+			WORD* src = source;
+			WORD* dest = destination;
+			source += sWidth;
+			destination += dWidth;
+
+			DWORD count = width;
+			do
 				*dest++ = *src++;
-		}
+			while (--count);
+		} while (--height);
 	}
 	else
 	{
-		for (DWORD j = lpSrcRect->top, y = lpDestRect->top; j < lpSrcRect->bottom; ++j, ++y)
+		width >>= 1;
+		do
 		{
-			WORD* src = (WORD*)surface->indexBuffer + j * sWidth + lpSrcRect->left;
-			WORD* dest = (WORD*)this->indexBuffer + y * dWidth + lpDestRect->left;
+			DWORD* src = (DWORD*)source;
+			DWORD* dest = (DWORD*)destination;
+			source += sWidth;
+			destination += dWidth;
 
-			for (DWORD i = lpSrcRect->left; i < lpSrcRect->right; ++i)
+			DWORD count = width;
+			do
 				*dest++ = *src++;
-		}
+			while (--count);
+		} while (--height);
 	}
 
 	if (this->ddraw->attachedSurface == this)
@@ -258,28 +271,45 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE7 lpDDSrcSu
 HRESULT DirectDrawSurface::BltFast(DWORD dwX, DWORD dwY, LPDIRECTDRAWSURFACE7 lpDDSrcSurface, LPRECT lpSrcRect, DWORD dwFlags)
 {
 	DirectDrawSurface* surface = (DirectDrawSurface*)lpDDSrcSurface;
-	DWORD width = lpSrcRect->right - lpSrcRect->left;
-	if (!(width % 2))
-	{
-		for (DWORD j = lpSrcRect->top, y = dwY; j < lpSrcRect->bottom; ++j, ++y)
-		{
-			DWORD* src = (DWORD*)((WORD*)surface->indexBuffer + j * surface->width + lpSrcRect->left);
-			DWORD* dest = (DWORD*)((WORD*)this->indexBuffer + y * this->width + dwX);
 
-			for (DWORD i = lpSrcRect->left; i < lpSrcRect->right; i += 2)
+	DWORD sWidth = surface->width;
+	DWORD dWidth = this->width;
+
+	WORD* source = surface->indexBuffer + lpSrcRect->top * sWidth + lpSrcRect->left;
+	WORD* destination = this->indexBuffer + dwY * dWidth + dwX;
+
+	INT width = lpSrcRect->right - lpSrcRect->left;
+	INT height = lpSrcRect->bottom - lpSrcRect->top;
+	if (width & 1)
+	{
+		do
+		{
+			WORD* src = source;
+			WORD* dest = destination;
+			source += sWidth;
+			destination += dWidth;
+
+			DWORD count = width;
+			do
 				*dest++ = *src++;
-		}
+			while (--count);
+		} while (--height);
 	}
 	else
 	{
-		for (DWORD j = lpSrcRect->top, y = dwY; j < lpSrcRect->bottom; ++j, ++y)
+		width >>= 1;
+		do
 		{
-			WORD* src = (WORD*)surface->indexBuffer + j * surface->width + lpSrcRect->left;
-			WORD* dest = (WORD*)this->indexBuffer + y * this->width + dwX;
+			DWORD* src = (DWORD*)source;
+			DWORD* dest = (DWORD*)destination;
+			source += sWidth;
+			destination += dWidth;
 
-			for (DWORD i = lpSrcRect->left; i < lpSrcRect->right; ++i)
+			DWORD count = width;
+			do
 				*dest++ = *src++;
-		}
+			while (--count);
+		} while (--height);
 	}
 
 	if (this->ddraw->attachedSurface == this)

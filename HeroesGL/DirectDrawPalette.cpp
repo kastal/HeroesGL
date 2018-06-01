@@ -24,6 +24,7 @@
 
 #include "stdafx.h"
 #include "DirectDrawPalette.h"
+#include "DirectDrawSurface.h"
 
 #pragma region Not Implemented
 HRESULT DirectDrawPalette::QueryInterface(REFIID riid, LPVOID * ppvObj) { return DD_OK; }
@@ -65,8 +66,28 @@ ULONG DirectDrawPalette::Release()
 HRESULT DirectDrawPalette::SetEntries(DWORD dwFlags, DWORD dwStartingEntry, DWORD dwCount, LPPALETTEENTRY lpEntries)
 {
 	PALETTEENTRY* dest = this->entries + dwStartingEntry;
-	while (dwCount--)
+	do
 		*dest++ = *lpEntries++;
+	while (--dwCount);
+
+	if (glVersion >= GL_VER_3_0 || !GLColorTable)
+	{
+		DirectDrawSurface* surfaceEntry = this->ddraw->surfaceEntries;
+		while (surfaceEntry)
+		{
+			if (surfaceEntry->attachedPallete == this)
+			{
+				BYTE* idx = surfaceEntry->indexBuffer;
+				DWORD* pix = surfaceEntry->pixelBuffer;
+				DWORD count = 640 * 480;
+				do
+					*pix++ = *(DWORD*)&this->entries[*idx++];
+				while (--count);
+			}
+
+			surfaceEntry = surfaceEntry->last;
+		}
+	}
 
 	SetEvent(this->ddraw->hDrawEvent);
 

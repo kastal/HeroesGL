@@ -313,7 +313,7 @@ namespace Hooks
 					if (hookSpace->method2_jmp_short)
 						PatchByte(hookSpace->method2_jmp, 0xEB);
 					else
-						PatchByte(hookSpace->method2_jmp, 0xE990);
+						PatchWord(hookSpace->method2_jmp, 0xE990);
 
 					PatchNop(hookSpace->mode_nop, hookSpace->mode_nop_size);
 					PatchHook(hookSpace->mode_hook, hookSpace->game_version == 2 ? hook_mode_v2 : hook_mode_v1);

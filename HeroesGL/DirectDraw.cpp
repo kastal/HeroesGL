@@ -417,8 +417,8 @@ DWORD __stdcall RenderThread(LPVOID lpParameter)
 		{
 			GL::CreateContextAttribs(ddraw->hDc, &hRc);
 
-			GLint glMaxTexSize;
-			GLGetIntegerv(GL_MAX_TEXTURE_SIZE, &glMaxTexSize);
+			DWORD glMaxTexSize;
+			GLGetIntegerv(GL_MAX_TEXTURE_SIZE, (GLint*)&glMaxTexSize);
 
 			if (glVersion >= GL_VER_3_0)
 			{
@@ -455,19 +455,14 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 	if (glMaxTexSize < 256)
 		glMaxTexSize = 256;
 
-	DWORD size;
-	if (glCapsClampToEdge == GL_CLAMP_TO_EDGE)
-		size = this->width < this->height ? this->width : this->height;
-	else
-		size = this->width > this->height ? this->width : this->height;
-
+	DWORD size = this->width > this->height ? this->width : this->height;
 	DWORD maxAllow = 1;
 	while (maxAllow < size)
 		maxAllow <<= 1;
 
 	DWORD maxTexSize = maxAllow < glMaxTexSize ? maxAllow : glMaxTexSize;
 
-	VOID* pixelBuffer = malloc(maxTexSize * maxTexSize * sizeof(DWORD));
+	VOID* frameBuffer = malloc(maxTexSize * maxTexSize * sizeof(DWORD));
 	{
 		DWORD framePerWidth = this->width / maxTexSize + (this->width % maxTexSize ? 1 : 0);
 		DWORD framePerHeight = this->height / maxTexSize + (this->height % maxTexSize ? 1 : 0);
@@ -556,9 +551,10 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 			{
 				if (this->attachedSurface)
 				{
-					DirectDrawPalette* palette = this->attachedSurface->attachedPallete;
-					if (palette)
+					DirectDrawSurface* surface = this->attachedSurface;
+					if (surface->attachedPallete)
 					{
+						DirectDrawPalette* palette = surface->attachedPallete;
 						if (fpsState)
 						{
 							DWORD tick = GetTickCount();
@@ -602,31 +598,74 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 						}
 
 						if (glCapsSharedPalette)
-							GLColorTable(GL_TEXTURE_2D, GL_RGBA8, 256, GL_RGBA, GL_UNSIGNED_BYTE, this->attachedSurface->attachedPallete);
+							GLColorTable(GL_TEXTURE_2D, GL_RGBA8, 256, GL_RGBA, GL_UNSIGNED_BYTE, palette->entries);
 
 						DWORD count = frameCount;
 						frame = frames;
 						while (count--)
 						{
-							GLBindTexture(GL_TEXTURE_2D, frame->id);
-
-							if (glFilter)
-							{
-								GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glFilter);
-								GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glFilter);
-							}
-
 							if (GLColorTable)
 							{
+								GLBindTexture(GL_TEXTURE_2D, frame->id);
+
+								if (glFilter)
+								{
+									GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glFilter);
+									GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glFilter);
+								}
+
 								if (!glCapsSharedPalette)
 									GLColorTable(GL_TEXTURE_2D, GL_RGBA8, 256, GL_RGBA, GL_UNSIGNED_BYTE, palette->entries);
 
-								BYTE* pix = (BYTE*)pixelBuffer;
-								for (DWORD y = frame->rect.y; y < frame->vSize.height; ++y)
+								BYTE* indices = surface->indexBuffer + frame->rect.y * this->width + frame->rect.x;
+								DWORD height = frame->rect.height;
+								if (frame->rect.width & 1)
 								{
-									BYTE* idx = this->attachedSurface->indexBuffer + y * this->width + frame->rect.x;
-									memcpy(pix, idx, frame->rect.width);
-									pix += frame->rect.width;
+									DWORD width = frame->rect.width;
+									WORD* pix = (WORD*)frameBuffer;
+
+									do
+									{
+										BYTE* idx = indices;
+										indices += this->width;
+										DWORD count = width;
+
+										do
+											*pix++ = *idx++;
+										while (--count);
+									} while (--height);
+								}
+								else if (frame->rect.width & 2)
+								{
+									DWORD width = frame->rect.width >> 1;
+									WORD* pix = (WORD*)frameBuffer;
+
+									do
+									{
+										WORD* idx = (WORD*)indices;
+										indices += this->width;
+										DWORD count = width;
+
+										do
+											*pix++ = *idx++;
+										while (--count);
+									} while (--height);
+								}
+								else
+								{
+									DWORD width = frame->rect.width >> 2;
+									DWORD* pix = (DWORD*)frameBuffer;
+
+									do
+									{
+										DWORD* idx = (DWORD*)indices;
+										indices += this->width;
+										DWORD count = width;
+
+										do
+											*pix++ = *idx++;
+										while (--count);
+									} while (--height);
 								}
 
 								if (fpsState && count == frameCount - 1)
@@ -653,7 +692,7 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 
 										for (DWORD y = 0; y < FPS_HEIGHT; ++y)
 										{
-											BYTE* pix = (BYTE*)pixelBuffer + (FPS_Y + y) * frame->rect.width +
+											BYTE* pix = (BYTE*)frameBuffer + (FPS_Y + y) * frame->rect.width +
 												FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1) + FPS_STEP;
 
 											DWORD width = FPS_WIDTH;
@@ -669,17 +708,93 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 									} while (--dcount);
 								}
 
-								GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, frame->rect.width, frame->rect.height, GL_COLOR_INDEX, GL_UNSIGNED_BYTE, pixelBuffer);
+								GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, frame->rect.width, frame->rect.height, GL_COLOR_INDEX, GL_UNSIGNED_BYTE, frameBuffer);
+							}
+							else if (frameCount == 1)
+							{
+								if (glFilter)
+								{
+									GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glFilter);
+									GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glFilter);
+								}
+
+								GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, frame->rect.width, frame->rect.height, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixelBuffer);
+
+								if (fpsState)
+								{
+									DWORD fps = Main::Round((FLOAT)fpsSum / fpsCount);
+
+									DWORD offset = FPS_X;
+
+									DWORD digCount = 0;
+									DWORD current = fps;
+									do
+									{
+										++digCount;
+										current = current / 10;
+									} while (current);
+
+									DWORD fpsColor = fpsState == FpsBenchmark ? 0xFF00FFFF : 0xFFFFFFFF;
+									DWORD dcount = digCount;
+									current = fps;
+									do
+									{
+										DWORD digit = current % 10;
+										bool* lpDig = (bool*)counters + FPS_WIDTH * FPS_HEIGHT * digit;
+
+										for (DWORD y = 0; y < FPS_HEIGHT; ++y)
+										{
+											BYTE* idx = surface->indexBuffer + (FPS_Y + y) * this->width +
+												FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+											DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * digCount +
+												(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+											DWORD width = FPS_STEP;
+											do
+												*pix++ = *(DWORD*)&palette->entries[*idx++];
+											while (--width);
+
+											width = FPS_WIDTH;
+											do
+											{
+												*pix++ = *lpDig++ ? fpsColor : *(DWORD*)&palette->entries[*idx];
+												++idx;
+											} while (--width);
+										}
+
+										current = current / 10;
+									} while (--dcount);
+
+									GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_WIDTH + FPS_STEP) * digCount, FPS_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
+								}
 							}
 							else
 							{
-								DWORD* pix = (DWORD*)pixelBuffer;
-								for (DWORD y = frame->rect.y; y < frame->vSize.height; ++y)
+								GLBindTexture(GL_TEXTURE_2D, frame->id);
+
+								if (glFilter)
 								{
-									BYTE* idx = this->attachedSurface->indexBuffer + y * this->width + frame->rect.x;
-									for (DWORD x = frame->rect.x; x < frame->vSize.width; ++x)
-										*pix++ = *(DWORD*)&palette->entries[*idx++];
+									GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glFilter);
+									GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glFilter);
 								}
+
+								DWORD* indices = surface->pixelBuffer + frame->rect.y * this->width + frame->rect.x;
+								DWORD height = frame->rect.height;
+								
+								DWORD width = frame->rect.width;
+								DWORD* pix = (DWORD*)frameBuffer;
+
+								do
+								{
+									DWORD* idx = (DWORD*)indices;
+									indices += this->width;
+									DWORD count = width;
+
+									do
+										*pix++ = *idx++;
+									while (--count);
+								} while (--height);
 
 								if (fpsState && count == frameCount - 1)
 								{
@@ -705,7 +820,7 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 
 										for (DWORD y = 0; y < FPS_HEIGHT; ++y)
 										{
-											DWORD* pix = (DWORD*)pixelBuffer + (FPS_Y + y) * frame->rect.width +
+											DWORD* pix = (DWORD*)frameBuffer + (FPS_Y + y) * frame->rect.width +
 												FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1) + FPS_STEP;
 
 											DWORD width = FPS_WIDTH;
@@ -721,7 +836,7 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 									} while (--dcount);
 								}
 
-								GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, frame->rect.width, frame->rect.height, GL_RGBA, GL_UNSIGNED_BYTE, pixelBuffer);
+								GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, frame->rect.width, frame->rect.height, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
 							}
 
 							GLBegin(GL_TRIANGLE_FAN);
@@ -767,7 +882,7 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 		}
 		free(frames);
 	}
-	free(pixelBuffer);
+	free(frameBuffer);
 }
 
 VOID DirectDraw::RenderNew()
@@ -874,7 +989,7 @@ VOID DirectDraw::RenderNew()
 										GLClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 										this->viewport.refresh = TRUE;
 
-										VOID* pixelBuffer = malloc(maxTexSize * maxTexSize * sizeof(DWORD));
+										VOID* fpsBuffer = malloc((FPS_WIDTH + FPS_STEP) * FPS_HEIGHT * 4 * sizeof(DWORD));
 										{
 											this->isStateChanged = TRUE;
 
@@ -893,9 +1008,10 @@ VOID DirectDraw::RenderNew()
 											{
 												if (this->attachedSurface)
 												{
-													DirectDrawPalette* palette = this->attachedSurface->attachedPallete;
-													if (palette)
+													DirectDrawSurface* surface = this->attachedSurface;
+													if (surface->attachedPallete)
 													{
+														DirectDrawPalette* palette = surface->attachedPallete;
 														if (fpsState)
 														{
 															DWORD tick = GetTickCount();
@@ -957,11 +1073,7 @@ VOID DirectDraw::RenderNew()
 															}
 														}
 
-														BYTE* idx = this->attachedSurface->indexBuffer;
-														DWORD* pix = (DWORD*)pixelBuffer;
-														DWORD count = this->width * this->height;
-														while (count--)
-															*pix++ = *(DWORD*)&palette->entries[*idx++];
+														GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, this->width, this->height, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixelBuffer);
 
 														if (fpsState)
 														{
@@ -987,23 +1099,30 @@ VOID DirectDraw::RenderNew()
 
 																for (DWORD y = 0; y < FPS_HEIGHT; ++y)
 																{
-																	DWORD* pix = (DWORD*)pixelBuffer + (FPS_Y + y) * this->width +
-																		FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1) + FPS_STEP;
+																	BYTE* idx = surface->indexBuffer + (FPS_Y + y) * this->width +
+																		FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
 
-																	DWORD width = FPS_WIDTH;
+																	DWORD* pix = (DWORD*)fpsBuffer + y * (FPS_STEP + FPS_WIDTH) * digCount +
+																		(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+																	DWORD width = FPS_STEP;
+																	do
+																		*pix++ = *(DWORD*)&palette->entries[*idx++];
+																	while (--width);
+
+																	width = FPS_WIDTH;
 																	do
 																	{
-																		if (*lpDig++)
-																			*pix = fpsColor;
-																		++pix;
+																		*pix++ = *lpDig++ ? fpsColor : *(DWORD*)&palette->entries[*idx];
+																		++idx;
 																	} while (--width);
 																}
 
 																current = current / 10;
 															} while (--dcount);
-														}
 
-														GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, this->width, this->height, GL_RGBA, GL_UNSIGNED_BYTE, pixelBuffer);
+															GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_WIDTH + FPS_STEP) * digCount, FPS_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, fpsBuffer);
+														}
 
 														GLDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
@@ -1021,7 +1140,6 @@ VOID DirectDraw::RenderNew()
 											} while (!this->isFinish);
 											GLFinish();
 										}
-										free(pixelBuffer);
 									}
 									GLDeleteTextures(1, &textureId);
 								}

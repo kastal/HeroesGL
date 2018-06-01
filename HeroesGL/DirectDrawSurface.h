@@ -39,8 +39,10 @@ public:
 	DirectDrawClipper* attachedClipper;
 
 	BYTE indexBuffer[640 * 480];
+	DWORD* pixelBuffer;
 
 	DirectDrawSurface(DirectDraw*, DWORD);
+	~DirectDrawSurface();
 
 	// Inherited via IDirectDrawSurface
 	HRESULT __stdcall QueryInterface(REFIID riid, LPVOID * ppvObj);

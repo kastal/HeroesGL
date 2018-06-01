@@ -51,7 +51,8 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>D:\Install\DirectX SDK\DirectX_7.1_SDK\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Install\DirectX SDK\DirectX_7.1_SDK\include;C:\Program Files (x86)\Microsoft SDK\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files (x86)\Microsoft SDK\Lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>

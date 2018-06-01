@@ -40,7 +40,7 @@ public:
 
 	DirectDrawClipper* attachedClipper;
 
-	BYTE* indexBuffer;
+	WORD* indexBuffer;
 	HBITMAP hBmp;
 	HDC hDc;
 
