@@ -79,7 +79,7 @@ HRESULT DirectDrawPalette::SetEntries(DWORD dwFlags, DWORD dwStartingEntry, DWOR
 			{
 				BYTE* idx = surfaceEntry->indexBuffer;
 				DWORD* pix = surfaceEntry->pixelBuffer;
-				DWORD count = 640 * 480;
+				DWORD count = RES_WIDTH * RES_HEIGHT;
 				do
 					*pix++ = *(DWORD*)&this->entries[*idx++];
 				while (--count);

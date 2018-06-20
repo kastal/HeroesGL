@@ -29,9 +29,6 @@
 #include "Main.h"
 #include "Hooks.h"
 #include "DirectDraw.h"
-#include "DirectDrawSurface.h"
-#include "DirectDrawPalette.h"
-#include "DirectDrawClipper.h"
 #include "FpsCounter.h"
 #include "Config.h"
 #include "CommCtrl.h"
@@ -39,7 +36,11 @@
 #define VK_I 0x49
 #define VK_F 0x46
 
+#define MIN_WIDTH 240
+#define MIN_HEIGHT 180
+
 WNDPROC OldWindowProc, OldPanelProc;
+BOOL isVSync;
 
 #pragma region Not Implemented
 ULONG DirectDraw::AddRef() { return 0; }
@@ -112,6 +113,24 @@ LRESULT __stdcall WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			ddraw->viewport.height = HIWORD(lParam);
 			ddraw->viewport.refresh = TRUE;
 			SetEvent(ddraw->hDrawEvent);
+		}
+
+		return CallWindowProc(OldWindowProc, hWnd, uMsg, wParam, lParam);
+	}
+
+	case WM_GETMINMAXINFO:
+	{
+		DirectDraw* ddraw = Main::FindDirectDrawByWindow(hWnd);
+		if (ddraw && ddraw->windowState == WinStateWindowed)
+		{
+			RECT rect = { 0, 0, MIN_WIDTH, MIN_HEIGHT };
+			AdjustWindowRect(&rect, GetWindowLong(hWnd, GWL_STYLE), TRUE);
+
+			MINMAXINFO* mmi = (MINMAXINFO*)lParam;
+			mmi->ptMinTrackSize.x = rect.right - rect.left;
+			mmi->ptMinTrackSize.y = rect.bottom - rect.top;;
+
+			return NULL;
 		}
 
 		return CallWindowProc(OldWindowProc, hWnd, uMsg, wParam, lParam);
@@ -241,6 +260,19 @@ LRESULT __stdcall WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			return NULL;
 		}
 
+		case IDM_VSYNC:
+		{
+			DirectDraw* ddraw = Main::FindDirectDrawByWindow(hWnd);
+			if (ddraw)
+			{
+				ddraw->imageVSync = !ddraw->imageVSync;
+				Config::Set("ImageVSync", ddraw->imageVSync);
+				SetEvent(ddraw->hDrawEvent);
+				ddraw->CheckMenu(NULL);
+			}
+			return NULL;
+		}
+
 		case IDM_FILT_OFF:
 		{
 			DirectDraw* ddraw = Main::FindDirectDrawByWindow(hWnd);
@@ -327,6 +359,20 @@ LRESULT __stdcall PanelProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return CallWindowProc(OldPanelProc, hWnd, uMsg, wParam, lParam);
 	}
 
+	case WM_SYSCOMMAND:
+	case WM_SYSKEYDOWN:
+	case WM_SYSKEYUP:
+	case WM_KEYDOWN:
+	case WM_KEYUP:
+	case WM_CHAR:
+	{
+		DWORD stye = GetWindowLong(hWnd, GWL_STYLE);
+		if (stye & WS_POPUP)
+			return WindowProc(GetParent(hWnd), uMsg, wParam, lParam);
+
+		return CallWindowProc(OldPanelProc, hWnd, uMsg, wParam, lParam);
+	}
+
 	default:
 		return CallWindowProc(OldPanelProc, hWnd, uMsg, wParam, lParam);
 	}
@@ -346,6 +392,7 @@ VOID DirectDraw::CheckMenu(HMENU hMenu)
 	if (!hMenu) return;
 
 	CheckMenuItem(hMenu, IDM_ASPECT_RATIO, MF_BYCOMMAND | (this->imageAspect ? MF_CHECKED : MF_UNCHECKED));
+	CheckMenuItem(hMenu, IDM_VSYNC, MF_BYCOMMAND | (this->imageVSync ? MF_CHECKED : MF_UNCHECKED));
 	EnableMenuItem(hMenu, IDM_FILT_XRBZ, MF_BYCOMMAND | (!glVersion || glVersion >= GL_VER_3_0 ? MF_ENABLED : MF_DISABLED));
 
 	switch (this->imageFilter)
@@ -546,7 +593,9 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 			memset(fpsQueue, 0, sizeof(fpsQueue));
 			memset(tickQueue, 0, sizeof(tickQueue));
 
-			GLClear(GL_COLOR_BUFFER_BIT);
+			BOOL isVSync = FALSE;
+			WGLSwapInterval(0);
+
 			do
 			{
 				if (this->attachedSurface)
@@ -555,6 +604,24 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 					if (surface->attachedPallete)
 					{
 						DirectDrawPalette* palette = surface->attachedPallete;
+
+						if (!isVSync)
+						{
+							if (this->imageVSync)
+							{
+								isVSync = TRUE;
+								WGLSwapInterval(1);
+							}
+						}
+						else
+						{
+							if (!this->imageVSync)
+							{
+								isVSync = FALSE;
+								WGLSwapInterval(0);
+							}
+						}
+
 						if (fpsState)
 						{
 							DWORD tick = GetTickCount();
@@ -599,6 +666,8 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 
 						if (glCapsSharedPalette)
 							GLColorTable(GL_TEXTURE_2D, GL_RGBA8, 256, GL_RGBA, GL_UNSIGNED_BYTE, palette->entries);
+
+						GLClear(GL_COLOR_BUFFER_BIT);
 
 						DWORD count = frameCount;
 						frame = frames;
@@ -671,9 +740,6 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 								if (fpsState && count == frameCount - 1)
 								{
 									DWORD fps = Main::Round((FLOAT)fpsSum / fpsCount);
-
-									DWORD offset = FPS_X;
-
 									DWORD digCount = 0;
 									DWORD current = fps;
 									do
@@ -723,9 +789,6 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 								if (fpsState)
 								{
 									DWORD fps = Main::Round((FLOAT)fpsSum / fpsCount);
-
-									DWORD offset = FPS_X;
-
 									DWORD digCount = 0;
 									DWORD current = fps;
 									do
@@ -799,9 +862,6 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 								if (fpsState && count == frameCount - 1)
 								{
 									DWORD fps = Main::Round((FLOAT)fpsSum / fpsCount);
-
-									DWORD offset = FPS_X;
-
 									DWORD digCount = 0;
 									DWORD current = fps;
 									do
@@ -860,7 +920,7 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 
 						GLFlush();
 						SwapBuffers(this->hDc);
-						GLClear(GL_COLOR_BUFFER_BIT);
+						GLFinish();
 
 						if (fpsState != FpsBenchmark)
 						{
@@ -870,8 +930,7 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 					}
 				}
 			} while (!this->isFinish);
-			GLFinish();
-
+			
 			frame = frames;
 			DWORD count = frameCount;
 			while (count--)
@@ -951,9 +1010,9 @@ VOID DirectDraw::RenderNew()
 					GLUniform1i(GLGetUniformLocation(shProgramXRBZ, "tex01"), 0);
 					GLUniform2f(GLGetUniformLocation(shProgramXRBZ, "inSize"), (GLfloat)maxTexSize, (GLfloat)maxTexSize);
 					GLuint outSize = GLGetUniformLocation(shProgramXRBZ, "outSize");
+					GLUniform2f(outSize, this->viewport.clipFactor.x * maxTexSize, this->viewport.clipFactor.y * maxTexSize);
 
 					GLuint arrayName;
-
 					GLGenVertexArrays(1, &arrayName);
 					{
 						GLBindVertexArray(arrayName);
@@ -991,8 +1050,6 @@ VOID DirectDraw::RenderNew()
 
 										VOID* fpsBuffer = malloc((FPS_WIDTH + FPS_STEP) * FPS_HEIGHT * 4 * sizeof(DWORD));
 										{
-											this->isStateChanged = TRUE;
-
 											DWORD fpsQueue[FPS_COUNT];
 											DWORD tickQueue[FPS_COUNT];
 
@@ -1003,7 +1060,9 @@ VOID DirectDraw::RenderNew()
 											memset(fpsQueue, 0, sizeof(fpsQueue));
 											memset(tickQueue, 0, sizeof(tickQueue));
 
-											GLClear(GL_COLOR_BUFFER_BIT);
+											BOOL isVSync = FALSE;
+											WGLSwapInterval(0);
+
 											do
 											{
 												if (this->attachedSurface)
@@ -1012,6 +1071,24 @@ VOID DirectDraw::RenderNew()
 													if (surface->attachedPallete)
 													{
 														DirectDrawPalette* palette = surface->attachedPallete;
+
+														if (!isVSync)
+														{
+															if (this->imageVSync)
+															{
+																isVSync = TRUE;
+																WGLSwapInterval(1);
+															}
+														}
+														else
+														{
+															if (!this->imageVSync)
+															{
+																isVSync = FALSE;
+																WGLSwapInterval(0);
+															}
+														}
+
 														if (fpsState)
 														{
 															DWORD tick = GetTickCount();
@@ -1078,9 +1155,6 @@ VOID DirectDraw::RenderNew()
 														if (fpsState)
 														{
 															DWORD fps = Main::Round((FLOAT)fpsSum / fpsCount);
-
-															DWORD offset = FPS_X;
-
 															DWORD digCount = 0;
 															DWORD current = fps;
 															do
@@ -1124,11 +1198,12 @@ VOID DirectDraw::RenderNew()
 															GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_WIDTH + FPS_STEP) * digCount, FPS_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, fpsBuffer);
 														}
 
+														GLClear(GL_COLOR_BUFFER_BIT);
 														GLDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 														GLFlush();
 														SwapBuffers(this->hDc);
-														GLClear(GL_COLOR_BUFFER_BIT);
+														GLFinish();
 
 														if (fpsState != FpsBenchmark)
 														{
@@ -1138,8 +1213,8 @@ VOID DirectDraw::RenderNew()
 													}
 												}
 											} while (!this->isFinish);
-											GLFinish();
 										}
+										free(fpsBuffer);
 									}
 									GLDeleteTextures(1, &textureId);
 								}
@@ -1324,6 +1399,7 @@ DirectDraw::DirectDraw(DirectDraw* lastObj)
 	}
 
 	this->imageAspect = Config::Get("ImageAspect", TRUE);
+	this->imageVSync = Config::Get("ImageVSync", TRUE);
 
 	this->hDrawEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 }
@@ -1443,17 +1519,9 @@ HRESULT DirectDraw::SetDisplayMode(DWORD dwWidth, DWORD dwHeight, DWORD dwBPP)
 	this->width = dwWidth;
 	this->height = dwHeight;
 
-	HMONITOR hMon = MonitorFromWindow(this->hWnd, MONITOR_DEFAULTTONEAREST);
-
-	MONITORINFO mi = { sizeof(mi) };
-	GetMonitorInfo(hMon, &mi);
-
-	RECT* rect = &mi.rcMonitor;
-
-	DWORD dwStyle = GetWindowLong(this->hWnd, GWL_STYLE);
-	AdjustWindowRect(rect, dwStyle, FALSE);
-
-	SetWindowPos(this->hWnd, NULL, rect->left, rect->top, rect->right - rect->left, rect->bottom - rect->top, SWP_NOZORDER);
+	RECT rect = { 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) };
+	AdjustWindowRect(&rect, GetWindowLong(this->hWnd, GWL_STYLE), FALSE);
+	MoveWindow(this->hWnd, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, TRUE);
 	SetForegroundWindow(this->hWnd);
 
 	return DD_OK;

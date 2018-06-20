@@ -87,13 +87,11 @@ enum FpsState
 
 struct AddressSpace
 {
-	DWORD style_check;
-	DWORD style_icon;
-	DWORD game_version;
+	DWORD check;
+	WORD game_version;
+	WORD start_offset;
 	DWORD ddraw_dll;
-	DWORD screenToClient;
-	DWORD loadMenu;
-	DWORD setMenu;
+	DWORD cpu_hook;
 	DWORD resMenu;
 	DWORD method2_nop;
 	DWORD method2_nop_size;
@@ -105,18 +103,7 @@ struct AddressSpace
 	DWORD mode_call1;
 	DWORD mode_call2;
 	DWORD mode_call3;
+	const CHAR* windowName;
 	const CHAR* configKey;
 	const CHAR* configPrefix;
 };
-
-#ifndef WH_MOUSE_LL
-#define WH_MOUSE_LL        14
-
-typedef struct tagMSLLHOOKSTRUCT {
-	POINT   pt;
-	DWORD   mouseData;
-	DWORD   flags;
-	DWORD   time;
-	ULONG_PTR dwExtraInfo;
-} MSLLHOOKSTRUCT, FAR *LPMSLLHOOKSTRUCT, *PMSLLHOOKSTRUCT;
-#endif

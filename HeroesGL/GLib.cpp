@@ -34,6 +34,7 @@ WGLMAKECURRENT WGLMakeCurrent;
 WGLCREATECONTEXT WGLCreateContext;
 WGLDELETECONTEXT WGLDeleteContext;
 WGLCREATECONTEXTATTRIBSARB WGLCreateContextAttribs;
+WGLSWAPINTERVAL WGLSwapInterval;
 
 GLGETSTRING GLGetString;
 GLVERTEX2S GLVertex2s;
@@ -201,6 +202,8 @@ namespace GL
 			if (!GetContext(hDc, lpHRc, 3, 0, FALSE))
 				GetContext(hDc, lpHRc, 1, 4, TRUE);
 		}
+
+		LoadGLFunction(buffer, "wgl", "SwapInterval", (PROC*)&WGLSwapInterval, "EXT");
 
 		LoadGLFunction(buffer, PREFIX_GL, "GetString", (PROC*)&GLGetString);
 		LoadGLFunction(buffer, PREFIX_GL, "TexCoord2f", (PROC*)&GLTexCoord2f);

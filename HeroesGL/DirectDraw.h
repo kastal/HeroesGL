@@ -25,14 +25,14 @@
 #pragma once
 #include "ddraw.h"
 #include "ExtraTypes.h"
-
-class DirectDrawSurface;
-class DirectDrawPalette;
-class DirectDrawClipper;
+#include "DirectDrawSurface.h"
 
 class DirectDraw : IDirectDraw
 {
 public:
+	VOID * operator new(size_t size) { return malloc(size); };
+	VOID operator delete(VOID *p) { free(p); };
+
 	DirectDraw* last;
 
 	DirectDrawSurface* surfaceEntries;
@@ -57,6 +57,7 @@ public:
 	WindowState windowState;
 	ImageFilter imageFilter;
 	BOOL imageAspect;
+	BOOL imageVSync;
 	BOOL isStateChanged;
 
 	DirectDraw(DirectDraw* lastObj);

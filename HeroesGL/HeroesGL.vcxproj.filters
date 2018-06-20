@@ -25,13 +25,13 @@
     <ClCompile Include="FpsCounter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hooks.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
     <ClCompile Include="DirectDrawClipper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hooks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -82,9 +82,6 @@
     </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{b48440de-744c-470c-835a-b1527d1c4325}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Hooks">
-      <UniqueIdentifier>{03b8651a-63d2-4427-8cad-22d49315525d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resource Files\Shaders Files">
       <UniqueIdentifier>{48b71afc-9a5a-4f85-a874-5ace8674a992}</UniqueIdentifier>

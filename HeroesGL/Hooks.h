@@ -24,18 +24,7 @@
 
 #pragma once
 
-#include "ExtraTypes.h"
-
 namespace Hooks
 {
-	BOOL __fastcall PatchHook(DWORD addr, VOID* hook);
-	BOOL __fastcall PatchNop(DWORD addr, DWORD size);
-	BOOL __fastcall PatchBlock(DWORD addr, VOID* block, DWORD size);
-	BOOL __fastcall ReadBlock(DWORD addr, VOID* block, DWORD size);
-	BOOL __fastcall PatchWord(DWORD addr, WORD value);
-	BOOL __fastcall PatchDWord(DWORD addr, DWORD value);
-	BOOL __fastcall PatchByte(DWORD addr, BYTE value);
-	BOOL __fastcall ReadDWord(DWORD addr, DWORD* value);
-
 	BOOL Load();
 }

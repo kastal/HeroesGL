@@ -32,12 +32,13 @@ HRESULT DirectDrawClipper::GetHWnd(HWND*) { return DD_OK; }
 HRESULT DirectDrawClipper::Initialize(LPDIRECTDRAW, DWORD) { return DD_OK; }
 HRESULT DirectDrawClipper::IsClipListChanged(BOOL*) { return DD_OK; }
 HRESULT DirectDrawClipper::SetClipList(LPRGNDATA, DWORD) { return DD_OK; }
-HRESULT DirectDrawClipper::SetHWnd(DWORD, HWND) { return DD_OK; }
+
 
 DirectDrawClipper::DirectDrawClipper(DirectDraw* lpDD)
 {
 	this->ddraw = lpDD;
 	this->last = lpDD->clipperEntries;
+	this->hWnd = NULL;
 }
 
 ULONG DirectDrawClipper::Release()
@@ -61,4 +62,10 @@ ULONG DirectDrawClipper::Release()
 
 	delete this;
 	return 0;
+}
+
+HRESULT DirectDrawClipper::SetHWnd(DWORD dwFlags, HWND hWnd)
+{
+	this->hWnd = hWnd;
+	return DD_OK;
 }

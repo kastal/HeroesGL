@@ -39,6 +39,7 @@
 #define IDM_RES_FULL_SCREEN			40009
 
 #define IDM_ASPECT_RATIO			20010
+#define IDM_VSYNC					20011
 
 #define IDM_FILT_OFF				20000
 #define IDM_FILT_LINEAR				20001

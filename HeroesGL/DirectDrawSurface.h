@@ -26,11 +26,16 @@
 #include "ddraw.h"
 #include "DirectDrawPalette.h"
 #include "DirectDrawClipper.h"
-#include "GLib.h"
+
+#define RES_WIDTH 640
+#define RES_HEIGHT 480
 
 class DirectDrawSurface : IDirectDrawSurface
 {
 public:
+	VOID * operator new(size_t size) { return malloc(size); };
+	VOID operator delete(VOID *p) { free(p); };
+
 	DirectDrawSurface* last;
 	DirectDraw* ddraw;
 	DWORD index;
@@ -38,7 +43,7 @@ public:
 	DirectDrawPalette* attachedPallete;
 	DirectDrawClipper* attachedClipper;
 
-	BYTE indexBuffer[640 * 480];
+	BYTE indexBuffer[RES_WIDTH * RES_HEIGHT];
 	DWORD* pixelBuffer;
 
 	DirectDrawSurface(DirectDraw*, DWORD);

@@ -25,7 +25,6 @@
 #include "stdafx.h"
 #include "GLib.h"
 #include "DirectDrawSurface.h"
-#include "DirectDrawClipper.h"
 #include "DirectDraw.h"
 
 #pragma region Not Implemented
@@ -67,7 +66,7 @@ DirectDrawSurface::DirectDrawSurface(DirectDraw* lpDD, DWORD index)
 	this->ddraw = lpDD;
 	this->last = lpDD->surfaceEntries;
 	this->index = index;
-	this->pixelBuffer = index ? NULL : (DWORD*)malloc(640 * 480 * sizeof(DWORD));
+	this->pixelBuffer = index ? NULL : (DWORD*)malloc(RES_WIDTH * RES_HEIGHT * sizeof(DWORD));
 
 	this->attachedPallete = NULL;
 	this->attachedClipper = NULL;
@@ -110,20 +109,22 @@ ULONG DirectDrawSurface::Release()
 
 HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lpDDSrcSurface, LPRECT lpSrcRect, DWORD dwFlags, LPDDBLTFX lpDDBltFx)
 {
+	if (lpSrcRect->right == lpSrcRect->left || lpSrcRect->bottom == lpSrcRect->top)
+		return DD_OK;
+
+	if (this->attachedClipper)
+		ScreenToClient(this->attachedClipper->hWnd, (POINT*)&lpDestRect->left);
+
 	RECT rect;
 	GetClientRect(this->ddraw->hWnd, &rect);
-
-	POINT p = { lpDestRect->left, lpDestRect->top };
-	ScreenToClient(this->ddraw->hWnd, &p);
-
-	DWORD px = DWORD((FLOAT)640 * (FLOAT)p.x / (FLOAT)(rect.right - rect.left));
-	DWORD py = DWORD((FLOAT)480 * (FLOAT)p.y / (FLOAT)(rect.bottom - rect.top));
+	lpDestRect->left = lpDestRect->left * RES_WIDTH / (rect.right - rect.left);
+	lpDestRect->top = lpDestRect->top * RES_HEIGHT / (rect.bottom - rect.top);
 
 	DirectDrawSurface* surface = (DirectDrawSurface*)lpDDSrcSurface;
 
-	BYTE* source = surface->indexBuffer + lpSrcRect->top * 640 + lpSrcRect->left;
-	BYTE* destination = this->indexBuffer + py * 640 + px;
-	DWORD* pixels = this->pixelBuffer + py * 640 + px;
+	BYTE* source = surface->indexBuffer + lpSrcRect->top * RES_WIDTH + lpSrcRect->left;
+	BYTE* destination = this->indexBuffer + lpDestRect->top * RES_WIDTH + lpDestRect->left;
+	DWORD* pixels = this->pixelBuffer + lpDestRect->top * RES_WIDTH + lpDestRect->left;
 
 	DWORD width = lpSrcRect->right - lpSrcRect->left;
 	DWORD height = lpSrcRect->bottom - lpSrcRect->top;
@@ -131,23 +132,22 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lpDDSrcSur
 	do
 	{
 		BYTE* src = source;
-		source += 640;
+		source += RES_WIDTH;
 
 		BYTE* dest = destination;
-		destination += 640;
+		destination += RES_WIDTH;
 
 		DWORD* pix = pixels;
-		pixels += 640;
-			
+		pixels += RES_WIDTH;
+
 		DWORD count = width;
 		do
 		{
 			*pix++ = *(DWORD*)&this->attachedPallete->entries[*src];
 			*dest++ = *src++;
-		}
-		while (--count);
+		} while (--count);
 	} while (--height);
-	
+
 	SetEvent(this->ddraw->hDrawEvent);
 
 	return DD_OK;
