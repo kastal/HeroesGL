@@ -25,7 +25,6 @@
 #include "stdafx.h"
 #include "GLib.h"
 #include "DirectDrawSurface.h"
-#include "DirectDrawClipper.h"
 
 #pragma region Not Implemented
 HRESULT DirectDrawSurface::QueryInterface(REFIID riid, LPVOID * ppvObj) { return DD_OK; }
@@ -220,7 +219,7 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE7 lpDDSrcSu
 		lpDestRect->left -= clip.left;
 		lpDestRect->top -= clip.top;
 
-		dWidth = clip.right - clip.left;
+		dWidth = this->ddraw->mode->width;
 	}
 	else
 		dWidth = this->width;

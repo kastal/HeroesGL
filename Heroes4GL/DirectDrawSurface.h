@@ -25,13 +25,15 @@
 #pragma once
 #include "ddraw.h"
 #include "DirectDrawClipper.h"
-#include "GLib.h"
 
 class DirectDraw;
 
 class DirectDrawSurface : IDirectDrawSurface7
 {
 public:
+	VOID * operator new(size_t size) { return malloc(size); };
+	VOID operator delete(VOID *p) { free(p); };
+
 	DirectDrawSurface* last;
 	DirectDraw* ddraw;
 	DWORD index;

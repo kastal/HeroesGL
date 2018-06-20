@@ -92,10 +92,7 @@ typedef char GLchar;
 #define GL_ELEMENT_ARRAY_BUFFER 0x8893
 #define GL_STATIC_DRAW 0x88E4
 
-#define GL_BGRA 0x80E1
 #define GL_UNSIGNED_SHORT_5_6_5 0x8363
-//#define GL_UNSIGNED_SHORT_5_5_5_1 0x8034
-#define GL_UNSIGNED_SHORT_1_5_5_5_REV 0x8366
 
 #define ERROR_INVALID_VERSION_ARB 0x2095
 #define ERROR_INVALID_PROFILE_ARB 0x2096
@@ -106,6 +103,7 @@ typedef HGLRC(__stdcall *WGLCREATECONTEXT)(HDC devContext);
 typedef BOOL(__stdcall *WGLDELETECONTEXT)(HGLRC glContext);
 typedef HGLRC(__stdcall *WGLCREATECONTEXTATTRIBSARB)(HDC hDC, HGLRC hshareContext, const DWORD *attribList);
 typedef BOOL(__stdcall *WGLCHOOSEPIXELFORMATARB) (HDC hDC, const INT* piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, INT *piFormats, UINT *nNumFormats);
+typedef BOOL(__stdcall *WGLSWAPINTERVAL)(INT interval);
 
 typedef const GLubyte* (__stdcall *GLGETSTRING)(GLenum name);
 typedef VOID(__stdcall *GLVERTEX2S)(GLshort x, GLshort y);
@@ -133,7 +131,6 @@ typedef VOID(__stdcall *GLGETINTEGERV)(GLenum pname, GLint* data);
 typedef VOID(__stdcall *GLCLEAR)(GLbitfield mask);
 typedef VOID(__stdcall *GLCLEARCOLOR)(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
 typedef VOID(__stdcall *GLPIXELSTOREI)(GLenum pname, GLint param);
-
 
 #ifdef _DEBUG
 typedef GLenum(__stdcall *GLGETERROR)();
@@ -183,6 +180,7 @@ extern WGLMAKECURRENT WGLMakeCurrent;
 extern WGLCREATECONTEXT WGLCreateContext;
 extern WGLDELETECONTEXT WGLDeleteContext;
 extern WGLCREATECONTEXTATTRIBSARB WGLCreateContextAttribs;
+extern WGLSWAPINTERVAL WGLSwapInterval;
 
 extern GLGETSTRING GLGetString;
 extern GLVERTEX2S GLVertex2s;
@@ -248,8 +246,6 @@ extern GLUNIFORMMATRIX4FV GLUniformMatrix4fv;
 extern GLGENVERTEXARRAYS GLGenVertexArrays;
 extern GLBINDVERTEXARRAY GLBindVertexArray;
 extern GLDELETEVERTEXARRAYS GLDeleteVertexArrays;
-
-extern HMODULE hModule;
 
 extern WORD glVersion;
 extern DWORD glCapsClampToEdge;

@@ -22,94 +22,40 @@
 	SOFTWARE.
 */
 
-#pragma once
-#include "windows.h"
-#include "GLib.h"
+#include "stdafx.h"
+#include "Config.h"
 
-struct Rect
-{
-	INT x;
-	INT y;
-	INT width;
-	INT height;
-};
+const CHAR* configKey;
 
-struct VecSize
+namespace Config
 {
-	INT width;
-	INT height;
-};
-
-struct TexSize
-{
-	FLOAT width;
-	FLOAT height;
-};
-
-struct Frame
-{
-	GLuint id;
-	Rect rect;
-	VecSize vSize;
-	TexSize tSize;
-};
-
-struct Viewport
-{
-	BOOL refresh;
-	INT width;
-	INT height;
-	Rect rectangle;
-	POINTFLOAT viewFactor;
-	POINTFLOAT clipFactor;
-};
-
-enum WindowState
-{
-	WinStateNone = 0,
-	WinStateFullScreen,
-	WinStateWindowed
-};
-
-enum ImageFilter
-{
-	FilterNearest = 0,
-	FilterLinear,
-	FilterXRBZ
-};
-
-struct DisplayMode
-{
-	DWORD width;
-	DWORD height;
-	union
+	DWORD __fastcall Get(const CHAR* name, DWORD def)
 	{
-		DWORD bpp;
-		BOOL isExists;
-	};
-};
+		HKEY regKey;
+		if (RegCreateKeyEx(HKEY_LOCAL_MACHINE, configKey, NULL, NULL, REG_OPTION_NON_VOLATILE, KEY_READ, NULL, &regKey, NULL) == ERROR_SUCCESS)
+		{
+			BYTE data[256];
+			DWORD cbData;
+			if (RegQueryValueEx(regKey, name, NULL, 0, data, &cbData) == ERROR_SUCCESS)
+				def = *(DWORD*)data;
 
-enum FpsState
-{
-	FpsDisabled = 0,
-	FpsNormal,
-	FpsBenchmark
-};
+			RegCloseKey(regKey);
+		}
 
-struct AddressSpace
-{
-	DWORD check_1;
-	DWORD check_2;
-	DWORD equal_address;
-	DWORD equal_value;
-	DWORD cpu_hook;
-	DWORD resMenu;
-	const CHAR* windowName;
-	const CHAR* configKey;
-};
+		return def;
+	}
 
-struct RGNRECTDATA
-{
-	RGNDATAHEADER   rdh;
-	RECT            rect;
-};
+	BOOL __fastcall Set(const CHAR* name, DWORD value)
+	{
+		BOOL res = FALSE;
+
+		HKEY regKey;
+		if (RegCreateKeyEx(HKEY_LOCAL_MACHINE, configKey, NULL, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &regKey, NULL) == ERROR_SUCCESS)
+		{
+			res = RegSetValueEx(regKey, name, NULL, REG_DWORD, (BYTE*)&value, sizeof(DWORD)) == ERROR_SUCCESS;
+			RegCloseKey(regKey);
+		}
+
+		return res;
+	}
+}

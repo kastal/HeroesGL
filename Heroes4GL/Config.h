@@ -23,93 +23,11 @@
 */
 
 #pragma once
-#include "windows.h"
-#include "GLib.h"
 
-struct Rect
-{
-	INT x;
-	INT y;
-	INT width;
-	INT height;
-};
+extern const CHAR* configKey;
 
-struct VecSize
+namespace Config
 {
-	INT width;
-	INT height;
-};
-
-struct TexSize
-{
-	FLOAT width;
-	FLOAT height;
-};
-
-struct Frame
-{
-	GLuint id;
-	Rect rect;
-	VecSize vSize;
-	TexSize tSize;
-};
-
-struct Viewport
-{
-	BOOL refresh;
-	INT width;
-	INT height;
-	Rect rectangle;
-	POINTFLOAT viewFactor;
-	POINTFLOAT clipFactor;
-};
-
-enum WindowState
-{
-	WinStateNone = 0,
-	WinStateFullScreen,
-	WinStateWindowed
-};
-
-enum ImageFilter
-{
-	FilterNearest = 0,
-	FilterLinear,
-	FilterXRBZ
-};
-
-struct DisplayMode
-{
-	DWORD width;
-	DWORD height;
-	union
-	{
-		DWORD bpp;
-		BOOL isExists;
-	};
-};
-
-enum FpsState
-{
-	FpsDisabled = 0,
-	FpsNormal,
-	FpsBenchmark
-};
-
-struct AddressSpace
-{
-	DWORD check_1;
-	DWORD check_2;
-	DWORD equal_address;
-	DWORD equal_value;
-	DWORD cpu_hook;
-	DWORD resMenu;
-	const CHAR* windowName;
-	const CHAR* configKey;
-};
-
-struct RGNRECTDATA
-{
-	RGNDATAHEADER   rdh;
-	RECT            rect;
-};
+	DWORD __fastcall Get(const CHAR* name, DWORD def);
+	BOOL __fastcall Set(const CHAR* name, DWORD value);
+}

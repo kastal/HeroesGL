@@ -51,8 +51,10 @@ END
 // Shaders
 //
 
-IDR_30_LINEAR_VERTEX		RCDATA		".\\Shaders\\linear.vgl"
-IDR_30_LINEAR_FRAGMENT		RCDATA		".\\Shaders\\linear.fgl"
+IDR_LINEAR_VERTEX		RCDATA		".\\Shaders\\linear.vgl"
+IDR_LINEAR_FRAGMENT		RCDATA		".\\Shaders\\linear.fgl"
+IDR_XBRZ_VERTEX			RCDATA		".\\Shaders\\xbrz.vgl"
+IDR_XBRZ_FRAGMENT		RCDATA		".\\Shaders\\xbrz.fgl"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -60,8 +62,8 @@ IDR_30_LINEAR_FRAGMENT		RCDATA		".\\Shaders\\linear.fgl"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2018,6,1,31
- PRODUCTVERSION 1,0,1,0
+ FILEVERSION 2018,6,21,60
+ PRODUCTVERSION 1,0,2,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -77,10 +79,10 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "HoMM IV - OpenGL wrapper"
-            VALUE "FileVersion", "2018.06.01.31"
+            VALUE "FileVersion", "2018.06.21.060"
             VALUE "LegalCopyright", "© 2018 Verok (verokster@gmail.com)"
             VALUE "OriginalFilename", "ddraw.dll"
-            VALUE "ProductVersion", "1.0.1"
+            VALUE "ProductVersion", "1.0.2"
             VALUE "ProductName", "Heroes4GL"
         END
     END
@@ -90,8 +92,81 @@ BEGIN
     END
 END
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDM_ENGLISH MENU
+BEGIN
+	POPUP "File"
+	BEGIN
+		MENUITEM "New Game", IDM_FILE_NEW_GAME
+		MENUITEM "Load Game", IDM_FILE_LOAD_GAME
+		MENUITEM "Save Game", IDM_FILE_SAVE_GAME
+		MENUITEM "Exit", IDM_FILE_EXIT
+	END
+	POPUP "Display"
+	BEGIN
+		MENUITEM "Full Screen (F4)", IDM_RES_FULL_SCREEN
+		POPUP "Filtering (F3)"
+		BEGIN
+			MENUITEM "Off", IDM_FILT_OFF
+			MENUITEM "Linear", IDM_FILT_LINEAR
+			MENUITEM "xRBz", IDM_FILT_XRBZ
+		END
+		MENUITEM "Keep Aspect Ratio (F5)", IDM_ASPECT_RATIO
+		MENUITEM "Enable VSync", IDM_VSYNC
+	END
+	POPUP "Help"
+	BEGIN
+		MENUITEM "About", IDM_HELP_ABOUT
+	END
+END
+
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
+// Russian (Russia) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(1251)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDM_RUSSIAN MENU
+BEGIN
+POPUP "Файл"
+	BEGIN
+		MENUITEM "Новая игра", IDM_FILE_NEW_GAME
+		MENUITEM "Загрузить игру", IDM_FILE_LOAD_GAME
+		MENUITEM "Сохранить игру", IDM_FILE_SAVE_GAME
+		MENUITEM "Выход", IDM_FILE_EXIT
+	END
+	POPUP "Экран"
+	BEGIN
+		MENUITEM "В полный экран (F4)", IDM_RES_FULL_SCREEN
+		POPUP "Фильтрация (F3)"
+		BEGIN
+			MENUITEM "Откл.", IDM_FILT_OFF
+			MENUITEM "Линейная", IDM_FILT_LINEAR
+			MENUITEM "xRBz", IDM_FILT_XRBZ
+		END
+		MENUITEM "Сохр. пропорции (F5)", IDM_ASPECT_RATIO
+		MENUITEM "Верт. синхронизация", IDM_VSYNC
+	END
+	POPUP "Помощь"
+	BEGIN
+		MENUITEM "О программе", IDM_HELP_ABOUT
+	END
+END
+
+#endif    // Russian (Russia) resources
 
 #ifndef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////

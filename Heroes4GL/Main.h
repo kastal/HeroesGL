@@ -28,7 +28,7 @@
 
 namespace Main
 {
-	HRESULT __stdcall DirectDrawCreate(GUID* lpGUID, LPDIRECTDRAW* lplpDD, IUnknown* pUnkOuter);
+	HRESULT __stdcall  DirectDrawCreateEx(GUID* lpGuid, LPVOID* lplpDD, REFIID iid, IUnknown* pUnkOuter);
 
 	DirectDraw* __fastcall FindDirectDrawByWindow(HWND hWnd);
 

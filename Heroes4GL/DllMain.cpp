@@ -23,6 +23,7 @@
 */
 
 #include "stdafx.h"
+#include "Hooks.h"
 
 HMODULE hDllModule;
 
@@ -113,13 +114,15 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved)
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		LoadRealLibrary();
+		DisableThreadLibraryCalls(hModule);
+		if (!Hooks::Load())
+			LoadRealLibrary();
 		hDllModule = hModule;
 		break;
 
 	case DLL_PROCESS_DETACH:
 		GL::Free();
-		ChangeDisplaySettings(NULL, NULL);
+		ClipCursor(NULL);
 		break;
 
 	default: break;

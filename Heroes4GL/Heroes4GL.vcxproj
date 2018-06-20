@@ -96,11 +96,11 @@
       <SectionAlignment>
       </SectionAlignment>
       <AssemblyDebug>true</AssemblyDebug>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;msvcrt.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;advapi32.lib;msvcrt.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <FixedBaseAddress>true</FixedBaseAddress>
-      <OutputFile>D:\Games\Heroes IV\ddraw$(TargetExt)</OutputFile>
+      <OutputFile>D:\Games\Heroes 4\ddraw$(TargetExt)</OutputFile>
       <StackReserveSize>
       </StackReserveSize>
     </Link>
@@ -133,13 +133,12 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
-      <CallingConvention>FastCall</CallingConvention>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;msvcrt.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;advapi32.lib;msvcrt.lib</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AssemblyDebug>false</AssemblyDebug>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
@@ -152,29 +151,33 @@
       <MapExports>false</MapExports>
       <ModuleDefinitionFile>$(ProjectDir)\module.def</ModuleDefinitionFile>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
-      <OutputFile>D:\Games\Heroes IV\ddraw$(TargetExt)</OutputFile>
+      <OutputFile>D:\Games\Heroes 4\ddraw$(TargetExt)</OutputFile>
     </Link>
     <Bscmake />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Config.cpp" />
     <ClCompile Include="DirectDraw.cpp" />
     <ClCompile Include="DirectDrawClipper.cpp" />
     <ClCompile Include="DirectDrawSurface.cpp" />
     <ClCompile Include="DllMain.cpp" />
     <ClCompile Include="FpsCounter.cpp" />
     <ClCompile Include="GLib.cpp" />
+    <ClCompile Include="Hooks.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Config.h" />
     <ClInclude Include="DirectDraw.h" />
     <ClInclude Include="DirectDrawClipper.h" />
     <ClInclude Include="DirectDrawSurface.h" />
     <ClInclude Include="ExtraTypes.h" />
     <ClInclude Include="FpsCounter.h" />
     <ClInclude Include="GLib.h" />
+    <ClInclude Include="Hooks.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StdAfx.h" />
@@ -186,6 +189,8 @@
     <None Include="module.def" />
     <None Include="Shaders\linear.fgl" />
     <None Include="Shaders\linear.vgl" />
+    <None Include="Shaders\xbrz.fgl" />
+    <None Include="Shaders\xbrz.vgl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

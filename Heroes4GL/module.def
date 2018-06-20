@@ -9,7 +9,7 @@ EXPORTS
 	DSoundHelp						= ?DSoundHelp@@YGXXZ
 	DirectDrawCreate				= ?DirectDrawCreate@@YGXXZ
 	DirectDrawCreateClipper			= ?DirectDrawCreateClipper@@YGXXZ
-	DirectDrawCreateEx				= ?DirectDrawCreateEx@Main@@YGJPAU_GUID@@PAPAXABU2@PAUIUnknown@@@Z
+	DirectDrawCreateEx				= ?DirectDrawCreateEx@@YGXXZ
 	DirectDrawEnumerateA			= ?DirectDrawEnumerateA@@YGXXZ
 	DirectDrawEnumerateExA			= ?DirectDrawEnumerateExA@@YGXXZ
 	DirectDrawEnumerateExW			= ?DirectDrawEnumerateExW@@YGXXZ

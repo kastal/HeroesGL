@@ -24,8 +24,32 @@
 
 #pragma once
 
-#define IDR_30_LINEAR_VERTEX		30
-#define IDR_30_LINEAR_FRAGMENT		31
+#define IDR_LINEAR_VERTEX		30
+#define IDR_LINEAR_FRAGMENT		31
+#define IDR_XBRZ_VERTEX			32
+#define IDR_XBRZ_FRAGMENT		33
+
+#define IDG_ABOUT					103
+#define CMD_OK						1
+
+#define IDM_ENGLISH					100
+#define IDM_RUSSIAN					101
+
+#define IDM_RES_FULL_SCREEN			40009
+
+#define IDM_ASPECT_RATIO			20010
+#define IDM_VSYNC					20011
+
+#define IDM_FILT_OFF				20000
+#define IDM_FILT_LINEAR				20001
+#define IDM_FILT_XRBZ				20002
+
+#define IDM_FILE_NEW_GAME			32897
+#define IDM_FILE_LOAD_GAME			32864
+#define IDM_FILE_SAVE_GAME			32865
+#define IDM_FILE_EXIT				105
+
+#define IDM_HELP_ABOUT				40053
 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
