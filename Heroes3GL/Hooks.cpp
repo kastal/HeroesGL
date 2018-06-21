@@ -39,107 +39,107 @@ AddressSpace* hookSpace;
 AddressSpace addressArray[] = {
 	// check 1 & 2,         cpu patch,  renderNop
 
-	0x004D4A5F, 0x0059308B, 0x004D4EF0, 0x00592D72, IDM_RUSSIAN, // Heroes III Erathia - v1.0 Buka
+	0x004D4A5F, 0x0059308B, 0x004D4EF0, 0x00592D72, 0x004E6BAF, 0x004E6C1D, 0x004E6C22, IDM_RUSSIAN, // Heroes III Erathia - v1.0 Buka
 	"Ãåðîè Ìå÷à è Ìàãèè III: Âîçðîæäåíèå Ýðàôèè",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
 
-	0x004F2533, 0x005F9649, 0x004F29C3, 0x005F9336, IDM_RUSSIAN, // Heroes III Armageddon - v2.1 Buka
+	0x004F2533, 0x005F9649, 0x004F29C3, 0x005F9336, 0x005074CF, 0x0050753B, 0x00507540, IDM_RUSSIAN, // Heroes III Armageddon - v2.1 Buka
 	"Ãåðîè Ìå÷à è Ìàãèè III: Êëèíîê Àðìàãåääîíà",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
 
-	0x004F7EB3, 0x00602379, 0x004F8363, 0x00602066, IDM_RUSSIAN, // Heroes III Shadow - Buka
+	0x004F7EB3, 0x00602379, 0x004F8363, 0x00602066, 0x0050D58F, 0x0050D5FB, 0x0050D600, IDM_RUSSIAN, // Heroes III Shadow - Buka
 	"Ãåðîè Ìå÷à è Ìàãèè III: Äûõàíèå Cìåðòè",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
 
-	0x004F7EB3, 0x006021A9, 0x004F8363, 0x00601E96, IDM_RUSSIAN, // Heroes III Complete - v4.0 Buka
+	0x004F7EB3, 0x006021A9, 0x004F8363, 0x00601E96, 0x0050DB1F, 0x0050DB8B, 0x0050DB90, IDM_RUSSIAN, // Heroes III Complete - v4.0 Buka
 	"Ãåðîè Ìå÷à è Ìàãèè III: Ïîëíîå Ñîáðàíèå",
 	"SOFTWARE\\Buka\\3DO\\Heroes of Might and Magic III Complete Platinum",
 
 	// ----------------------------------------------------------------------------------------------------------------------------------------------
 
-	0x004EBA34, 0x005AF329, 0x004EBEC3, 0x005AF016, IDM_RUSSIAN, // Heroes Chronicles Warlords & Underworld & Elements & Dragons - v1.0
+	0x004EBA34, 0x005AF329, 0x004EBEC3, 0x005AF016, 0x004FFFAF, 0x0050001B, 0x00500020, IDM_RUSSIAN, // Heroes Chronicles Warlords & Underworld & Elements & Dragons - v1.0
 	"Õðîíèêè ãåðîåâ",
 	"SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
 
-	0x004EB494, 0x005AF2D9, 0x004EB923, 0x005AEFC6, IDM_RUSSIAN, // Heroes Chronicles Beastmaster & Sword - v1.0
+	0x004EB494, 0x005AF2D9, 0x004EB923, 0x005AEFC6, 0x004FF98F, 0x004FF9FB, 0x004FFA00, IDM_RUSSIAN, // Heroes Chronicles Beastmaster & Sword - v1.0
 	"Õðîíèêè ãåðîåâ",
 	"SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
 
 	// ==============================================================================================================================================
 
-	0x004D3363, 0x0058E558, 0x004D39F3, 0x0058E246, IDM_ENGLISH, // Heroes III Erathia - v1.0
+	0x004D3363, 0x0058E558, 0x004D39F3, 0x0058E246, 0x004E568F, 0x004E56FB, 0x004E5700, IDM_ENGLISH, // Heroes III Erathia - v1.0
 	"Heroes of Might and Magic III: The Restoration of Erathia",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
 
-	0x0041E573, 0x004210B8, 0x0041EA03, 0x00420DA6, IDM_ENGLISH, // Heroes III Erathia - v1.1
+	0x0041E573, 0x004210B8, 0x0041EA03, 0x00420DA6, 0x004179AF, 0x00417A1B, 0x00417A20, IDM_ENGLISH, // Heroes III Erathia - v1.1
 	"Heroes of Might and Magic III: The Restoration of Erathia",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
 
-	0x0041E523, 0x00421078, 0x0041E9C3, 0x00420D66, IDM_ENGLISH, // Heroes III Erathia - v1.2
+	0x0041E523, 0x00421078, 0x0041E9C3, 0x00420D66, 0x0041797F, 0x004179EB, 0x004179F0, IDM_ENGLISH, // Heroes III Erathia - v1.2
 	"Heroes of Might and Magic III: The Restoration of Erathia",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
 
-	0x004F58F3, 0x005D9679, 0x004F5D83, 0x005D9366, IDM_ENGLISH, // Heroes III Erathia - v1.3
+	0x004F58F3, 0x005D9679, 0x004F5D83, 0x005D9366, 0x0050ABEF, 0x0050AC5B, 0x0050AC60, IDM_ENGLISH, // Heroes III Erathia - v1.3
 	"Heroes of Might and Magic III: The Restoration of Erathia",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
 
-	0x004F5583, 0x005D8F69, 0x004F5A13, 0x005D8C56, IDM_ENGLISH, // Heroes III Erathia - v1.4
+	0x004F5583, 0x005D8F69, 0x004F5A13, 0x005D8C56, 0x0050AAAF, 0x0050AB1B, 0x0050AB20, IDM_ENGLISH, // Heroes III Erathia - v1.4
 	"Heroes of Might and Magic III: The Restoration of Erathia",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
 
 	// ----------------------------------------------------------------------------------------------------------------------------------------------
 
-	0x004EB283, 0x005EEFD8, 0x004EB713, 0x005EECC6, IDM_ENGLISH, // Heroes III Armageddon - v2.0
+	0x004EB283, 0x005EEFD8, 0x004EB713, 0x005EECC6, 0x0050041F, 0x0050048B, 0x00500490, IDM_ENGLISH, // Heroes III Armageddon - v2.0
 	"Heroes of Might and Magic III: Armageddon’s Blade",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
 
-	0x004F5C43, 0x00600299, 0x004F60D3, 0x005FFF86, IDM_ENGLISH, // Heroes III Armageddon - v2.1
+	0x004F5C43, 0x00600299, 0x004F60D3, 0x005FFF86, 0x0050B6AF, 0x0050B71B, 0x0050B720, IDM_ENGLISH, // Heroes III Armageddon - v2.1
 	"Heroes of Might and Magic III: Armageddon’s Blade",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
 
-	0x004F5963, 0x005FFBF9, 0x004F5DF3, 0x005FF8E6, IDM_ENGLISH, // Heroes III Armageddon - v2.2
+	0x004F5963, 0x005FFBF9, 0x004F5DF3, 0x005FF8E6, 0x0050B1BF, 0x0050B22B, 0x0050B230, IDM_ENGLISH, // Heroes III Armageddon - v2.2
 	"Heroes of Might and Magic III: Armageddon’s Blade",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
 
 	// ----------------------------------------------------------------------------------------------------------------------------------------------
 
-	0x004F7D73, 0x006027E9, 0x004F8223, 0x006024D6, IDM_ENGLISH, // Heroes III Shadow - v3.0
+	0x004F7D73, 0x006027E9, 0x004F8223, 0x006024D6, 0x0050D93F, 0x0050D9AB, 0x0050D9B0, IDM_ENGLISH, // Heroes III Shadow - v3.0
 	"Heroes of Might and Magic III: The Shadow of Death",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
 
-	0x004F85B3, 0x006027E9, 0x004F8A63, 0x006024D6, IDM_ENGLISH, // Heroes III Shadow - v3.1
+	0x004F85B3, 0x006027E9, 0x004F8A63, 0x006024D6, 0x0050DE4F, 0x0050DEBB, 0x0050DEC0, IDM_ENGLISH, // Heroes III Shadow - v3.1
 	"Heroes of Might and Magic III: The Shadow of Death",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
 
-	0x004F8193, 0x00602149, 0x004F8643, 0x00601E36, IDM_ENGLISH, // Heroes III Shadow - v3.2
+	0x004F8193, 0x00602149, 0x004F8643, 0x00601E36, 0x0050D8CF, 0x0050D93B, 0x0050D940, IDM_ENGLISH, // Heroes III Shadow - v3.2
 	"Heroes of Might and Magic III: The Shadow of Death",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
 
 	// ----------------------------------------------------------------------------------------------------------------------------------------------
 
-	0x004F7B03, 0x00601B89, 0x004F7FB3, 0x00601876, IDM_ENGLISH, // Heroes III Complete - v4.0
+	0x004F7B03, 0x00601B89, 0x004F7FB3, 0x00601876, 0x0050D6CF, 0x0050D73B, 0x0050D740, IDM_ENGLISH, // Heroes III Complete - v4.0
 	"Heroes of Might and Magic III: Complete",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
 
 	// ==============================================================================================================================================
 
-	0x004F0033, 0x005B5129, 0x004F04B3, 0x005B4E16, IDM_ENGLISH, // Heroes Chronicles Warlords & Underworld - v1.0
+	0x004F0033, 0x005B5129, 0x004F04B3, 0x005B4E16, 0x00504C8F, 0x00504CFB, 0x00504D00, IDM_ENGLISH, // Heroes Chronicles Warlords & Underworld - v1.0
 	"Heroes Chronicles",
 	"SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
 
-	0x004EFE04, 0x005B5469, 0x004F0293, 0x005B5156, IDM_ENGLISH, // Heroes Chronicles Elements & Dragons - v1.0
+	0x004EFE04, 0x005B5469, 0x004F0293, 0x005B5156, 0x00504B6F, 0x00504BDB, 0x00504BE0, IDM_ENGLISH, // Heroes Chronicles Elements & Dragons - v1.0
 	"Heroes Chronicles",
 	"SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
 
-	0x004EFA84, 0x005B51B9, 0x004EFFF3, 0x005B4EA6, IDM_ENGLISH, // Heroes Chronicles WorldTree - v1.0
+	0x004EFA84, 0x005B51B9, 0x004EFFF3, 0x005B4EA6, 0x00504B6F, 0x00504BDB, 0x00504BE0, IDM_ENGLISH, // Heroes Chronicles WorldTree - v1.0
 	"Heroes Chronicles",
 	"SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
 
-	0x004EF824, 0x005B5249, 0x004EFD93, 0x005B4F36, IDM_ENGLISH, // Heroes Chronicles FieryMoon - v1.0
+	0x004EF824, 0x005B5249, 0x004EFD93, 0x005B4F36, 0x0050418F, 0x005041FB, 0x00504200, IDM_ENGLISH, // Heroes Chronicles FieryMoon - v1.0
 	"Heroes Chronicles",
 	"SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
 
-	0x004EF874, 0x005B4C09, 0x004EFD03, 0x005B48F6, IDM_ENGLISH, // Heroes Chronicles Beastmaster & Sword - v1.0
+	0x004EF874, 0x005B4C09, 0x004EFD03, 0x005B48F6, 0x0050460F, 0x0050467B, 0x00504680, IDM_ENGLISH, // Heroes Chronicles Beastmaster & Sword - v1.0
 	"Heroes Chronicles",
 	"SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
 
@@ -495,6 +495,11 @@ namespace Hooks
 
 	BOOL Load()
 	{
+		DEVMODE devMode = { NULL };
+		devMode.dmSize = sizeof(DEVMODE);
+		EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &devMode);
+		DWORD cursorTime = 1000 / devMode.dmDisplayFrequency;
+
 		hookSpace = addressArray;
 		do
 		{
@@ -514,6 +519,10 @@ namespace Hooks
 				back_cpu = hookSpace->cpu_hook + 10;
 
 				PatchNop(hookSpace->renderNop, 5); // prevent on WM_PAINT
+
+				PatchByte(hookSpace->cursor_time_1 + 2, cursorTime);
+				PatchByte(hookSpace->cursor_time_2 + 2, cursorTime);
+				PatchDWord(hookSpace->cursor_time_3 + 1, cursorTime);
 
 				configKey = hookSpace->configKey;
 

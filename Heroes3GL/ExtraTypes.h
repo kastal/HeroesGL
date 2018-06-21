@@ -103,6 +103,9 @@ struct AddressSpace
 	DWORD check_2;
 	DWORD cpu_hook;
 	DWORD renderNop;
+	DWORD cursor_time_1;
+	DWORD cursor_time_2;
+	DWORD cursor_time_3;
 	DWORD resMenu;
 	const CHAR* windowName;
 	const CHAR* configKey;
