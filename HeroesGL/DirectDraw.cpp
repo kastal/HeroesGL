@@ -32,6 +32,7 @@
 #include "FpsCounter.h"
 #include "Config.h"
 #include "CommCtrl.h"
+#include "Shellapi.h"
 
 #define VK_I 0x49
 #define VK_F 0x46
@@ -61,6 +62,60 @@ HRESULT DirectDraw::WaitForVerticalBlank(DWORD, HANDLE) { return DD_OK; }
 HRESULT DirectDraw::QueryInterface(REFIID riid, LPVOID* ppvObj) { return DD_OK; }
 HRESULT DirectDraw::EnumDisplayModes(DWORD, LPDDSURFACEDESC, LPVOID, LPDDENUMMODESCALLBACK) { return DD_OK; }
 #pragma endregion
+
+LRESULT __stdcall AboutProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+	case WM_INITDIALOG:
+	{
+		SetWindowLong(hDlg, GWL_EXSTYLE, NULL);
+		EnumChildWindows(hDlg, Hooks::EnumChildProc, NULL);
+
+		CHAR email[50];
+		GetDlgItemText(hDlg, IDC_LNK_EMAIL, email, sizeof(email) - 1);
+		CHAR anchor[256];
+		sprintf(anchor, "<A HREF=\"mailto:%s\">%s</A>", email, email);
+		SetDlgItemText(hDlg, IDC_LNK_EMAIL, anchor);
+
+		break;
+	}
+
+	case WM_NOTIFY:
+	{
+		if (((NMHDR*)lParam)->code == NM_CLICK && wParam == IDC_LNK_EMAIL)
+		{
+			NMLINK* pNMLink = (NMLINK*)lParam;
+			LITEM iItem = pNMLink->item;
+			
+			CHAR url[256];
+			wcstombs(url, pNMLink->item.szUrl, sizeof(url) - 1);
+
+			SHELLEXECUTEINFO shExecInfo = { NULL };
+			shExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+			shExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+			shExecInfo.lpFile = url;
+			shExecInfo.nShow = SW_SHOW;
+
+			ShellExecuteEx(&shExecInfo);
+		}
+
+		break;
+	}
+
+	case WM_COMMAND:
+	{
+		if (wParam == IDC_BTN_OK)
+			EndDialog(hDlg, TRUE);
+		break;
+	}
+
+	default:
+		break;
+	}
+
+	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+}
 
 LRESULT __stdcall WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -246,6 +301,23 @@ LRESULT __stdcall WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		switch (wParam)
 		{
+		case IDM_HELP_WRAPPER:
+		{
+			INT_PTR res;
+			if (hActCtx && hActCtx != INVALID_HANDLE_VALUE)
+			{
+				ULONG_PTR cookie;
+				ActivateActCtxC(hActCtx, &cookie);
+				res = DialogBoxParam(hDllModule, MAKEINTRESOURCE(configLanguage == LNG_ENGLISH ? IDD_ENGLISH : IDD_RUSSIAN), hWnd, (DLGPROC)AboutProc, NULL);
+				DeactivateActCtxC(0, cookie);
+			}
+			else
+				res = DialogBoxParam(hDllModule, MAKEINTRESOURCE(configLanguage == LNG_ENGLISH ? IDD_ENGLISH : IDD_RUSSIAN), hWnd, (DLGPROC)AboutProc, NULL);
+
+			SetForegroundWindow(hWnd);
+			return NULL;
+		}
+
 		case IDM_ASPECT_RATIO:
 		{
 			DirectDraw* ddraw = Main::FindDirectDrawByWindow(hWnd);

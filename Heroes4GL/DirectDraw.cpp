@@ -31,12 +31,14 @@
 #include "FpsCounter.h"
 #include "Config.h"
 #include "CommCtrl.h"
+#include "Shellapi.h"
 
 #define VK_I 0x49
 #define VK_F 0x46
 
 #define MIN_WIDTH 240
 #define MIN_HEIGHT 180
+#define STYLE_DIALOG (DS_MODALFRAME | WS_POPUP)
 
 WNDPROC OldWindowProc, OldPanelProc;
 
@@ -67,15 +69,60 @@ HRESULT DirectDraw::StartModeTest(LPSIZE, DWORD, DWORD) { return DD_OK; }
 HRESULT DirectDraw::EvaluateMode(DWORD, DWORD *) { return DD_OK; }
 #pragma endregion
 
-LRESULT __stdcall HelpProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+BOOL __stdcall EnumChildProc(HWND hDlg, LPARAM lParam)
+{
+	if ((GetWindowLong(hDlg, GWL_STYLE) & SS_ICON) == SS_ICON)
+		SendMessage(hDlg, STM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)configIcon);
+	else
+		SendMessage(hDlg, WM_SETFONT, (WPARAM)configFont, TRUE);
+
+	return TRUE;
+}
+
+LRESULT __stdcall AboutProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
+	case WM_INITDIALOG:
+	{
+		SetWindowLong(hDlg, GWL_EXSTYLE, NULL);
+		EnumChildWindows(hDlg, EnumChildProc, NULL);
+
+		CHAR email[50];
+		GetDlgItemText(hDlg, IDC_LNK_EMAIL, email, sizeof(email) - 1);
+		CHAR anchor[256];
+		sprintf(anchor, "<A HREF=\"mailto:%s\">%s</A>", email, email);
+		SetDlgItemText(hDlg, IDC_LNK_EMAIL, anchor);
+
+		break;
+	}
+
+	case WM_NOTIFY:
+	{
+		if (((NMHDR*)lParam)->code == NM_CLICK && wParam == IDC_LNK_EMAIL)
+		{
+			NMLINK* pNMLink = (NMLINK*)lParam;
+			LITEM iItem = pNMLink->item;
+
+			CHAR url[256];
+			wcstombs(url, pNMLink->item.szUrl, sizeof(url) - 1);
+
+			SHELLEXECUTEINFO shExecInfo = { NULL };
+			shExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+			shExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+			shExecInfo.lpFile = url;
+			shExecInfo.nShow = SW_SHOW;
+
+			ShellExecuteEx(&shExecInfo);
+		}
+
+		break;
+	}
+
 	case WM_COMMAND:
 	{
-		if (wParam == CMD_OK)
-			EndDialog(hWnd, TRUE);
-
+		if (wParam == IDC_BTN_OK)
+			EndDialog(hDlg, TRUE);
 		break;
 	}
 
@@ -83,7 +130,26 @@ LRESULT __stdcall HelpProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 	}
 
-	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+}
+
+LRESULT __stdcall AboutAppProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if (uMsg == WM_INITDIALOG)
+	{
+		RECT rect, offset;
+		GetClientRect(hDlg, &rect);
+		GetWindowRect(hDlg, &offset);
+		OffsetRect(&rect, offset.left, offset.top);
+		AdjustWindowRect(&rect, STYLE_DIALOG, FALSE);
+		SetWindowLong(hDlg, GWL_STYLE, STYLE_DIALOG);
+		SetWindowLong(hDlg, GWL_EXSTYLE, NULL);
+		MoveWindow(hDlg, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, TRUE);
+		EnumChildWindows(hDlg, EnumChildProc, NULL);
+	}
+	else if (uMsg == WM_COMMAND && wParam == IDC_BTN_OK)
+		EndDialog(hDlg, TRUE);
+	return DefWindowProc(hDlg, uMsg, wParam, lParam);
 }
 
 LRESULT __stdcall WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -307,9 +373,36 @@ LRESULT __stdcall WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			return NULL;
 		}
 
+		case IDM_HELP_WRAPPER:
+		{
+			INT_PTR res;
+			if (hActCtx && hActCtx != INVALID_HANDLE_VALUE)
+			{
+				ULONG_PTR cookie;
+				ActivateActCtxC(hActCtx, &cookie);
+				res = DialogBoxParam(hDllModule, MAKEINTRESOURCE(configLanguage == LNG_ENGLISH ? IDD_ENGLISH : IDD_RUSSIAN), hWnd, (DLGPROC)AboutProc, NULL);
+				DeactivateActCtxC(0, cookie);
+			}
+			else
+				res = DialogBoxParam(hDllModule, MAKEINTRESOURCE(configLanguage == LNG_ENGLISH ? IDD_ENGLISH : IDD_RUSSIAN), hWnd, (DLGPROC)AboutProc, NULL);
+
+			SetForegroundWindow(hWnd);
+			return NULL;
+		}
+
 		case IDM_HELP_ABOUT:
 		{
-			DialogBoxParam(NULL, MAKEINTRESOURCE(IDG_ABOUT), hWnd, (DLGPROC)HelpProc, NULL);
+			INT_PTR res;
+			if (hActCtx && hActCtx != INVALID_HANDLE_VALUE)
+			{
+				ULONG_PTR cookie;
+				ActivateActCtxC(hActCtx, &cookie);
+				res = DialogBoxParam(NULL, MAKEINTRESOURCE(IDD_HELP_ABOUT), hWnd, (DLGPROC)AboutAppProc, NULL);
+				DeactivateActCtxC(0, cookie);
+			}
+			else
+				res = DialogBoxParam(NULL, MAKEINTRESOURCE(IDD_HELP_ABOUT), hWnd, (DLGPROC)AboutAppProc, NULL);
+
 			SetForegroundWindow(hWnd);
 			return NULL;
 		}

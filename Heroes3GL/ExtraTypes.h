@@ -101,12 +101,14 @@ struct AddressSpace
 {
 	DWORD check_1;
 	DWORD check_2;
+	DWORD equal_address;
+	DWORD equal_value;
 	DWORD cpu_hook;
 	DWORD renderNop;
 	DWORD cursor_time_1;
 	DWORD cursor_time_2;
 	DWORD cursor_time_3;
-	DWORD resMenu;
+	BYTE resLanguage;
 	const CHAR* windowName;
 	const CHAR* configKey;
 };

@@ -1,56 +1,38 @@
-/*
-	MIT License
+//{{NO_DEPENDENCIES}}
+// Microsoft Visual C++ generated include file.
+// Used by module.rc
+//
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+#define IDM_MANIFEST                    2
 
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software and associated documentation files (the "Software"), to deal
-	in the Software without restriction, including without limitation the rights
-	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-	copies of the Software, and to permit persons to whom the Software is
-	furnished to do so, subject to the following conditions:
+#define LNG_ENGLISH						0
+#define LNG_RUSSIAN						1
+#define IDC_BTN_OK						1
+#define IDC_LNK_EMAIL					2
+#define IDR_LINEAR_VERTEX               30
+#define IDR_LINEAR_FRAGMENT             31
+#define IDR_XBRZ_VERTEX                 32
+#define IDR_XBRZ_FRAGMENT               33
+#define IDM_ENGLISH                     100
+#define IDM_RUSSIAN                     101
+#define IDD_ENGLISH						200
+#define IDD_RUSSIAN						201
+#define IDD_HELP_ABOUT                  103
+#define IDM_FILE_EXIT                   105
+#define IDM_FILT_OFF                    20000
+#define IDM_FILT_LINEAR                 20001
+#define IDM_FILT_XRBZ                   20002
+#define IDM_ASPECT_RATIO                20010
+#define IDM_VSYNC                       20011
+#define IDM_HELP_WRAPPER                20053
+#define IDM_FILE_LOAD_GAME              32864
+#define IDM_FILE_SAVE_GAME              32865
+#define IDM_FILE_NEW_GAME               32897
+#define IDM_RES_FULL_SCREEN             40009
+#define IDM_HELP_ABOUT                  40053
 
-	The above copyright notice and this permission notice shall be included in all
-	copies or substantial portions of the Software.
-
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-	SOFTWARE.
-*/
-
-#pragma once
-
-#define IDR_LINEAR_VERTEX		30
-#define IDR_LINEAR_FRAGMENT		31
-#define IDR_XBRZ_VERTEX			32
-#define IDR_XBRZ_FRAGMENT		33
-
-#define IDG_ABOUT					103
-#define CMD_OK						1
-
-#define IDM_ENGLISH					100
-#define IDM_RUSSIAN					101
-
-#define IDM_RES_FULL_SCREEN			40009
-
-#define IDM_ASPECT_RATIO			20010
-#define IDM_VSYNC					20011
-
-#define IDM_FILT_OFF				20000
-#define IDM_FILT_LINEAR				20001
-#define IDM_FILT_XRBZ				20002
-
-#define IDM_FILE_NEW_GAME			32897
-#define IDM_FILE_LOAD_GAME			32864
-#define IDM_FILE_SAVE_GAME			32865
-#define IDM_FILE_EXIT				105
-
-#define IDM_HELP_ABOUT				40053
-
+// Next default values for new objects
+// 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        101

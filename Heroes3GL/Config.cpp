@@ -26,6 +26,9 @@
 #include "Config.h"
 
 const CHAR* configKey;
+DWORD configLanguage;
+HICON configIcon;
+HFONT configFont;
 
 namespace Config
 {

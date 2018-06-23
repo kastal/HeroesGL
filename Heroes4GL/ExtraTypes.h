@@ -103,7 +103,7 @@ struct AddressSpace
 	DWORD equal_address;
 	DWORD equal_value;
 	DWORD cpu_hook;
-	DWORD resMenu;
+	BYTE resLanguage;
 	const CHAR* windowName;
 	const CHAR* configKey;
 };

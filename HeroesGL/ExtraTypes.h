@@ -88,15 +88,16 @@ enum FpsState
 struct AddressSpace
 {
 	DWORD check;
-	WORD game_version;
-	WORD start_offset;
+	BYTE game_version;
+	BYTE start_offset;
+	const CHAR* icon;
 	DWORD ddraw_dll;
 	DWORD cpu_hook;
-	DWORD resMenu;
+	BYTE resLanguage;
 	DWORD method2_nop;
 	DWORD method2_nop_size;
 	DWORD method2_jmp;
-	BOOL method2_jmp_short;
+	BYTE method2_jmp_short;
 	DWORD mode_nop;
 	DWORD mode_nop_size;
 	DWORD mode_hook;

@@ -26,5 +26,6 @@
 
 namespace Hooks
 {
+	BOOL __stdcall EnumChildProc(HWND hDlg, LPARAM lParam);
 	BOOL Load();
 }

@@ -25,56 +25,41 @@
 #include "stdafx.h"
 #include "Hooks.h"
 
-HMODULE hDllModule;
-
-DWORD
-	pWinGRecommendDIBFormat,
-	pWinGSetDIBColorTable,
-	pWinGStretchBlt,
-	pWinGBitBlt,
-	pWinGCreateDC,
-	pWinGCreateBitmap;
-
-VOID _declspec(naked) __stdcall WinGRecommendDIBFormat() { _asm { JMP pWinGRecommendDIBFormat } }
-VOID _declspec(naked) __stdcall WinGSetDIBColorTable() { _asm { JMP pWinGSetDIBColorTable } }
-VOID _declspec(naked) __stdcall WinGStretchBlt() { _asm { JMP pWinGStretchBlt } }
-VOID _declspec(naked) __stdcall WinGBitBlt() { _asm { JMP pWinGBitBlt } }
-VOID _declspec(naked) __stdcall WinGCreateDC() { _asm { JMP pWinGCreateDC } }
-VOID _declspec(naked) __stdcall WinGCreateBitmap() { _asm { JMP pWinGCreateBitmap } }
-
-VOID LoadRealLibrary()
-{
-	CHAR dir[MAX_PATH];
-	if (GetSystemDirectory(dir, MAX_PATH))
-	{
-		strcat(dir, "\\WING32.dll");
-		HMODULE hLib = LoadLibrary(dir);
-		if (hLib)
-		{
-			pWinGRecommendDIBFormat = (DWORD)GetProcAddress(hLib, "WinGRecommendDIBFormat");
-			pWinGSetDIBColorTable = (DWORD)GetProcAddress(hLib, "WinGSetDIBColorTable");
-			pWinGStretchBlt = (DWORD)GetProcAddress(hLib, "WinGStretchBlt");
-			pWinGBitBlt = (DWORD)GetProcAddress(hLib, "WinGBitBlt");
-			pWinGCreateDC = (DWORD)GetProcAddress(hLib, "WinGCreateDC");
-			pWinGCreateBitmap = (DWORD)GetProcAddress(hLib, "WinGCreateBitmap");
-		}
-	}
-}
-
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved)
 {
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
 		DisableThreadLibraryCalls(hModule);
-		if (!Hooks::Load())
-			LoadRealLibrary();
-		hDllModule = hModule;
+		if (Hooks::Load())
+		{
+			LoadKernel32();
+			hDllModule = hModule;
+
+			ACTCTX actCtx = { NULL };
+			actCtx.cbSize = sizeof(actCtx);
+			actCtx.hModule = hDllModule;
+			actCtx.lpResourceName = MAKEINTRESOURCE(2);
+			actCtx.dwFlags = ACTCTX_FLAG_HMODULE_VALID | ACTCTX_FLAG_RESOURCE_NAME_VALID;
+
+			if (CreateActCtxC)
+				hActCtx = CreateActCtxC(&actCtx);
+		}
+		else
+			LoadWinG32();
+
 		break;
 
 	case DLL_PROCESS_DETACH:
-		GL::Free();
-		ClipCursor(NULL);
+		if (hDllModule)
+		{
+			if (hActCtx && hActCtx != INVALID_HANDLE_VALUE)
+				ReleaseActCtxC(hActCtx);
+
+			GL::Free();
+			ClipCursor(NULL);
+		}
+
 		break;
 
 	default: break;

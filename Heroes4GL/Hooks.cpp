@@ -34,71 +34,75 @@
 #define STYLE_WIN_OLD (WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX)
 #define STYLE_WIN_NEW (WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX | WS_MAXIMIZEBOX)
 
+#define RESOURCE_ICON 107
+
 AddressSpace* hookSpace;
 
 AddressSpace addressArray[] = {
 	// check 1 & 2,         renderNop,              cpu patch
 
-	0x00844A4D, 0x00844B35, 0x00401D18, 0x90909090, 0x00842790, IDM_RUSSIAN, // Heroes IV - 1.0
+	0x00844A4D, 0x00844B35, 0x00401D18, 0x90909090, 0x00842790, LNG_RUSSIAN, // Heroes IV - 1.0
 	"Герои Меча и Магии IV", //"Heroes of Might and Magic IV",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
-	0x008C6411, 0x008C64F9, 0x00000000, 0x00000000, 0x008C3EF0, IDM_RUSSIAN, // Heroes IV - 2.2GS
+	0x008C6411, 0x008C64F9, 0x00000000, 0x00000000, 0x008C3EF0, LNG_RUSSIAN, // Heroes IV - 2.2GS
 	"Герои Меча и Магии IV: Грядущая Буря",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
-	0x008D38B1, 0x008D3999, 0x00000000, 0x00000000, 0x008D1390, IDM_RUSSIAN, // Heroes IV - 3.0WoW
+	0x008D38B1, 0x008D3999, 0x00000000, 0x00000000, 0x008D1390, LNG_RUSSIAN, // Heroes IV - 3.0WoW
 	"Герои Меча и Магии IV: Вихри Войны",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
 	// =====================================================================================================================
 
-	0x00844A4D, 0x00844B35, 0x00000000, 0x00000000, 0x00842790, IDM_ENGLISH, // Heroes IV - 1.0
+	0x00844A4D, 0x00844B35, 0x00000000, 0x00000000, 0x00842790, LNG_ENGLISH, // Heroes IV - 1.0
 	"Heroes of Might and Magic IV",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
-	0x0084C0FD, 0x0084C1E5, 0x00000000, 0x00000000, 0x00849DF0, IDM_ENGLISH, // Heroes IV - 1.2
+	0x0084C0FD, 0x0084C1E5, 0x00000000, 0x00000000, 0x00849DF0, LNG_ENGLISH, // Heroes IV - 1.2
 	"Heroes of Might and Magic IV",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
-	0x008533C1, 0x008534A9, 0x00000000, 0x00000000, 0x00851010, IDM_ENGLISH, // Heroes IV - 1.3
+	0x008533C1, 0x008534A9, 0x00000000, 0x00000000, 0x00851010, LNG_ENGLISH, // Heroes IV - 1.3
 	"Heroes of Might and Magic IV",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
-	0x008C5F51, 0x008C6039, 0x00000000, 0x00000000, 0x008C3A30, IDM_ENGLISH, // Heroes IV - 2.0
+	0x008C5F51, 0x008C6039, 0x00000000, 0x00000000, 0x008C3A30, LNG_ENGLISH, // Heroes IV - 2.0
 	"Heroes of Might and Magic IV",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
-	0x008C63F1, 0x008C64D9, 0x00000000, 0x00000000, 0x008C3ED0, IDM_ENGLISH, // Heroes IV - 2.2
+	0x008C63F1, 0x008C64D9, 0x00000000, 0x00000000, 0x008C3ED0, LNG_ENGLISH, // Heroes IV - 2.2
 	"Heroes of Might and Magic IV",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
-	0x008D3881, 0x008D3969, 0x00000000, 0x00000000, 0x008D1360, IDM_ENGLISH, // Heroes IV - 3.0
+	0x008D3881, 0x008D3969, 0x00000000, 0x00000000, 0x008D1360, LNG_ENGLISH, // Heroes IV - 3.0
 	"Heroes of Might and Magic IV",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
 	// ---------------------------------------------------------------------------------------------------------------------
 
-	0x008C5F51, 0x008C6039, 0x00401448, 0x00961278, 0x008C3A30, IDM_ENGLISH, // Heroes IV - 2.0GS
+	0x008C5F51, 0x008C6039, 0x00401448, 0x00961278, 0x008C3A30, LNG_ENGLISH, // Heroes IV - 2.0GS
 	"Heroes of Might and Magic IV: The Gathering Storm",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
-	0x008C63F1, 0x008C64D9, 0x00401448, 0x00961278, 0x008C3ED0, IDM_ENGLISH, // Heroes IV - 2.2GS
+	0x008C63F1, 0x008C64D9, 0x00401448, 0x00961278, 0x008C3ED0, LNG_ENGLISH, // Heroes IV - 2.2GS
 	"Heroes of Might and Magic IV: The Gathering Storm",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
-	0x008D3881, 0x008D3969, 0x00401448, 0x00970278, 0x008D1360, IDM_ENGLISH, // Heroes IV - 3.0GS
+	0x008D3881, 0x008D3969, 0x00401448, 0x00970278, 0x008D1360, LNG_ENGLISH, // Heroes IV - 3.0GS
 	"Heroes of Might and Magic IV: The Gathering Storm",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
 	// ---------------------------------------------------------------------------------------------------------------------
 
-	0x008D3881, 0x008D3969, 0x00401448, 0x00970200, 0x008D1360, IDM_ENGLISH, // Heroes IV - 3.0WoW
+	0x008D3881, 0x008D3969, 0x00401448, 0x00970200, 0x008D1360, LNG_ENGLISH, // Heroes IV - 3.0WoW
 	"Heroes of Might and Magic IV: Winds of War",
 	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
 	NULL
 };
+
+UINT menuIds[] = { IDM_FILT_OFF, IDM_FILT_LINEAR, IDM_FILT_XRBZ, IDM_ASPECT_RATIO, IDM_VSYNC, IDM_HELP_WRAPPER };
 
 namespace Hooks
 {
@@ -213,7 +217,7 @@ namespace Hooks
 		return ReadBlock(addr, value, sizeof(*value));
 	}
 
-	DWORD __fastcall PatchFunction(HMODULE hModule, const CHAR* function, DWORD addr)
+	DWORD __fastcall PatchFunction(HMODULE hModule, const CHAR* function, VOID* addr)
 	{
 		PIMAGE_DOS_HEADER headDOS = (PIMAGE_DOS_HEADER)hModule;
 		PIMAGE_NT_HEADERS headNT = (PIMAGE_NT_HEADERS)((BYTE*)headDOS + headDOS->e_lfanew);
@@ -233,7 +237,7 @@ namespace Hooks
 				if (ReadWord(name, (WORD*)&indent) && !strcmp(funcName, function))
 				{
 					DWORD res;
-					if (ReadDWord((DWORD)&addressThunk->u1.AddressOfData, &res) && PatchDWord((DWORD)&addressThunk->u1.AddressOfData, addr))
+					if (ReadDWord((DWORD)&addressThunk->u1.AddressOfData, &res) && PatchDWord((DWORD)&addressThunk->u1.AddressOfData, (DWORD)addr))
 						return res;
 					return NULL;
 				}
@@ -315,7 +319,7 @@ namespace Hooks
 			{
 				if (GetMenuItemID(hSub, 0) == IDM_FILE_NEW_GAME && DeleteMenu(hMenu, i, MF_BYPOSITION))
 				{
-					HMENU hNew = LoadMenu(hDllModule, MAKEINTRESOURCE(hookSpace->resMenu));
+					HMENU hNew = LoadMenu(hDllModule, MAKEINTRESOURCE(configLanguage == LNG_ENGLISH ? IDM_ENGLISH : IDM_RUSSIAN));
 					if (hNew)
 					{
 						for (DWORD j = 0; hSub = GetSubMenu(hNew, j); ++j)
@@ -323,8 +327,6 @@ namespace Hooks
 							GetMenuString(hNew, j, buffer, 20, MF_BYPOSITION);
 							InsertMenu(hMenu, i + j, MF_BYPOSITION | MF_POPUP, (UINT_PTR)hSub, buffer);
 						}
-
-						DestroyMenu(hNew);
 					}
 
 					return;
@@ -337,7 +339,7 @@ namespace Hooks
 	{
 		dwStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX | WS_MAXIMIZEBOX;
 
-		HWND hWnd = CreateWindowEx(dwExStyle, lpClassName, hookSpace->windowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+		HWND hWnd = CreateWindow(lpClassName, hookSpace->windowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
 		if (hWnd)
 			LoadNewMenu(GetMenu(hWnd));
 		return hWnd;
@@ -361,6 +363,23 @@ namespace Hooks
 		}
 
 		return SetWindowLong(hWnd, nIndex, dwNewLong);
+	}
+
+	INT __stdcall MessageBoxHook(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
+	{
+		INT res;
+
+		if (hActCtx && hActCtx != INVALID_HANDLE_VALUE)
+		{
+			ULONG_PTR cookie;
+			ActivateActCtxC(hActCtx, &cookie);
+			res = MessageBox(hWnd, lpText, lpCaption, uType);
+			DeactivateActCtxC(0, cookie);
+		}
+		else
+			res = MessageBox(hWnd, lpText, lpCaption, uType);
+
+		return res;
 	}
 
 	BOOL __stdcall GetClientRectHook(HWND hWnd, LPRECT lpRect)
@@ -437,24 +456,42 @@ namespace Hooks
 		return FALSE;
 	}
 
+	BOOL __stdcall EnableMenuItemHook(HMENU hMenu, UINT uIDEnableItem, UINT uEnable)
+	{
+		BOOL found = FALSE;
+		DWORD count = sizeof(menuIds) / sizeof(*menuIds);
+		UINT* menu = menuIds;
+		do
+		{
+			if (*menu++ == uIDEnableItem)
+			{
+				found = TRUE;
+				break;
+			}
+		} while (--count);
+
+		return !found && EnableMenuItem(hMenu, uIDEnableItem, uEnable);
+	}
 
 	HMODULE hModule;
 	VOID __stdcall StartHook()
 	{
-		PatchFunction(hModule, "AdjustWindowRectEx", (DWORD)AdjustWindowRectExHook);
-		PatchFunction(hModule, "CreateWindowExA", (DWORD)CreateWindowExHook);
-		PatchFunction(hModule, "SetWindowLongA", (DWORD)SetWindowLongHook);
+		PatchFunction(hModule, "AdjustWindowRectEx", AdjustWindowRectExHook);
+		PatchFunction(hModule, "CreateWindowExA", CreateWindowExHook);
+		PatchFunction(hModule, "SetWindowLongA", SetWindowLongHook);
+		PatchFunction(hModule, "MessageBoxA", MessageBoxHook);
 
-		PatchFunction(hModule, "GetWindowRect", (DWORD)GetWindowRectHook);
-		PatchFunction(hModule, "GetClientRect", (DWORD)GetClientRectHook);
-		PatchFunction(hModule, "GetCursorPos", (DWORD)GetCursorPosHook);
+		PatchFunction(hModule, "GetWindowRect", GetWindowRectHook);
+		PatchFunction(hModule, "GetClientRect", GetClientRectHook);
+		PatchFunction(hModule, "GetCursorPos", GetCursorPosHook);
 
-		PatchFunction(hModule, "MoveWindow", (DWORD)MoveWindowHook);
+		PatchFunction(hModule, "MoveWindow", MoveWindowHook);
 
-		PatchFunction(hModule, "LoadMenuA", (DWORD)LoadMenuHook);
-		PatchFunction(hModule, "SetMenu", (DWORD)SetMenuHook);
+		PatchFunction(hModule, "LoadMenuA", LoadMenuHook);
+		PatchFunction(hModule, "SetMenu", SetMenuHook);
+		PatchFunction(hModule, "EnableMenuItem", EnableMenuItemHook);
 
-		PatchFunction(hModule, "DirectDrawCreateEx", (DWORD)Main::DirectDrawCreateEx);
+		PatchFunction(hModule, "DirectDrawCreateEx", Main::DirectDrawCreateEx);
 	}
 
 	DWORD back_cpu;
@@ -492,7 +529,8 @@ namespace Hooks
 		do
 		{
 			DWORD check1, check2, equal;
-			if (ReadDWord(hookSpace->check_1 + 1, &check1) && check1 == STYLE_FULL_OLD && ReadDWord(hookSpace->check_2 + 1, &check2) && check2 == STYLE_FULL_OLD)
+			if (ReadDWord(hookSpace->check_1 + 1, &check1) && check1 == STYLE_FULL_OLD &&
+				ReadDWord(hookSpace->check_2 + 1, &check2) && check2 == STYLE_FULL_OLD)
 			{
 				if (!hookSpace->equal_address)
 					defaultSpace = hookSpace;
@@ -507,7 +545,8 @@ namespace Hooks
 		} while (hookSpace->check_1);
 
 		hookSpace = equalSpace ? equalSpace : defaultSpace;
-		if (hookSpace) {
+		if (hookSpace)
+		{
 			hModule = GetModuleHandle(NULL);
 			PIMAGE_DOS_HEADER headDOS = (PIMAGE_DOS_HEADER)hModule;
 			PIMAGE_NT_HEADERS headNT = (PIMAGE_NT_HEADERS)((DWORD)headDOS + headDOS->e_lfanew);
@@ -520,6 +559,11 @@ namespace Hooks
 			back_cpu = hookSpace->cpu_hook + 7;
 
 			configKey = hookSpace->configKey;
+			configLanguage = hookSpace->resLanguage;
+			configIcon = LoadIcon(hModule, MAKEINTRESOURCE(RESOURCE_ICON));
+			configFont = (HFONT)CreateFont(16, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET,
+				OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+				DEFAULT_PITCH | FF_DONTCARE, TEXT("MS Sans Serif"));
 
 			return TRUE;
 		}

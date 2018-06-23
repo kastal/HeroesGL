@@ -30,5 +30,55 @@
 #include "stdio.h"
 #include "DirectDraw.h"
 
+#if (_WIN32_WINNT <= 0x0501)
+#define MAX_LINKID_TEXT     48
+#define L_MAX_URL_LENGTH    (2048 + 32 + sizeof("://"))
+#define ACTCTX_FLAG_RESOURCE_NAME_VALID             (0x00000008)
+#define ACTCTX_FLAG_HMODULE_VALID                   (0x00000080)
+
+typedef struct tagLITEM
+{
+	UINT        mask;
+	int         iLink;
+	UINT        state;
+	UINT        stateMask;
+	WCHAR       szID[MAX_LINKID_TEXT];
+	WCHAR       szUrl[L_MAX_URL_LENGTH];
+} LITEM, *PLITEM;
+
+typedef struct tagNMLINK
+{
+	NMHDR       hdr;
+	LITEM     item;
+} NMLINK, *PNMLINK;
+
+typedef struct ACTCTXC {
+	ULONG       cbSize;
+	DWORD       dwFlags;
+	LPCSTR      lpSource;
+	USHORT      wProcessorArchitecture;
+	LANGID      wLangId;
+	LPCSTR      lpAssemblyDirectory;
+	LPCSTR      lpResourceName;
+	LPCSTR      lpApplicationName;
+	HMODULE     hModule;
+} ACTCTXA, *PACTCTXA;
+typedef const ACTCTXA *PCACTCTXA;
+typedef ACTCTXA ACTCTX;
+#endif
+
 extern HMODULE hDllModule;
-extern DirectDraw* ddrawList;
+extern HANDLE hActCtx;
+
+typedef HANDLE(__stdcall *CREATEACTCTXA)(ACTCTX* pActCtx);
+typedef VOID(__stdcall *RELEASEACTCTX)(HANDLE hActCtx);
+typedef HANDLE(__stdcall *ACTIVATEACTCTX)(HANDLE hActCtx, ULONG_PTR* lpCookie);
+typedef HANDLE(__stdcall *DEACTIVATEACTCTX)(DWORD dwFlags, ULONG_PTR ulCookie);
+
+extern CREATEACTCTXA CreateActCtxC;
+extern RELEASEACTCTX ReleaseActCtxC;
+extern ACTIVATEACTCTX ActivateActCtxC;
+extern DEACTIVATEACTCTX DeactivateActCtxC;
+
+VOID LoadKernel32();
+VOID LoadDDraw();

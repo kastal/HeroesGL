@@ -26,6 +26,8 @@
 
 #include "DirectDraw.h"
 
+extern DirectDraw* ddrawList;
+
 namespace Main
 {
 	HRESULT __stdcall  DirectDrawCreateEx(GUID* lpGuid, LPVOID* lplpDD, REFIID iid, IUnknown* pUnkOuter);

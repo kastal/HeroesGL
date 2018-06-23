@@ -30,5 +30,6 @@ typedef DWORD(__stdcall *AIL_WAVEOUTOPEN)(LPVOID driver, DWORD a1, DWORD a2, LPW
 
 namespace Hooks
 {
+	BOOL __stdcall EnumChildProc(HWND hDlg, LPARAM lParam);
 	BOOL Load();
 }

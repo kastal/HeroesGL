@@ -23,3 +23,57 @@
 */
 
 #include "StdAfx.h"
+
+HMODULE hDllModule;
+HANDLE hActCtx;
+
+CREATEACTCTXA CreateActCtxC;
+RELEASEACTCTX ReleaseActCtxC;
+ACTIVATEACTCTX ActivateActCtxC;
+DEACTIVATEACTCTX DeactivateActCtxC;
+
+DWORD
+	pWinGRecommendDIBFormat,
+	pWinGSetDIBColorTable,
+	pWinGStretchBlt,
+	pWinGBitBlt,
+	pWinGCreateDC,
+	pWinGCreateBitmap;
+
+VOID _declspec(naked) __stdcall WinGRecommendDIBFormat() { _asm { JMP pWinGRecommendDIBFormat } }
+VOID _declspec(naked) __stdcall WinGSetDIBColorTable() { _asm { JMP pWinGSetDIBColorTable } }
+VOID _declspec(naked) __stdcall WinGStretchBlt() { _asm { JMP pWinGStretchBlt } }
+VOID _declspec(naked) __stdcall WinGBitBlt() { _asm { JMP pWinGBitBlt } }
+VOID _declspec(naked) __stdcall WinGCreateDC() { _asm { JMP pWinGCreateDC } }
+VOID _declspec(naked) __stdcall WinGCreateBitmap() { _asm { JMP pWinGCreateBitmap } }
+
+VOID LoadKernel32()
+{
+	HMODULE hLib = GetModuleHandle("KERNEL32.dll");
+	if (hLib)
+	{
+		CreateActCtxC = (CREATEACTCTXA)GetProcAddress(hLib, "CreateActCtxA");
+		ReleaseActCtxC = (RELEASEACTCTX)GetProcAddress(hLib, "ReleaseActCtx");
+		ActivateActCtxC = (ACTIVATEACTCTX)GetProcAddress(hLib, "ActivateActCtx");
+		DeactivateActCtxC = (DEACTIVATEACTCTX)GetProcAddress(hLib, "DeactivateActCtx");
+	}
+}
+
+VOID LoadWinG32()
+{
+	CHAR dir[MAX_PATH];
+	if (GetSystemDirectory(dir, MAX_PATH))
+	{
+		strcat(dir, "\\WING32.dll");
+		HMODULE hLib = LoadLibrary(dir);
+		if (hLib)
+		{
+			pWinGRecommendDIBFormat = (DWORD)GetProcAddress(hLib, "WinGRecommendDIBFormat");
+			pWinGSetDIBColorTable = (DWORD)GetProcAddress(hLib, "WinGSetDIBColorTable");
+			pWinGStretchBlt = (DWORD)GetProcAddress(hLib, "WinGStretchBlt");
+			pWinGBitBlt = (DWORD)GetProcAddress(hLib, "WinGBitBlt");
+			pWinGCreateDC = (DWORD)GetProcAddress(hLib, "WinGCreateDC");
+			pWinGCreateBitmap = (DWORD)GetProcAddress(hLib, "WinGCreateBitmap");
+		}
+	}
+}

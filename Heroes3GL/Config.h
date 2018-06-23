@@ -25,6 +25,9 @@
 #pragma once
 
 extern const CHAR* configKey;
+extern DWORD configLanguage;
+extern HICON configIcon;
+extern HFONT configFont;
 
 namespace Config
 {

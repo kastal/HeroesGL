@@ -27,6 +27,9 @@
 
 const CHAR* configKey;
 const CHAR* configPrefix;
+DWORD configLanguage;
+HICON configIcon;
+HFONT configFont;
 
 namespace Config
 {
