@@ -23,15 +23,11 @@
 */
 
 #version 130
-precision lowp float;
+precision mediump float;
 
-uniform mat4 mvp;
 
-in vec2 vCoord;
-in vec2 vTexCoord;
-out vec2 fTexCoord;
+out vec4 fragColor;
 
-void main() {
-	gl_Position = mvp * vec4(vCoord, 0.0, 1.0);
-	fTexCoord = vTexCoord;
+void main(void) {
+	fragColor = vec4(1.0, 1.0, 1.0, 1.0);
 }

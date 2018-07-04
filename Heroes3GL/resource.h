@@ -9,10 +9,13 @@
 #define LNG_RUSSIAN						1
 #define IDC_BTN_OK						1
 #define IDC_LNK_EMAIL					2
-#define IDR_LINEAR_VERTEX               30
+#define IDR_VERTEX						30
+#define IDR_LINEAR_VERTEX               IDR_VERTEX
 #define IDR_LINEAR_FRAGMENT             31
-#define IDR_XBRZ_VERTEX                 32
-#define IDR_XBRZ_FRAGMENT               33
+#define IDR_XBRZ_VERTEX                 IDR_VERTEX
+#define IDR_XBRZ_FRAGMENT               32
+#define IDR_STENCIL_VERTEX              33
+#define IDR_STENCIL_FRAGMENT            34
 #define IDM_ENGLISH                     100
 #define IDM_RUSSIAN                     101
 #define IDD_ENGLISH						200

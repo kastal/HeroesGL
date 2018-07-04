@@ -28,12 +28,13 @@
 
 #define RES_WIDTH 800
 #define RES_HEIGHT 600
+#define STENCIL_COUNT 100
 
 class DirectDrawSurface : IDirectDrawSurface
 {
 public:
-	VOID* operator new(size_t size) { return malloc(size); };
-	VOID operator delete(VOID *p) { free(p); };
+	VOID * operator new(size_t size) { return MemoryAlloc(size); };
+	VOID operator delete(VOID *p) { MemoryFree(p); };
 
 	DirectDrawSurface* last;
 	DirectDraw* ddraw;
@@ -47,6 +48,12 @@ public:
 
 	WORD* indexBuffer;
 	WORD colorKey;
+
+	RECT* clipsList;
+	RECT* endClip;
+
+	RECT* currentClip;
+	RECT* poinetrClip;
 
 	DirectDrawSurface(DirectDraw*, DWORD);
 	~DirectDrawSurface();

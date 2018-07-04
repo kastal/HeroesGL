@@ -146,7 +146,7 @@ namespace Hooks
 		DWORD old_prot;
 		if (VirtualProtect((VOID*)addr, size, PAGE_EXECUTE_READWRITE, &old_prot))
 		{
-			memset((VOID*)addr, 0x90, size);
+			MemorySet((VOID*)addr, 0x90, size);
 			VirtualProtect((VOID*)addr, size, old_prot, &old_prot);
 
 			return TRUE;

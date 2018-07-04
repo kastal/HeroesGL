@@ -46,9 +46,9 @@ GLVIEWPORT GLViewport;
 GLMATRIXMODE GLMatrixMode;
 GLLOADIDENTITY GLLoadIdentity;
 GLORTHO GLOrtho;
-GLFLUSH GLFlush;
 GLFINISH GLFinish;
 GLENABLE GLEnable;
+GLDISABLE GLDisable;
 GLBINDTEXTURE GLBindTexture;
 GLDELETETEXTURES GLDeleteTextures;
 GLTEXPARAMETERI GLTexParameteri;
@@ -61,7 +61,9 @@ GLGENTEXTURES GLGenTextures;
 GLGETINTEGERV GLGetIntegerv;
 GLCLEAR GLClear;
 GLCLEARCOLOR GLClearColor;
-GLPIXELSTOREI GLPixelStorei;
+GLCOLORMASK GLColorMask;
+GLSTENCILFUNC GLStencilFunc;
+GLSTENCILOP GLStencilOp;
 
 #ifdef _DEBUG
 GLGETERROR GLGetError;
@@ -72,11 +74,8 @@ GLGENBUFFERS GLGenBuffers;
 GLDELETEBUFFERS GLDeleteBuffers;
 GLBINDBUFFER GLBindBuffer;
 GLBUFFERDATA GLBufferData;
-GLMAPBUFFERRANGE GLMapBufferRange;
-GLUNMAPBUFFER GLUnmapBuffer;
-GLFLUSHMAPPEDBUFFERRANGE GLFlushMappedBufferRange;
+GLBUFFERSUBDATA GLBufferSubData;
 GLDRAWARRAYS GLDrawArrays;
-GLDRAWELEMENTS GLDrawElements;
 
 GLENABLEVERTEXATTRIBARRAY GLEnableVertexAttribArray;
 GLVERTEXATTRIBPOINTER GLVertexAttribPointer;
@@ -104,6 +103,17 @@ GLUNIFORMMATRIX4FV GLUniformMatrix4fv;
 GLGENVERTEXARRAYS GLGenVertexArrays;
 GLBINDVERTEXARRAY GLBindVertexArray;
 GLDELETEVERTEXARRAYS GLDeleteVertexArrays;
+
+GLGENFRAMEBUFFERS GLGenFramebuffers;
+GLDELETEFRAMEBUFFERS GLDeleteFramebuffers;
+GLBINDFRAMEBUFFER GLBindFramebuffer;
+GLFRAMEBUFFERTEXTURE2D GLFramebufferTexture2D;
+
+GLGENRENDERBUFFERS GLGenRenderbuffers;
+GLDELETERENDERBUFFERS GLDeleteRenderbuffers;
+GLBINDRENDERBUFFER GLBindRenderbuffer;
+GLRENDERBUFFERSTORAGE GLRenderbufferStorage;
+GLFRAMEBUFFERRENDERBUFFER GLFramebufferRenderbuffer;
 
 HMODULE hModule;
 
@@ -213,9 +223,9 @@ namespace GL
 		LoadGLFunction(buffer, PREFIX_GL, "MatrixMode", (PROC*)&GLMatrixMode);
 		LoadGLFunction(buffer, PREFIX_GL, "LoadIdentity", (PROC*)&GLLoadIdentity);
 		LoadGLFunction(buffer, PREFIX_GL, "Ortho", (PROC*)&GLOrtho);
-		LoadGLFunction(buffer, PREFIX_GL, "Flush", (PROC*)&GLFlush);
 		LoadGLFunction(buffer, PREFIX_GL, "Finish", (PROC*)&GLFinish);
 		LoadGLFunction(buffer, PREFIX_GL, "Enable", (PROC*)&GLEnable);
+		LoadGLFunction(buffer, PREFIX_GL, "Disable", (PROC*)&GLDisable);
 		LoadGLFunction(buffer, PREFIX_GL, "BindTexture", (PROC*)&GLBindTexture);
 		LoadGLFunction(buffer, PREFIX_GL, "DeleteTextures", (PROC*)&GLDeleteTextures);
 		LoadGLFunction(buffer, PREFIX_GL, "TexParameteri", (PROC*)&GLTexParameteri);
@@ -228,7 +238,9 @@ namespace GL
 		LoadGLFunction(buffer, PREFIX_GL, "GetIntegerv", (PROC*)&GLGetIntegerv);
 		LoadGLFunction(buffer, PREFIX_GL, "Clear", (PROC*)&GLClear);
 		LoadGLFunction(buffer, PREFIX_GL, "ClearColor", (PROC*)&GLClearColor);
-		LoadGLFunction(buffer, PREFIX_GL, "PixelStorei", (PROC*)&GLPixelStorei);
+		LoadGLFunction(buffer, PREFIX_GL, "ColorMask", (PROC*)&GLColorMask);
+		LoadGLFunction(buffer, PREFIX_GL, "StencilFunc", (PROC*)&GLStencilFunc);
+		LoadGLFunction(buffer, PREFIX_GL, "StencilOp", (PROC*)&GLStencilOp);
 
 #ifdef _DEBUG
 		LoadGLFunction(buffer, PREFIX_GL, "GetError", (PROC*)&GLGetError);
@@ -239,11 +251,8 @@ namespace GL
 		LoadGLFunction(buffer, PREFIX_GL, "DeleteBuffers", (PROC*)&GLDeleteBuffers);
 		LoadGLFunction(buffer, PREFIX_GL, "BindBuffer", (PROC*)&GLBindBuffer);
 		LoadGLFunction(buffer, PREFIX_GL, "BufferData", (PROC*)&GLBufferData);
-		LoadGLFunction(buffer, PREFIX_GL, "MapBufferRange", (PROC*)&GLMapBufferRange);
-		LoadGLFunction(buffer, PREFIX_GL, "UnmapBuffer", (PROC*)&GLUnmapBuffer);
-		LoadGLFunction(buffer, PREFIX_GL, "FlushMappedBufferRange", (PROC*)&GLFlushMappedBufferRange);
+		LoadGLFunction(buffer, PREFIX_GL, "BufferSubData", (PROC*)&GLBufferSubData);
 		LoadGLFunction(buffer, PREFIX_GL, "DrawArrays", (PROC*)&GLDrawArrays);
-		LoadGLFunction(buffer, PREFIX_GL, "DrawElements", (PROC*)&GLDrawElements);
 
 		LoadGLFunction(buffer, PREFIX_GL, "EnableVertexAttribArray", (PROC*)&GLEnableVertexAttribArray);
 		LoadGLFunction(buffer, PREFIX_GL, "VertexAttribPointer", (PROC*)&GLVertexAttribPointer);
@@ -271,6 +280,17 @@ namespace GL
 		LoadGLFunction(buffer, PREFIX_GL, "GenVertexArrays", (PROC*)&GLGenVertexArrays);
 		LoadGLFunction(buffer, PREFIX_GL, "BindVertexArray", (PROC*)&GLBindVertexArray);
 		LoadGLFunction(buffer, PREFIX_GL, "DeleteVertexArrays", (PROC*)&GLDeleteVertexArrays);
+
+		LoadGLFunction(buffer, PREFIX_GL, "GenFramebuffers", (PROC*)&GLGenFramebuffers);
+		LoadGLFunction(buffer, PREFIX_GL, "DeleteFramebuffers", (PROC*)&GLDeleteFramebuffers);
+		LoadGLFunction(buffer, PREFIX_GL, "BindFramebuffer", (PROC*)&GLBindFramebuffer);
+		LoadGLFunction(buffer, PREFIX_GL, "FramebufferTexture2D", (PROC*)&GLFramebufferTexture2D);
+
+		LoadGLFunction(buffer, PREFIX_GL, "GenRenderbuffers", (PROC*)&GLGenRenderbuffers);
+		LoadGLFunction(buffer, PREFIX_GL, "DeleteRenderbuffers", (PROC*)&GLDeleteRenderbuffers);
+		LoadGLFunction(buffer, PREFIX_GL, "BindRenderbuffer", (PROC*)&GLBindRenderbuffer);
+		LoadGLFunction(buffer, PREFIX_GL, "RenderbufferStorage", (PROC*)&GLRenderbufferStorage);
+		LoadGLFunction(buffer, PREFIX_GL, "FramebufferRenderbuffer", (PROC*)&GLFramebufferRenderbuffer);
 
 		const GLubyte* extensions = GLGetString(GL_EXTENSIONS);
 		if (GLGetString)
@@ -300,7 +320,7 @@ namespace GL
 			if (glVersion < GL_VER_1_2)
 			{
 				if (extensions)
-					glCapsClampToEdge = (strstr((const CHAR*)extensions, "GL_EXT_texture_edge_clamp") != NULL || strstr((const CHAR*)extensions, "GL_SGIS_texture_edge_clamp") != NULL) ? GL_CLAMP_TO_EDGE : GL_CLAMP;
+					glCapsClampToEdge = (StrStr((const CHAR*)extensions, "GL_EXT_texture_edge_clamp") || StrStr((const CHAR*)extensions, "GL_SGIS_texture_edge_clamp")) ? GL_CLAMP_TO_EDGE : GL_CLAMP;
 				else
 					glVersion = GL_VER_1_1;
 			}
@@ -322,7 +342,8 @@ namespace GL
 	BOOL PreparePixelFormat(PIXELFORMATDESCRIPTOR* pfd, DWORD* pixelFormat)
 	{
 		CHAR* dummyclassname = "dummyclass";
-		WNDCLASS wc = { NULL };
+		WNDCLASS wc;
+		MemoryZero(&wc, sizeof(WNDCLASS));
 		wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
 		wc.lpfnWndProc = DummyWndProc;
 		wc.cbClsExtra = 0;
@@ -377,6 +398,7 @@ namespace GL
 											WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
 											WGL_COLOR_BITS_ARB, 32,
 											WGL_DEPTH_BITS_ARB, 16,
+											WGL_STENCIL_BITS_ARB, 8,
 											WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
 											WGL_SWAP_METHOD_ARB, WGL_SWAP_EXCHANGE_ARB,
 											0

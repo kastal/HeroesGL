@@ -38,8 +38,8 @@ namespace Config
 		if (RegCreateKeyEx(HKEY_LOCAL_MACHINE, configKey, NULL, NULL, REG_OPTION_NON_VOLATILE, KEY_READ, NULL, &regKey, NULL) == ERROR_SUCCESS)
 		{
 			BYTE data[256];
-			DWORD cbData;
-			if (RegQueryValueEx(regKey, name, NULL, 0, data, &cbData) == ERROR_SUCCESS)
+			DWORD size = 256;
+			if (RegQueryValueEx(regKey, name, NULL, 0, data, &size) == ERROR_SUCCESS)
 				def = *(DWORD*)data;
 
 			RegCloseKey(regKey);

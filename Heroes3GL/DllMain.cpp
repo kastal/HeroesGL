@@ -24,19 +24,21 @@
 
 #include "stdafx.h"
 #include "Hooks.h"
+#include "GLib.h"
 
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved)
+BOOL __stdcall DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved)
 {
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		DisableThreadLibraryCalls(hModule);
+		LoadMsvCRT();
 		if (Hooks::Load())
 		{
 			LoadKernel32();
 			hDllModule = hModule;
 
-			ACTCTX actCtx = { NULL };
+			ACTCTX actCtx;
+			MemoryZero(&actCtx, sizeof(ACTCTX));
 			actCtx.cbSize = sizeof(actCtx);
 			actCtx.hModule = hDllModule;
 			actCtx.lpResourceName = MAKEINTRESOURCE(2);

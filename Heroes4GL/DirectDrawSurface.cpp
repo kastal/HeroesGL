@@ -25,6 +25,7 @@
 #include "stdafx.h"
 #include "GLib.h"
 #include "DirectDrawSurface.h"
+#include "DirectDraw.h"
 
 #pragma region Not Implemented
 HRESULT DirectDrawSurface::QueryInterface(REFIID riid, LPVOID * ppvObj) { return DD_OK; }
@@ -84,6 +85,8 @@ DirectDrawSurface::DirectDrawSurface(DirectDraw* lpDD, DWORD index)
 
 	this->width = 0;
 	this->height = 0;
+
+	this->clipsList = NULL;
 }
 
 DirectDrawSurface::~DirectDrawSurface()
@@ -94,6 +97,9 @@ DirectDrawSurface::~DirectDrawSurface()
 
 VOID DirectDrawSurface::ReleaseBuffer()
 {
+	if (this->clipsList)
+		MemoryFree(this->clipsList);
+
 	if (this->hBmp)
 		DeleteObject(this->hBmp);
 
@@ -109,7 +115,12 @@ VOID DirectDrawSurface::CreateBuffer(DWORD width, DWORD height)
 	this->width = width;
 	this->height = height;
 
-	BITMAPINFO* bmi = (BITMAPINFO*)calloc(1, sizeof(BITMAPINFO) + 8);
+	this->clipsList = !this->index ? (RECT*)MemoryAlloc(STENCIL_COUNT * sizeof(RECT)) : NULL;
+	this->endClip = this->clipsList + (!this->index ? STENCIL_COUNT : 0);
+	this->poinetrClip = this->currentClip = this->clipsList;
+
+	BITMAPINFO* bmi = (BITMAPINFO*)MemoryAlloc(sizeof(BITMAPINFO) + 8);
+	MemoryZero(bmi, sizeof(BITMAPINFO) + 8);
 	{
 		bmi->bmiHeader.biSize = sizeof(BITMAPINFO) + 8; // 108
 		bmi->bmiHeader.biWidth = width;
@@ -123,12 +134,10 @@ VOID DirectDrawSurface::CreateBuffer(DWORD width, DWORD height)
 		mask[2] = 0x001F;
 
 		HDC hDc = ::GetDC(NULL);
-		{
-			this->hBmp = CreateDIBSection(hDc, bmi, 0, (VOID**)&this->indexBuffer, 0, 0);
-		}
+		this->hBmp = CreateDIBSection(hDc, bmi, 0, (VOID**)&this->indexBuffer, 0, 0);
 		::ReleaseDC(this->ddraw->hDraw, hDc);
 	}
-	free(bmi);
+	MemoryFree(bmi);
 
 	this->hDc = CreateCompatibleDC(this->ddraw->hDc);
 	SelectObject(this->hDc, this->hBmp);
@@ -224,12 +233,14 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE7 lpDDSrcSu
 	else
 		dWidth = this->width;
 
-	WORD* source = surface->indexBuffer + lpSrcRect->top * sWidth + lpSrcRect->left;
-	WORD* destination = this->indexBuffer + lpDestRect->top * dWidth + lpDestRect->left;
-
 	INT width = lpSrcRect->right - lpSrcRect->left;
 	INT height = lpSrcRect->bottom - lpSrcRect->top;
-	if (width & 1)
+
+	WORD* source = surface->indexBuffer + lpSrcRect->top * sWidth + lpSrcRect->left;
+	WORD* destination = this->indexBuffer + lpDestRect->top * dWidth + lpDestRect->left;
+	DWORD copyWidth = width;
+	DWORD copyHeight = height;
+	if (copyWidth & 1)
 	{
 		do
 		{
@@ -238,15 +249,15 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE7 lpDDSrcSu
 			source += sWidth;
 			destination += dWidth;
 
-			DWORD count = width;
+			DWORD count = copyWidth;
 			do
 				*dest++ = *src++;
 			while (--count);
-		} while (--height);
+		} while (--copyHeight);
 	}
 	else
 	{
-		width >>= 1;
+		copyWidth >>= 1;
 		do
 		{
 			DWORD* src = (DWORD*)source;
@@ -254,11 +265,26 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE7 lpDDSrcSu
 			source += sWidth;
 			destination += dWidth;
 
-			DWORD count = width;
+			DWORD count = copyWidth;
 			do
 				*dest++ = *src++;
 			while (--count);
-		} while (--height);
+		} while (--copyHeight);
+	}
+
+	if (!this->index)
+	{
+		this->currentClip->left = lpDestRect->left;
+		this->currentClip->top = lpDestRect->top;
+		this->currentClip->right = lpDestRect->left + width;
+		this->currentClip->bottom = lpDestRect->top + height;
+
+		if (!this->ddraw->mode ||
+			(width == this->ddraw->mode->width &&
+			height == this->ddraw->mode->height))
+			this->poinetrClip = this->currentClip;
+
+		this->currentClip = this->currentClip + 1 != this->endClip ? this->currentClip + 1 : this->clipsList;
 	}
 
 	if (this->ddraw->attachedSurface == this)
@@ -274,12 +300,14 @@ HRESULT DirectDrawSurface::BltFast(DWORD dwX, DWORD dwY, LPDIRECTDRAWSURFACE7 lp
 	DWORD sWidth = surface->width;
 	DWORD dWidth = this->width;
 
-	WORD* source = surface->indexBuffer + lpSrcRect->top * sWidth + lpSrcRect->left;
-	WORD* destination = this->indexBuffer + dwY * dWidth + dwX;
-
 	INT width = lpSrcRect->right - lpSrcRect->left;
 	INT height = lpSrcRect->bottom - lpSrcRect->top;
-	if (width & 1)
+
+	WORD* source = surface->indexBuffer + lpSrcRect->top * sWidth + lpSrcRect->left;
+	WORD* destination = this->indexBuffer + dwY * dWidth + dwX;
+	DWORD copyWidth = width;
+	DWORD copyHeight = height;
+	if (copyWidth & 1)
 	{
 		do
 		{
@@ -288,15 +316,15 @@ HRESULT DirectDrawSurface::BltFast(DWORD dwX, DWORD dwY, LPDIRECTDRAWSURFACE7 lp
 			source += sWidth;
 			destination += dWidth;
 
-			DWORD count = width;
+			DWORD count = copyWidth;
 			do
 				*dest++ = *src++;
 			while (--count);
-		} while (--height);
+		} while (--copyHeight);
 	}
 	else
 	{
-		width >>= 1;
+		copyWidth >>= 1;
 		do
 		{
 			DWORD* src = (DWORD*)source;
@@ -304,11 +332,26 @@ HRESULT DirectDrawSurface::BltFast(DWORD dwX, DWORD dwY, LPDIRECTDRAWSURFACE7 lp
 			source += sWidth;
 			destination += dWidth;
 
-			DWORD count = width;
+			DWORD count = copyWidth;
 			do
 				*dest++ = *src++;
 			while (--count);
-		} while (--height);
+		} while (--copyHeight);
+	}
+
+	if (!this->index)
+	{
+		this->currentClip->left = dwX;
+		this->currentClip->top = dwY;
+		this->currentClip->right = dwX + width;
+		this->currentClip->bottom = dwY + height;
+
+		if (!this->ddraw->mode ||
+			(width == this->ddraw->mode->width &&
+				height == this->ddraw->mode->height))
+			this->poinetrClip = this->currentClip;
+
+		this->currentClip = this->currentClip + 1 != this->endClip ? this->currentClip + 1 : this->clipsList;
 	}
 
 	if (this->ddraw->attachedSurface == this)

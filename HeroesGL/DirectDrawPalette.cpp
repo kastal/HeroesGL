@@ -25,6 +25,8 @@
 #include "stdafx.h"
 #include "DirectDrawPalette.h"
 #include "DirectDrawSurface.h"
+#include "DirectDraw.h"
+#include "Glib.h"
 
 #pragma region Not Implemented
 HRESULT DirectDrawPalette::QueryInterface(REFIID riid, LPVOID * ppvObj) { return DD_OK; }
@@ -38,6 +40,7 @@ DirectDrawPalette::DirectDrawPalette(DirectDraw* lpDD)
 {
 	this->ddraw = lpDD;
 	this->last = lpDD->paletteEntries;
+	this->isChanged = FALSE;
 }
 
 ULONG DirectDrawPalette::Release()
@@ -65,13 +68,28 @@ ULONG DirectDrawPalette::Release()
 
 HRESULT DirectDrawPalette::SetEntries(DWORD dwFlags, DWORD dwStartingEntry, DWORD dwCount, LPPALETTEENTRY lpEntries)
 {
-	PALETTEENTRY* dest = this->entries + dwStartingEntry;
-	do
-		*dest++ = *lpEntries++;
-	while (--dwCount);
+	BOOL changed = FALSE;
 
-	if (glVersion >= GL_VER_3_0 || !GLColorTable)
+	DWORD* src = (DWORD*)lpEntries;
+	DWORD* dst = (DWORD*)this->entries + dwStartingEntry;
+	do
 	{
+		if (*dst != *src)
+		{
+			changed = TRUE;
+			*dst++ = *src++;
+			--dwCount;
+			break;
+		}
+
+		++dst;
+		++src;
+	} while (--dwCount);
+
+	if (changed)
+	{
+		while (dwCount--) *dst++ = *src++;
+
 		DirectDrawSurface* surfaceEntry = this->ddraw->surfaceEntries;
 		while (surfaceEntry)
 		{
@@ -87,9 +105,10 @@ HRESULT DirectDrawPalette::SetEntries(DWORD dwFlags, DWORD dwStartingEntry, DWOR
 
 			surfaceEntry = surfaceEntry->last;
 		}
-	}
 
-	SetEvent(this->ddraw->hDrawEvent);
+		this->isChanged = TRUE;
+		SetEvent(this->ddraw->hDrawEvent);
+	}
 
 	return DD_OK;
 }

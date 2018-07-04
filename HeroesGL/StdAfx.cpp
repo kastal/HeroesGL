@@ -22,7 +22,7 @@
 	SOFTWARE.
 */
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 HMODULE hDllModule;
 HANDLE hActCtx;
@@ -31,6 +31,15 @@ CREATEACTCTXA CreateActCtxC;
 RELEASEACTCTX ReleaseActCtxC;
 ACTIVATEACTCTX ActivateActCtxC;
 DEACTIVATEACTCTX DeactivateActCtxC;
+
+MALLOC MemoryAlloc;
+FREE MemoryFree;
+MEMSET MemorySet;
+CEIL MathCeil;
+FLOOR MathFloor;
+SPRINTF StrPrint;
+STRSTR StrStr;
+WCSTOMBS StrToAnsi;
 
 DWORD
 	pWinGRecommendDIBFormat,
@@ -56,6 +65,24 @@ VOID LoadKernel32()
 		ReleaseActCtxC = (RELEASEACTCTX)GetProcAddress(hLib, "ReleaseActCtx");
 		ActivateActCtxC = (ACTIVATEACTCTX)GetProcAddress(hLib, "ActivateActCtx");
 		DeactivateActCtxC = (DEACTIVATEACTCTX)GetProcAddress(hLib, "DeactivateActCtx");
+	}
+}
+
+VOID LoadMsvCRT()
+{
+	HMODULE hLib = LoadLibrary("MSVCRT.dll");
+	if (hLib)
+	{
+		MemoryAlloc = (MALLOC)GetProcAddress(hLib, "malloc");
+		MemoryFree = (FREE)GetProcAddress(hLib, "free");
+		MemorySet = (MEMSET)GetProcAddress(hLib, "memset");
+
+		MathCeil = (CEIL)GetProcAddress(hLib, "ceil");
+		MathFloor = (FLOOR)GetProcAddress(hLib, "floor");
+
+		StrPrint = (SPRINTF)GetProcAddress(hLib, "sprintf");
+		StrStr = (STRSTR)GetProcAddress(hLib, "strstr");
+		StrToAnsi = (WCSTOMBS)GetProcAddress(hLib, "wcstombs");
 	}
 }
 

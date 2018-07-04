@@ -19,12 +19,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v60</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -51,8 +52,8 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>D:\Install\DirectX SDK\DirectX_7.1_SDK\include;C:\Program Files (x86)\Microsoft SDK\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files (x86)\Microsoft SDK\Lib;$(LibraryPath)</LibraryPath>
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -126,32 +127,44 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>false</ExceptionHandling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsManaged>false</CompileAsManaged>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <CreateHotpatchableImage>false</CreateHotpatchableImage>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ResourceCompile>
+    <ResourceCompile />
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;advapi32.lib;shell32.lib;msvcrt.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;advapi32.lib;shell32.lib;vcruntime.lib;msvcrt.lib</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AssemblyDebug>false</AssemblyDebug>
-      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <BaseAddress>0x60000000</BaseAddress>
       <TargetMachine>MachineX86</TargetMachine>
-      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <MergeSections>.rdata=.text</MergeSections>
       <SectionAlignment>4096</SectionAlignment>
       <GenerateMapFile>false</GenerateMapFile>
       <MapExports>false</MapExports>
       <ModuleDefinitionFile>$(ProjectDir)\module.def</ModuleDefinitionFile>
-      <EntryPointSymbol>DllMain</EntryPointSymbol>
       <OutputFile>D:\Games\Heroes 3\ddraw$(TargetExt)</OutputFile>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
+      <CLRSupportLastError>Disabled</CLRSupportLastError>
+      <CLRUnmanagedCodeCheck>false</CLRUnmanagedCodeCheck>
+      <TurnOffAssemblyGeneration>true</TurnOffAssemblyGeneration>
+      <ProgramDatabaseFile />
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <IgnoreEmbeddedIDL>true</IgnoreEmbeddedIDL>
+      <EntryPointSymbol>DllMain</EntryPointSymbol>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <FixedBaseAddress>true</FixedBaseAddress>
     </Link>
     <Bscmake />
   </ItemDefinitionGroup>
@@ -188,9 +201,10 @@
   <ItemGroup>
     <None Include="module.def" />
     <None Include="Shaders\linear.fgl" />
-    <None Include="Shaders\linear.vgl" />
+    <None Include="Shaders\linear_xbrz.vgl" />
+    <None Include="Shaders\stencil.fgl" />
+    <None Include="Shaders\stencil.vgl" />
     <None Include="Shaders\xbrz.fgl" />
-    <None Include="Shaders\xbrz.vgl" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="module.manifest" />

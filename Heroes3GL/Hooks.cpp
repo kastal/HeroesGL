@@ -191,7 +191,7 @@ namespace Hooks
 		DWORD old_prot;
 		if (VirtualProtect((VOID*)addr, size, PAGE_EXECUTE_READWRITE, &old_prot))
 		{
-			memset((VOID*)addr, 0x90, size);
+			MemorySet((VOID*)addr, 0x90, size);
 			VirtualProtect((VOID*)addr, size, old_prot, &old_prot);
 
 			return TRUE;
@@ -641,12 +641,13 @@ namespace Hooks
 
 			PatchNop(hookSpace->renderNop, 5); // prevent on WM_PAINT
 
-			DEVMODE devMode = { NULL };
+			DEVMODE devMode;
+			MemoryZero(&devMode, sizeof(DEVMODE));
 			devMode.dmSize = sizeof(DEVMODE);
 			EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &devMode);
 			DWORD cursorTime = 1000 / devMode.dmDisplayFrequency;
-			PatchByte(hookSpace->cursor_time_1 + 2, cursorTime);
-			PatchByte(hookSpace->cursor_time_2 + 2, cursorTime);
+			PatchByte(hookSpace->cursor_time_1 + 2, (BYTE)cursorTime);
+			PatchByte(hookSpace->cursor_time_2 + 2, (BYTE)cursorTime);
 			PatchDWord(hookSpace->cursor_time_3 + 1, cursorTime);
 
 			configKey = hookSpace->configKey;

@@ -75,6 +75,8 @@ DirectDrawSurface::DirectDrawSurface(DirectDraw* lpDD, DWORD index)
 	this->isSizeChanged = TRUE;
 
 	this->colorKey = 0;
+
+	this->clipsList = NULL;
 }
 
 DirectDrawSurface::~DirectDrawSurface()
@@ -85,7 +87,10 @@ DirectDrawSurface::~DirectDrawSurface()
 VOID DirectDrawSurface::ReleaseBuffer()
 {
 	if (this->indexBuffer)
-		free(this->indexBuffer);
+		MemoryFree(this->indexBuffer);
+
+	if (this->clipsList)
+		MemoryFree(this->clipsList);
 }
 
 VOID DirectDrawSurface::CreateBuffer(DWORD width, DWORD height)
@@ -93,9 +98,12 @@ VOID DirectDrawSurface::CreateBuffer(DWORD width, DWORD height)
 	this->ReleaseBuffer();
 	this->width = width;
 	this->height = height;
-	this->indexBuffer = (WORD*)malloc(width * height * sizeof(WORD));
-}
+	this->indexBuffer = (WORD*)MemoryAlloc(width * height * sizeof(WORD));
 
+	this->clipsList = !this->index ? (RECT*)MemoryAlloc(STENCIL_COUNT * sizeof(RECT)) : NULL;
+	this->endClip = this->clipsList + (!this->index ? STENCIL_COUNT : 0);
+	this->poinetrClip = this->currentClip = this->clipsList;
+}
 
 ULONG DirectDrawSurface::Release()
 {
@@ -219,6 +227,8 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lpDDSrcSur
 
 			lpDestRect->left -= clip.left;
 			lpDestRect->top -= clip.top;
+			lpDestRect->right -= clip.left;
+			lpDestRect->bottom -= clip.top;
 
 			dWidth = RES_WIDTH;
 		}
@@ -293,10 +303,21 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lpDDSrcSur
 			this->isDouble = doubled;
 			this->isSizeChanged = TRUE;
 		}
-	}
 
-	if (this->ddraw->attachedSurface == this)
-		SetEvent(this->ddraw->hDrawEvent);
+		if (!this->index)
+		{
+			*this->currentClip = *lpDestRect;
+
+			if (lpDestRect->right - lpDestRect->left == this->ddraw->width &&
+				lpDestRect->bottom - lpDestRect->top == this->ddraw->height)
+				this->poinetrClip = this->currentClip;
+
+			this->currentClip = this->currentClip + 1 != this->endClip ? this->currentClip + 1 : this->clipsList;
+		}
+
+		if (this->ddraw->attachedSurface == this)
+			SetEvent(this->ddraw->hDrawEvent);
+	}
 
 	return DD_OK;
 }

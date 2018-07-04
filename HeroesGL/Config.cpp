@@ -39,11 +39,11 @@ namespace Config
 		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, configKey, NULL, KEY_READ, &regKeyGame) == ERROR_SUCCESS)
 		{
 			CHAR valName[50];
-			sprintf(valName, "%s%s", configPrefix, name);
+			StrPrint(valName, "%s%s", configPrefix, name);
 
 			BYTE data[256];
-			DWORD cbData;
-			if (RegQueryValueEx(regKeyGame, valName, NULL, 0, data, &cbData) == ERROR_SUCCESS)
+			DWORD size = 256;
+			if (RegQueryValueEx(regKeyGame, valName, NULL, 0, data, &size) == ERROR_SUCCESS)
 				def = *(DWORD*)data;
 
 			RegCloseKey(regKeyGame);
@@ -60,7 +60,7 @@ namespace Config
 		if (RegCreateKeyEx(HKEY_LOCAL_MACHINE, configKey, NULL, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &regKeyGame, NULL) == ERROR_SUCCESS)
 		{
 			CHAR valName[50];
-			sprintf(valName, "%s%s", configPrefix, name);
+			StrPrint(valName, "%s%s", configPrefix, name);
 
 			res = RegSetValueEx(regKeyGame, valName, NULL, REG_DWORD, (BYTE*)&value, sizeof(DWORD)) == ERROR_SUCCESS;
 

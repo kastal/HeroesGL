@@ -30,12 +30,13 @@ class DirectDraw;
 class DirectDrawPalette : IDirectDrawPalette
 {
 public:
-	VOID * operator new(size_t size) { return malloc(size); };
-	VOID operator delete(VOID *p) { free(p); };
+	VOID * operator new(size_t size) { return MemoryAlloc(size); };
+	VOID operator delete(VOID *p) { MemoryFree(p); };
 
 	DirectDrawPalette* last;
 	DirectDraw* ddraw;
 	PALETTEENTRY entries[256];
+	BOOL isChanged;
 
 	DirectDrawPalette(DirectDraw*);
 

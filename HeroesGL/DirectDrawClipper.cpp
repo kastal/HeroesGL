@@ -24,6 +24,7 @@
 
 #include "stdafx.h"
 #include "DirectDrawClipper.h"
+#include "DirectDraw.h"
 
 HRESULT DirectDrawClipper::QueryInterface(REFIID riid, LPVOID* ppvObj) { return DD_OK; }
 ULONG DirectDrawClipper::AddRef() { return 0; }

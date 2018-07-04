@@ -88,13 +88,16 @@
     <None Include="Shaders\linear.fgl">
       <Filter>Resource Files\Shaders Files</Filter>
     </None>
-    <None Include="Shaders\linear.vgl">
-      <Filter>Resource Files\Shaders Files</Filter>
-    </None>
     <None Include="Shaders\xbrz.fgl">
       <Filter>Resource Files\Shaders Files</Filter>
     </None>
-    <None Include="Shaders\xbrz.vgl">
+    <None Include="Shaders\stencil.fgl">
+      <Filter>Resource Files\Shaders Files</Filter>
+    </None>
+    <None Include="Shaders\stencil.vgl">
+      <Filter>Resource Files\Shaders Files</Filter>
+    </None>
+    <None Include="Shaders\linear_xbrz.vgl">
       <Filter>Resource Files\Shaders Files</Filter>
     </None>
   </ItemGroup>

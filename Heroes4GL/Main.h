@@ -25,8 +25,10 @@
 #pragma once
 
 #include "DirectDraw.h"
+#include "ExtraTypes.h"
 
 extern DirectDraw* ddrawList;
+extern DisplayMode modesList[3];
 
 namespace Main
 {

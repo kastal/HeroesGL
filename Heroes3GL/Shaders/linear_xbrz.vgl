@@ -25,6 +25,7 @@
 #version 130
 precision mediump float;
 
+
 uniform mat4 mvp;
 
 in vec2 vCoord;
@@ -33,5 +34,5 @@ out vec2 fTexCoord;
 
 void main() {
 	gl_Position = mvp * vec4(vCoord, 0.0, 1.0);
-	fTexCoord = vTexCoord * 1.0001;
+	fTexCoord = vTexCoord;
 }

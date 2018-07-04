@@ -28,7 +28,6 @@
 #include "Main.h"
 
 DirectDraw* ddrawList;
-
 DisplayMode modesList[3] = {
 	800, 600, FALSE,
 	1024, 768, FALSE,
@@ -60,15 +59,24 @@ namespace Main
 
 	INT __fastcall Round(FLOAT number)
 	{
-		FLOAT floorVal = floor(number);
-		return INT(floorVal + 0.5f > number ? floorVal : ceil(number));
+		FLOAT floorVal = MathFloor(number);
+		return INT(floorVal + 0.5f > number ? floorVal : MathCeil(number));
 	}
 
 	VOID __fastcall ShowError(CHAR* message, CHAR* file, DWORD line)
 	{
 		CHAR dest[400];
-		sprintf(dest, "%s\n\n\nFILE %s\nLINE %d", message, file, line);
-		MessageBox(NULL, dest, "Error", MB_OK | MB_ICONERROR);
+		StrPrint(dest, "%s\n\n\nFILE %s\nLINE %d", message, file, line);
+
+		if (hActCtx && hActCtx != INVALID_HANDLE_VALUE)
+		{
+			ULONG_PTR cookie;
+			ActivateActCtxC(hActCtx, &cookie);
+			MessageBox(NULL, dest, "Error", MB_OK | MB_ICONERROR);
+			DeactivateActCtxC(0, cookie);
+		}
+		else
+			MessageBox(NULL, dest, "Error", MB_OK | MB_ICONERROR);
 	}
 
 #ifdef _DEBUG

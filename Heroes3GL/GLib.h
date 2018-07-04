@@ -90,12 +90,19 @@ typedef char GLchar;
 
 #define GL_ARRAY_BUFFER 0x8892
 #define GL_ELEMENT_ARRAY_BUFFER 0x8893
-#define GL_STATIC_DRAW 0x88E4
+#define GL_STATIC_DRAW                    0x88E4
+#define GL_STREAM_DRAW                    0x88E0
 
 #define GL_UNSIGNED_SHORT_5_6_5 0x8363
 
 #define ERROR_INVALID_VERSION_ARB 0x2095
 #define ERROR_INVALID_PROFILE_ARB 0x2096
+
+#define GL_COLOR_ATTACHMENT0              0x8CE0
+#define GL_STENCIL_ATTACHMENT             0x8D20
+#define GL_DRAW_FRAMEBUFFER               0x8CA9
+#define GL_RENDERBUFFER                   0x8D41
+#define GL_DEPTH24_STENCIL8               0x88F0
 
 typedef PROC(__stdcall *WGLGETPROCADDRESS)(LPCSTR name);
 typedef BOOL(__stdcall *WGLMAKECURRENT)(HDC devContext, HGLRC glContext);
@@ -115,9 +122,9 @@ typedef VOID(__stdcall *GLVIEWPORT)(GLint x, GLint y, GLsizei width, GLsizei hei
 typedef VOID(__stdcall *GLMATRIXMODE)(GLenum mode);
 typedef VOID(__stdcall *GLLOADIDENTITY)();
 typedef VOID(__stdcall *GLORTHO)(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar);
-typedef VOID(__stdcall *GLFLUSH)();
 typedef VOID(__stdcall *GLFINISH)();
 typedef VOID(__stdcall *GLENABLE)(GLenum cap);
+typedef VOID(__stdcall *GLDISABLE)(GLenum cap);
 typedef VOID(__stdcall *GLBINDTEXTURE)(GLenum target, GLuint texture);
 typedef VOID(__stdcall *GLDELETETEXTURES)(GLsizei n, const GLuint *textures);
 typedef VOID(__stdcall *GLTEXPARAMETERI)(GLenum target, GLenum pname, GLint param);
@@ -130,8 +137,9 @@ typedef GLenum(__stdcall *GLGENTEXTURES)(GLsizei n, GLuint* textures);
 typedef VOID(__stdcall *GLGETINTEGERV)(GLenum pname, GLint* data);
 typedef VOID(__stdcall *GLCLEAR)(GLbitfield mask);
 typedef VOID(__stdcall *GLCLEARCOLOR)(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
-typedef VOID(__stdcall *GLPIXELSTOREI)(GLenum pname, GLint param);
-
+typedef VOID(__stdcall *GLCOLORMASK)(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
+typedef VOID(__stdcall *GLSTENCILFUNC)(GLenum func, GLint ref, GLuint mask);
+typedef VOID(__stdcall *GLSTENCILOP)(GLenum fail, GLenum zfail, GLenum zpass);
 
 #ifdef _DEBUG
 typedef GLenum(__stdcall *GLGETERROR)();
@@ -141,12 +149,9 @@ typedef VOID(__stdcall *GLACTIVETEXTURE)(GLenum texture);
 typedef VOID(__stdcall *GLGENBUFFERS)(GLsizei n, GLuint* buffers);
 typedef VOID(__stdcall *GLDELETEBUFFERS)(GLsizei n, const GLuint* buffers);
 typedef VOID(__stdcall *GLBINDBUFFER)(GLenum target, GLuint buffer);
-typedef VOID*(__stdcall *GLMAPBUFFERRANGE)(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access);
-typedef GLboolean(__stdcall *GLUNMAPBUFFER)(GLenum target);
-typedef VOID(__stdcall *GLFLUSHMAPPEDBUFFERRANGE)(GLenum target, GLintptr offset, GLsizeiptr length);
 typedef VOID(__stdcall *GLBUFFERDATA)(GLenum target, GLsizeiptr size, const GLvoid* data, GLenum usage);
+typedef VOID(__stdcall *GLBUFFERSUBDATA)(GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid * data);
 typedef VOID(__stdcall *GLDRAWARRAYS)(GLenum mode, GLint first, GLsizei count);
-typedef VOID(__stdcall *GLDRAWELEMENTS)(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices);
 
 typedef VOID(__stdcall *GLENABLEVERTEXATTRIBARRAY)(GLuint index);
 typedef VOID(__stdcall *GLVERTEXATTRIBPOINTER)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* pointer);
@@ -176,6 +181,17 @@ typedef VOID(__stdcall *GLGENVERTEXARRAYS)(GLsizei n, GLuint* arrays);
 typedef VOID(__stdcall *GLBINDVERTEXARRAY)(GLuint array);
 typedef VOID(__stdcall *GLDELETEVERTEXARRAYS)(GLsizei n, const GLuint* arrays);
 
+typedef VOID(__stdcall *GLGENFRAMEBUFFERS)(GLsizei n, GLuint *ids);
+typedef VOID(__stdcall *GLDELETEFRAMEBUFFERS)(GLsizei n, GLuint *framebuffers);
+typedef VOID(__stdcall *GLBINDFRAMEBUFFER)(GLenum target, GLuint framebuffer);
+typedef VOID(__stdcall *GLFRAMEBUFFERTEXTURE2D)(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+
+typedef VOID(__stdcall *GLGENRENDERBUFFERS)(GLsizei n, GLuint *renderbuffers);
+typedef VOID(__stdcall *GLDELETERENDERBUFFERS)(GLsizei n, GLuint *renderbuffers);
+typedef VOID(__stdcall *GLBINDRENDERBUFFER)(GLenum target, GLuint renderbuffer);
+typedef VOID(__stdcall *GLRENDERBUFFERSTORAGE)(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+typedef VOID(__stdcall *GLFRAMEBUFFERRENDERBUFFER)(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+
 extern WGLGETPROCADDRESS WGLGetProcAddress;
 extern WGLMAKECURRENT WGLMakeCurrent;
 extern WGLCREATECONTEXT WGLCreateContext;
@@ -193,9 +209,9 @@ extern GLVIEWPORT GLViewport;
 extern GLMATRIXMODE GLMatrixMode;
 extern GLLOADIDENTITY GLLoadIdentity;
 extern GLORTHO GLOrtho;
-extern GLFLUSH GLFlush;
 extern GLFINISH GLFinish;
 extern GLENABLE GLEnable;
+extern GLDISABLE GLDisable;
 extern GLBINDTEXTURE GLBindTexture;
 extern GLDELETETEXTURES GLDeleteTextures;
 extern GLTEXPARAMETERI GLTexParameteri;
@@ -208,7 +224,9 @@ extern GLGENTEXTURES GLGenTextures;
 extern GLGETINTEGERV GLGetIntegerv;
 extern GLCLEAR GLClear;
 extern GLCLEARCOLOR GLClearColor;
-extern GLPIXELSTOREI GLPixelStorei;
+extern GLCOLORMASK GLColorMask;
+extern GLSTENCILFUNC GLStencilFunc;
+extern GLSTENCILOP GLStencilOp;
 
 #ifdef _DEBUG
 extern GLGETERROR GLGetError;
@@ -219,6 +237,7 @@ extern GLGENBUFFERS GLGenBuffers;
 extern GLDELETEBUFFERS GLDeleteBuffers;
 extern GLBINDBUFFER GLBindBuffer;
 extern GLBUFFERDATA GLBufferData;
+extern GLBUFFERSUBDATA GLBufferSubData;
 extern GLDRAWARRAYS GLDrawArrays;
 
 extern GLENABLEVERTEXATTRIBARRAY GLEnableVertexAttribArray;
@@ -248,18 +267,25 @@ extern GLGENVERTEXARRAYS GLGenVertexArrays;
 extern GLBINDVERTEXARRAY GLBindVertexArray;
 extern GLDELETEVERTEXARRAYS GLDeleteVertexArrays;
 
+extern GLGENFRAMEBUFFERS GLGenFramebuffers;
+extern GLDELETEFRAMEBUFFERS GLDeleteFramebuffers;
+extern GLBINDFRAMEBUFFER GLBindFramebuffer;
+extern GLFRAMEBUFFERTEXTURE2D GLFramebufferTexture2D;
+
+extern GLGENRENDERBUFFERS GLGenRenderbuffers;
+extern GLDELETERENDERBUFFERS GLDeleteRenderbuffers;
+extern GLBINDRENDERBUFFER GLBindRenderbuffer;
+extern GLRENDERBUFFERSTORAGE GLRenderbufferStorage;
+extern GLFRAMEBUFFERRENDERBUFFER GLFramebufferRenderbuffer;
+
 extern WORD glVersion;
 extern DWORD glCapsClampToEdge;
 
 namespace GL
 {
 	BOOL __fastcall Load();
-
 	VOID __fastcall Free();
-
 	VOID CreateContextAttribs(HDC devContext, HGLRC* glContext);
-
 	BOOL PreparePixelFormat(PIXELFORMATDESCRIPTOR* pfd, DWORD* pixelFormat);
-
 	GLuint __fastcall CompileShaderSource(DWORD name, GLenum type);
 }

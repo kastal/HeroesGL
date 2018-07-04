@@ -30,8 +30,8 @@ class DirectDraw;
 class DirectDrawClipper : IDirectDrawClipper
 {
 public:
-	VOID * operator new(size_t size) { return malloc(size); };
-	VOID operator delete(VOID *p) { free(p); };
+	VOID * operator new(size_t size) { return MemoryAlloc(size); };
+	VOID operator delete(VOID *p) { MemoryFree(p); };
 
 	DirectDrawClipper* last;
 	DirectDraw* ddraw;

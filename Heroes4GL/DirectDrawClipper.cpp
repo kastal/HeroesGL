@@ -24,6 +24,8 @@
 
 #include "stdafx.h"
 #include "DirectDrawClipper.h"
+#include "DirectDraw.h"
+#include "Main.h"
 
 #pragma region Not Implemented
 HRESULT DirectDrawClipper::QueryInterface(REFIID riid, LPVOID* ppvObj) { return DD_OK; }
@@ -40,7 +42,7 @@ DirectDrawClipper::DirectDrawClipper(DirectDraw* lpDD)
 	this->ddraw = lpDD;
 	this->last = lpDD->clipperEntries;
 
-	memset(&this->rgnData, NULL, sizeof(RGNRECTDATA));
+	MemoryZero(&this->rgnData, sizeof(RGNRECTDATA));
 
 	this->rgnData.rdh.dwSize = sizeof(RGNDATAHEADER);
 	this->rgnData.rdh.iType = RDH_RECTANGLES;

@@ -51,7 +51,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
 FONT 8, "System", 0, 0, 0x1
 BEGIN
     CTEXT           "Герои Меча и Магии III\nOpenGL враппер",1002,0,6,162,18
-    CTEXT           "Версия 1.04   Сборка 32",IDC_STATIC,0,30,162,8
+    CTEXT           "Версия 1.05   Сборка 62",IDC_STATIC,0,30,162,8
     CTEXT           "Copyright © 2018 Verok",1006,0,48,162,8
 	DEFPUSHBUTTON   "OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
 	CONTROL         "verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
@@ -117,7 +117,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
 FONT 8, "System", 0, 0, 0x1
 BEGIN
     CTEXT           "Heroes of Might and Magic III\nOpenGL Wrapper",1002,0,6,162,18
-    CTEXT           "Version 1.04   Build 32",IDC_STATIC,0,30,162,8
+    CTEXT           "Version 1.05   Build 62",IDC_STATIC,0,30,162,8
     CTEXT           "Copyright © 2018 Verok",1006,0,48,162,8
 	DEFPUSHBUTTON   "OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
 	CONTROL         "verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
@@ -129,13 +129,15 @@ END
 // RCDATA
 //
 
-IDR_LINEAR_VERTEX       RCDATA                  ".\\Shaders\\linear.vgl"
+IDR_VERTEX              RCDATA                  ".\\Shaders\\linear_xbrz.vgl"
 
 IDR_LINEAR_FRAGMENT     RCDATA                  ".\\Shaders\\linear.fgl"
 
-IDR_XBRZ_VERTEX         RCDATA                  ".\\Shaders\\xbrz.vgl"
-
 IDR_XBRZ_FRAGMENT       RCDATA                  ".\\Shaders\\xbrz.fgl"
+
+IDR_STENCIL_VERTEX      RCDATA                  ".\\Shaders\\stencil.vgl"
+
+IDR_STENCIL_FRAGMENT    RCDATA                  ".\\Shaders\\stencil.fgl"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -143,8 +145,8 @@ IDR_XBRZ_FRAGMENT       RCDATA                  ".\\Shaders\\xbrz.fgl"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2018,6,23,32
- PRODUCTVERSION 1,0,4,0
+ FILEVERSION 2018,7,4,62
+ PRODUCTVERSION 1,0,5,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -160,10 +162,10 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "HoMM III - OpenGL wrapper"
-            VALUE "FileVersion", "2018.06.23.032"
+            VALUE "FileVersion", "2018.07.04.062"
             VALUE "LegalCopyright", "© 2018 Verok (verokster@gmail.com)"
             VALUE "OriginalFilename", "ddraw.dll"
-            VALUE "ProductVersion", "1.0.4"
+            VALUE "ProductVersion", "1.0.5"
             VALUE "ProductName", "Heroes3GL"
         END
     END

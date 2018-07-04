@@ -66,7 +66,11 @@ DirectDrawSurface::DirectDrawSurface(DirectDraw* lpDD, DWORD index)
 	this->ddraw = lpDD;
 	this->last = lpDD->surfaceEntries;
 	this->index = index;
-	this->pixelBuffer = index ? NULL : (DWORD*)malloc(RES_WIDTH * RES_HEIGHT * sizeof(DWORD));
+
+	this->pixelBuffer = index ? NULL : (DWORD*)MemoryAlloc(RES_WIDTH * RES_HEIGHT * sizeof(DWORD));
+	this->clipsList = !this->index ? (RECT*)MemoryAlloc(STENCIL_COUNT * sizeof(RECT)) : NULL;
+	this->endClip = this->clipsList + (!this->index ? STENCIL_COUNT : 0);
+	this->poinetrClip = this->currentClip = this->clipsList;
 
 	this->attachedPallete = NULL;
 	this->attachedClipper = NULL;
@@ -75,7 +79,10 @@ DirectDrawSurface::DirectDrawSurface(DirectDraw* lpDD, DWORD index)
 DirectDrawSurface::~DirectDrawSurface()
 {
 	if (this->pixelBuffer)
-		free(this->pixelBuffer);
+		MemoryFree(this->pixelBuffer);
+
+	if (this->clipsList)
+		MemoryFree(this->clipsList);
 }
 
 ULONG DirectDrawSurface::Release()
@@ -117,18 +124,19 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lpDDSrcSur
 
 	RECT rect;
 	GetClientRect(this->ddraw->hWnd, &rect);
-	lpDestRect->left = lpDestRect->left * RES_WIDTH / (rect.right - rect.left);
-	lpDestRect->top = lpDestRect->top * RES_HEIGHT / (rect.bottom - rect.top);
+
+	DWORD left = lpDestRect->left * RES_WIDTH / (rect.right - rect.left);
+	DWORD top = lpDestRect->top * RES_HEIGHT / (rect.bottom - rect.top);
+	DWORD width = lpSrcRect->right - lpSrcRect->left;
+	DWORD height = lpSrcRect->bottom - lpSrcRect->top;
 
 	DirectDrawSurface* surface = (DirectDrawSurface*)lpDDSrcSurface;
 
 	BYTE* source = surface->indexBuffer + lpSrcRect->top * RES_WIDTH + lpSrcRect->left;
-	BYTE* destination = this->indexBuffer + lpDestRect->top * RES_WIDTH + lpDestRect->left;
-	DWORD* pixels = this->pixelBuffer + lpDestRect->top * RES_WIDTH + lpDestRect->left;
+	BYTE* destination = this->indexBuffer + top * RES_WIDTH + left;
+	DWORD* pixels = this->pixelBuffer + top * RES_WIDTH + left;
 
-	DWORD width = lpSrcRect->right - lpSrcRect->left;
-	DWORD height = lpSrcRect->bottom - lpSrcRect->top;
-
+	DWORD copyHeight = height;
 	do
 	{
 		BYTE* src = source;
@@ -140,13 +148,24 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lpDDSrcSur
 		DWORD* pix = pixels;
 		pixels += RES_WIDTH;
 
-		DWORD count = width;
+		DWORD copyWidth = width;
 		do
 		{
 			*pix++ = *(DWORD*)&this->attachedPallete->entries[*src];
 			*dest++ = *src++;
-		} while (--count);
-	} while (--height);
+		} while (--copyWidth);
+	} while (--copyHeight);
+
+	this->currentClip->left = left;
+	this->currentClip->top = top;
+	this->currentClip->right = left + width;
+	this->currentClip->bottom = top + height;
+
+	if (width == this->ddraw->width &&
+		height == this->ddraw->height)
+		this->poinetrClip = this->currentClip;
+
+	this->currentClip = this->currentClip + 1 != this->endClip ? this->currentClip + 1 : this->clipsList;
 
 	SetEvent(this->ddraw->hDrawEvent);
 

@@ -23,7 +23,7 @@
 */
 
 #version 130
-precision lowp float;
+precision mediump float;
 
 uniform sampler2D tex01;
 

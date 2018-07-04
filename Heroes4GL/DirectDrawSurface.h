@@ -26,13 +26,15 @@
 #include "ddraw.h"
 #include "DirectDrawClipper.h"
 
+#define STENCIL_COUNT 100
+
 class DirectDraw;
 
 class DirectDrawSurface : IDirectDrawSurface7
 {
 public:
-	VOID * operator new(size_t size) { return malloc(size); };
-	VOID operator delete(VOID *p) { free(p); };
+	VOID * operator new(size_t size) { return MemoryAlloc(size); };
+	VOID operator delete(VOID *p) { MemoryFree(p); };
 
 	DirectDrawSurface* last;
 	DirectDraw* ddraw;
@@ -45,6 +47,12 @@ public:
 	WORD* indexBuffer;
 	HBITMAP hBmp;
 	HDC hDc;
+
+	RECT* clipsList;
+	RECT* endClip;
+
+	RECT* currentClip;
+	RECT* poinetrClip;
 
 	DirectDrawSurface(DirectDraw*, DWORD);
 	~DirectDrawSurface();

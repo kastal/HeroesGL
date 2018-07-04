@@ -28,7 +28,6 @@
 #include "windows.h"
 #include "stdlib.h"
 #include "stdio.h"
-#include "DirectDraw.h"
 
 #if (_WIN32_WINNT <= 0x0501)
 #define MAX_LINKID_TEXT     48
@@ -67,9 +66,6 @@ typedef const ACTCTXA *PCACTCTXA;
 typedef ACTCTXA ACTCTX;
 #endif
 
-extern HMODULE hDllModule;
-extern HANDLE hActCtx;
-
 typedef HANDLE(__stdcall *CREATEACTCTXA)(ACTCTX* pActCtx);
 typedef VOID(__stdcall *RELEASEACTCTX)(HANDLE hActCtx);
 typedef HANDLE(__stdcall *ACTIVATEACTCTX)(HANDLE hActCtx, ULONG_PTR* lpCookie);
@@ -80,5 +76,29 @@ extern RELEASEACTCTX ReleaseActCtxC;
 extern ACTIVATEACTCTX ActivateActCtxC;
 extern DEACTIVATEACTCTX DeactivateActCtxC;
 
+typedef VOID*(__cdecl *MALLOC)(size_t);
+typedef VOID(__cdecl *FREE)(VOID*);
+typedef VOID*(__cdecl *MEMSET)(VOID*, INT, size_t);
+typedef double(__cdecl *CEIL)(double);
+typedef double(__cdecl *FLOOR)(double);
+typedef INT(__cdecl *SPRINTF)(CHAR*, const CHAR*, ...);
+typedef CHAR*(__cdecl *STRSTR)(const char *Str, const char *SubStr);
+typedef size_t(__cdecl *WCSTOMBS)(CHAR* mbstr, const WCHAR* wcstr, size_t count);
+
+extern MALLOC MemoryAlloc;
+extern FREE MemoryFree;
+extern MEMSET MemorySet;
+extern CEIL MathCeil;
+extern FLOOR MathFloor;
+extern SPRINTF StrPrint;
+extern STRSTR StrStr;
+extern WCSTOMBS StrToAnsi;
+
+#define MemoryZero(Destination,Length) MemorySet((Destination),0,(Length))
+
+extern HMODULE hDllModule;
+extern HANDLE hActCtx;
+
 VOID LoadKernel32();
+VOID LoadMsvCRT();
 VOID LoadDDraw();
