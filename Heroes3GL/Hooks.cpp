@@ -644,8 +644,12 @@ namespace Hooks
 			DEVMODE devMode;
 			MemoryZero(&devMode, sizeof(DEVMODE));
 			devMode.dmSize = sizeof(DEVMODE);
-			EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &devMode);
-			DWORD cursorTime = 1000 / devMode.dmDisplayFrequency;
+			DWORD cursorTime;
+			if (EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &devMode) && devMode.dmDisplayFrequency)
+				cursorTime = 1000 / devMode.dmDisplayFrequency;
+			else
+				cursorTime = 16;
+
 			PatchByte(hookSpace->cursor_time_1 + 2, (BYTE)cursorTime);
 			PatchByte(hookSpace->cursor_time_2 + 2, (BYTE)cursorTime);
 			PatchDWord(hookSpace->cursor_time_3 + 1, cursorTime);

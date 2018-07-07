@@ -278,14 +278,17 @@ extern GLBINDRENDERBUFFER GLBindRenderbuffer;
 extern GLRENDERBUFFERSTORAGE GLRenderbufferStorage;
 extern GLFRAMEBUFFERRENDERBUFFER GLFramebufferRenderbuffer;
 
-extern WORD glVersion;
+extern DWORD glVersion;
+extern DWORD glPixelFormat;
 extern DWORD glCapsClampToEdge;
 
 namespace GL
 {
 	BOOL __fastcall Load();
 	VOID __fastcall Free();
-	VOID CreateContextAttribs(HDC devContext, HGLRC* glContext);
-	BOOL PreparePixelFormat(PIXELFORMATDESCRIPTOR* pfd, DWORD* pixelFormat);
+	VOID __fastcall CreateContextAttribs(HDC devContext, HGLRC* glContext);
+	VOID __fastcall PreparePixelFormatDescription(PIXELFORMATDESCRIPTOR* pfd);
+	BOOL __fastcall PreparePixelFormat(PIXELFORMATDESCRIPTOR* pfd);
 	GLuint __fastcall CompileShaderSource(DWORD name, GLenum type);
+	VOID __fastcall ResetContext();
 }

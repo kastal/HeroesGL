@@ -91,8 +91,27 @@ DirectDrawSurface::DirectDrawSurface(DirectDraw* lpDD, DWORD index)
 
 DirectDrawSurface::~DirectDrawSurface()
 {
-	if (this->hBmp)
-		DeleteObject(this->hBmp);
+	if (this->ddraw->attachedSurface == this)
+		this->ddraw->attachedSurface = NULL;
+
+	if (this->ddraw->surfaceEntries == this)
+		this->ddraw->surfaceEntries = NULL;
+	else
+	{
+		DirectDrawSurface* entry = this->ddraw->surfaceEntries;
+		while (entry)
+		{
+			if (entry->last == this)
+			{
+				entry->last = this->last;
+				break;
+			}
+
+			entry = entry->last;
+		}
+	}
+
+	this->ReleaseBuffer();
 }
 
 VOID DirectDrawSurface::ReleaseBuffer()
@@ -143,32 +162,8 @@ VOID DirectDrawSurface::CreateBuffer(DWORD width, DWORD height)
 	SelectObject(this->hDc, this->hBmp);
 }
 
-
 ULONG DirectDrawSurface::Release()
 {
-	if (this->ddraw->attachedSurface == this)
-	{
-		this->ddraw->RenderStop();
-		this->ddraw->attachedSurface = NULL;
-	}
-
-	if (this->ddraw->surfaceEntries == this)
-		this->ddraw->surfaceEntries = NULL;
-	else
-	{
-		DirectDrawSurface* entry = this->ddraw->surfaceEntries;
-		while (entry)
-		{
-			if (entry->last == this)
-			{
-				entry->last = this->last;
-				break;
-			}
-
-			entry = entry->last;
-		}
-	}
-
 	delete this;
 	return 0;
 }
@@ -209,8 +204,6 @@ HRESULT DirectDrawSurface::Lock(LPRECT lpDestRect, LPDDSURFACEDESC2 lpDDSurfaceD
 	lpDDSurfaceDesc->dwHeight = this->height;
 	lpDDSurfaceDesc->lPitch = this->width * 2;
 	lpDDSurfaceDesc->lpSurface = this->indexBuffer;
-
-	this->ddraw->RenderStart();
 
 	return DD_OK;
 }

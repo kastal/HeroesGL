@@ -163,8 +163,6 @@
       <IgnoreEmbeddedIDL>true</IgnoreEmbeddedIDL>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <FixedBaseAddress>true</FixedBaseAddress>
     </Link>
     <Bscmake />
   </ItemDefinitionGroup>

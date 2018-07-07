@@ -41,7 +41,7 @@ DirectDrawClipper::DirectDrawClipper(DirectDraw* lpDD)
 	this->hWnd = NULL;
 }
 
-ULONG DirectDrawClipper::Release()
+DirectDrawClipper::~DirectDrawClipper()
 {
 	if (this->ddraw->clipperEntries == this)
 		this->ddraw->clipperEntries = NULL;
@@ -59,7 +59,10 @@ ULONG DirectDrawClipper::Release()
 			entry = entry->last;
 		}
 	}
+}
 
+ULONG DirectDrawClipper::Release()
+{
 	delete this;
 	return 0;
 }

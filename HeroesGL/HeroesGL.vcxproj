@@ -159,11 +159,9 @@
       <CLRSupportLastError>Disabled</CLRSupportLastError>
       <TurnOffAssemblyGeneration>true</TurnOffAssemblyGeneration>
       <IgnoreEmbeddedIDL>true</IgnoreEmbeddedIDL>
-      <FixedBaseAddress>true</FixedBaseAddress>
       <CLRUnmanagedCodeCheck>false</CLRUnmanagedCodeCheck>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <Bscmake />
   </ItemDefinitionGroup>

@@ -78,20 +78,8 @@ DirectDrawSurface::DirectDrawSurface(DirectDraw* lpDD, DWORD index)
 
 DirectDrawSurface::~DirectDrawSurface()
 {
-	if (this->pixelBuffer)
-		MemoryFree(this->pixelBuffer);
-
-	if (this->clipsList)
-		MemoryFree(this->clipsList);
-}
-
-ULONG DirectDrawSurface::Release()
-{
 	if (this->ddraw->attachedSurface == this)
-	{
-		this->ddraw->RenderStop();
 		this->ddraw->attachedSurface = NULL;
-	}
 
 	if (this->ddraw->surfaceEntries == this)
 		this->ddraw->surfaceEntries = NULL;
@@ -109,6 +97,17 @@ ULONG DirectDrawSurface::Release()
 			entry = entry->last;
 		}
 	}
+
+	if (this->pixelBuffer)
+		MemoryFree(this->pixelBuffer);
+
+	if (this->clipsList)
+		MemoryFree(this->clipsList);
+}
+
+ULONG DirectDrawSurface::Release()
+{
+	
 
 	delete this;
 	return 0;

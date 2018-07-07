@@ -35,7 +35,7 @@
 AddressSpace* hookSpace;
 
 AddressSpace addressArray[] = {
-	//	style,      ver,  DDRAW.dll,  cpu patch,               meth_2 NOP,    meth_2 JMP,        mode NOP,      mode hook,  call 1,     call 2,     call 3,    
+	//	style,      ver,                        DDRAW.dll,  cpu patch,               meth_2 NOP,    meth_2 JMP,        mode NOP,      mode hook,  call 1,     call 2,     call 3,    
 		0x00442EFF, 1, 0, MAKEINTRESOURCE(109), 0x0046815E, 0x00443776, LNG_RUSSIAN, 0x0046827C, 2, 0x004684AA, TRUE,  0x0046F8EC, 6, 0x0046833C, 0x004683DA, 0x004677A0, 0x00000000, // Heroes I - Buka
 		"Герои Меча и Магии",
 		"SOFTWARE\\Buka\\3DO\\Heroes of Might and Magic Platinum\\1.000", "HMM1 ",

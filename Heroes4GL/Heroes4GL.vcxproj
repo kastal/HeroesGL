@@ -157,13 +157,11 @@
       <OutputFile>D:\Games\Heroes 4\ddraw$(TargetExt)</OutputFile>
       <ProgramDatabaseFile />
       <IgnoreEmbeddedIDL>true</IgnoreEmbeddedIDL>
-      <FixedBaseAddress>true</FixedBaseAddress>
       <TurnOffAssemblyGeneration>true</TurnOffAssemblyGeneration>
       <CLRUnmanagedCodeCheck>false</CLRUnmanagedCodeCheck>
       <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
       <CLRSupportLastError>Disabled</CLRSupportLastError>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
     <Bscmake />
   </ItemDefinitionGroup>

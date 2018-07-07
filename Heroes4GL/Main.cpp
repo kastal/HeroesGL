@@ -57,12 +57,6 @@ namespace Main
 		return NULL;
 	}
 
-	INT __fastcall Round(FLOAT number)
-	{
-		FLOAT floorVal = MathFloor(number);
-		return INT(floorVal + 0.5f > number ? floorVal : MathCeil(number));
-	}
-
 	VOID __fastcall ShowError(CHAR* message, CHAR* file, DWORD line)
 	{
 		CHAR dest[400];

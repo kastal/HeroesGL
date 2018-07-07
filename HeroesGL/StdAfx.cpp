@@ -37,6 +37,7 @@ FREE MemoryFree;
 MEMSET MemorySet;
 CEIL MathCeil;
 FLOOR MathFloor;
+ROUND MathRound;
 SPRINTF StrPrint;
 STRSTR StrStr;
 WCSTOMBS StrToAnsi;
@@ -56,6 +57,12 @@ VOID _declspec(naked) __stdcall WinGBitBlt() { _asm { JMP pWinGBitBlt } }
 VOID _declspec(naked) __stdcall WinGCreateDC() { _asm { JMP pWinGCreateDC } }
 VOID _declspec(naked) __stdcall WinGCreateBitmap() { _asm { JMP pWinGCreateBitmap } }
 
+double __cdecl round(double number)
+{
+	double floorVal = MathFloor(number);
+	return floorVal + 0.5f > number ? floorVal : MathCeil(number);
+}
+
 VOID LoadKernel32()
 {
 	HMODULE hLib = GetModuleHandle("KERNEL32.dll");
@@ -73,12 +80,31 @@ VOID LoadMsvCRT()
 	HMODULE hLib = LoadLibrary("MSVCRT.dll");
 	if (hLib)
 	{
+		StrPrint = (SPRINTF)GetProcAddress(hLib, "sprintf");
+
+		CHAR libName[256];
+		for (DWORD i = 12; i >= 7; ++i)
+		{
+			StrPrint(libName, "MSVCR%d0.dll", i);
+			HMODULE hCrtLib = LoadLibrary(libName);
+			if (hCrtLib)
+			{
+				FreeLibrary(hLib);
+				hLib = hCrtLib;
+				StrPrint = (SPRINTF)GetProcAddress(hLib, "sprintf");
+				break;
+			}
+		}
+
 		MemoryAlloc = (MALLOC)GetProcAddress(hLib, "malloc");
 		MemoryFree = (FREE)GetProcAddress(hLib, "free");
 		MemorySet = (MEMSET)GetProcAddress(hLib, "memset");
 
 		MathCeil = (CEIL)GetProcAddress(hLib, "ceil");
 		MathFloor = (FLOOR)GetProcAddress(hLib, "floor");
+		MathRound = (ROUND)GetProcAddress(hLib, "round");
+		if (!MathRound)
+			MathRound = round;
 
 		StrPrint = (SPRINTF)GetProcAddress(hLib, "sprintf");
 		StrStr = (STRSTR)GetProcAddress(hLib, "strstr");

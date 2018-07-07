@@ -464,73 +464,67 @@ DWORD __stdcall RenderThread(LPVOID lpParameter)
 	ddraw->hDc = ::GetDC(ddraw->hDraw);
 	{
 		PIXELFORMATDESCRIPTOR pfd;
-		MemoryZero(&pfd, sizeof(PIXELFORMATDESCRIPTOR));
-		pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-		pfd.nVersion = 1;
-		pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-		pfd.iPixelType = PFD_TYPE_RGBA;
-		pfd.cColorBits = 32;
-		pfd.cAlphaBits = 0;
-		pfd.cAccumBits = 0;
-		pfd.cDepthBits = 16;
-		pfd.cStencilBits = 8;
-		pfd.cAuxBuffers = 0;
-		pfd.iLayerType = PFD_MAIN_PLANE;
-
-		DWORD pfIndex;
-		if (!GL::PreparePixelFormat(&pfd, &pfIndex))
+		GL::PreparePixelFormatDescription(&pfd);
+		if (!glPixelFormat && !GL::PreparePixelFormat(&pfd))
 		{
-			pfIndex = ChoosePixelFormat(ddraw->hDc, &pfd);
-			if (pfIndex == NULL)
+			glPixelFormat = ChoosePixelFormat(ddraw->hDc, &pfd);
+			if (!glPixelFormat)
 				Main::ShowError("ChoosePixelFormat failed", __FILE__, __LINE__);
 			else if (pfd.dwFlags & PFD_NEED_PALETTE)
 				Main::ShowError("Needs palette", __FILE__, __LINE__);
 		}
 
-		if (!SetPixelFormat(ddraw->hDc, pfIndex, &pfd))
+		if (!SetPixelFormat(ddraw->hDc, glPixelFormat, &pfd))
 			Main::ShowError("SetPixelFormat failed", __FILE__, __LINE__);
 
 		MemoryZero(&pfd, sizeof(PIXELFORMATDESCRIPTOR));
 		pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
 		pfd.nVersion = 1;
-		if (DescribePixelFormat(ddraw->hDc, pfIndex, sizeof(PIXELFORMATDESCRIPTOR), &pfd) == NULL)
+		if (DescribePixelFormat(ddraw->hDc, glPixelFormat, sizeof(PIXELFORMATDESCRIPTOR), &pfd) == NULL)
 			Main::ShowError("DescribePixelFormat failed", __FILE__, __LINE__);
 
 		if ((pfd.iPixelType != PFD_TYPE_RGBA) ||
 			(pfd.cRedBits < 5) || (pfd.cGreenBits < 5) || (pfd.cBlueBits < 5))
 			Main::ShowError("Bad pixel type", __FILE__, __LINE__);
-	}
 
-	HGLRC hRc = WGLCreateContext(ddraw->hDc);
-	if (hRc)
-	{
-		WGLMakeCurrent(ddraw->hDc, hRc);
+		do
 		{
-			GL::CreateContextAttribs(ddraw->hDc, &hRc);
-
-			DWORD glMaxTexSize;
-			GLGetIntegerv(GL_MAX_TEXTURE_SIZE, (GLint*)&glMaxTexSize);
-
-			if (glVersion >= GL_VER_3_0)
+			WaitForSingleObject(ddraw->hDrawEvent, INFINITE);
+			if (ddraw->width)
 			{
-				DWORD maxSize = ddraw->width > ddraw->height ? ddraw->width : ddraw->height;
+				HGLRC hRc = WGLCreateContext(ddraw->hDc);
+				if (hRc)
+				{
+					WGLMakeCurrent(ddraw->hDc, hRc);
+					{
+						GL::CreateContextAttribs(ddraw->hDc, &hRc);
 
-				DWORD maxTexSize = 1;
-				while (maxTexSize < maxSize)
-					maxTexSize <<= 1;
+						DWORD glMaxTexSize;
+						GLGetIntegerv(GL_MAX_TEXTURE_SIZE, (GLint*)&glMaxTexSize);
 
-				if (maxTexSize > glMaxTexSize)
-					glVersion = GL_VER_1_1;
+						if (glVersion >= GL_VER_3_0)
+						{
+							DWORD maxSize = ddraw->width > ddraw->height ? ddraw->width : ddraw->height;
+
+							DWORD maxTexSize = 1;
+							while (maxTexSize < maxSize)
+								maxTexSize <<= 1;
+
+							if (maxTexSize > glMaxTexSize)
+								glVersion = GL_VER_1_1;
+						}
+
+						ddraw->CheckMenu(NULL);
+						if (glVersion >= GL_VER_3_0)
+							ddraw->RenderNew();
+						else
+							ddraw->RenderOld(glMaxTexSize);
+					}
+					WGLMakeCurrent(ddraw->hDc, NULL);
+					WGLDeleteContext(hRc);
+				}
 			}
-
-			ddraw->CheckMenu(NULL);
-			if (glVersion >= GL_VER_3_0)
-				ddraw->RenderNew();
-			else
-				ddraw->RenderOld(glMaxTexSize);
-		}
-		WGLMakeCurrent(ddraw->hDc, NULL);
-		WGLDeleteContext(hRc);
+		} while (!ddraw->isFinish);
 	}
 	::ReleaseDC(ddraw->hDraw, ddraw->hDc);
 	ddraw->hDc = NULL;
@@ -698,7 +692,7 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 						DWORD diff = tick - tickQueue[fpsTotal != fpsCount ? fpsIdx : 0];
 						tickQueue[fpsIdx] = tick;
 
-						DWORD fps = diff ? Main::Round(1000.0f / diff * fpsCount) : 9999;
+						DWORD fps = diff ? (DWORD)MathRound(1000.0f / diff * fpsCount) : 9999;
 
 						DWORD* queue = &fpsQueue[fpsIdx];
 						fpsSum -= *queue - fps;
@@ -962,7 +956,7 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 
 						if (fpsState && frame == frames)
 						{
-							DWORD fps = Main::Round((FLOAT)fpsSum / fpsCount);
+							DWORD fps = (DWORD)MathRound((FLOAT)fpsSum / fpsCount);
 							DWORD digCount = 0;
 							DWORD current = fps;
 							do
@@ -1378,7 +1372,7 @@ VOID DirectDraw::RenderNew()
 																							DWORD diff = tick - tickQueue[fpsTotal != fpsCount ? fpsIdx : 0];
 																							tickQueue[fpsIdx] = tick;
 
-																							DWORD fps = diff ? Main::Round(1000.0f / diff * fpsCount) : 9999;
+																							DWORD fps = diff ? (DWORD)MathRound(1000.0f / diff * fpsCount) : 9999;
 
 																							DWORD* queue = &fpsQueue[fpsIdx];
 																							fpsSum -= *queue - fps;
@@ -1659,7 +1653,7 @@ VOID DirectDraw::RenderNew()
 																							// Update FPS
 																							if (fpsState)
 																							{
-																								DWORD fps = Main::Round((FLOAT)fpsSum / fpsCount);
+																								DWORD fps = (DWORD)MathRound((FLOAT)fpsSum / fpsCount);
 																								DWORD digCount = 0;
 																								DWORD current = fps;
 																								do
@@ -1802,7 +1796,7 @@ VOID DirectDraw::RenderNew()
 
 VOID DirectDraw::RenderStart()
 {
-	if (!this->isFinish)
+	if (!this->isFinish || !this->hWnd)
 		return;
 
 	this->isFinish = FALSE;
@@ -1814,7 +1808,7 @@ VOID DirectDraw::RenderStart()
 	if (this->windowState != WinStateWindowed)
 	{
 		this->hDraw = CreateWindowEx(
-			WS_EX_CONTROLPARENT,
+			WS_EX_CONTROLPARENT | WS_EX_TOPMOST,
 			WC_STATIC,
 			NULL,
 			WS_VISIBLE | WS_POPUP,
@@ -1824,8 +1818,6 @@ VOID DirectDraw::RenderStart()
 			NULL,
 			hDllModule,
 			NULL);
-
-		//SetActiveWindow(this->hWnd);
 	}
 	else
 	{
@@ -1869,8 +1861,14 @@ VOID DirectDraw::RenderStop()
 	WaitForSingleObject(this->hDrawThread, INFINITE);
 	this->hDrawThread = NULL;
 
+	BOOL wasFull = GetWindowLong(this->hDraw, GWL_STYLE) & WS_POPUP;
 	if (DestroyWindow(this->hDraw))
 		this->hDraw = NULL;
+
+	if (wasFull)
+		GL::ResetContext();
+
+	ClipCursor(NULL);
 }
 
 BOOL DirectDraw::CheckView()
@@ -1891,15 +1889,15 @@ BOOL DirectDraw::CheckView()
 			if (this->viewport.viewFactor.x > this->viewport.viewFactor.y)
 			{
 				FLOAT fw = this->viewport.viewFactor.y * this->width;
-				this->viewport.rectangle.width = Main::Round(fw);
-				this->viewport.rectangle.x = Main::Round(((FLOAT)this->viewport.width - fw) / 2.0f);
+				this->viewport.rectangle.width = (INT)MathRound(fw);
+				this->viewport.rectangle.x = (INT)MathRound(((FLOAT)this->viewport.width - fw) / 2.0f);
 				this->viewport.clipFactor.x = this->viewport.viewFactor.y;
 			}
 			else
 			{
 				FLOAT fh = this->viewport.viewFactor.x * this->height;
-				this->viewport.rectangle.height = Main::Round(fh);
-				this->viewport.rectangle.y = Main::Round(((FLOAT)this->viewport.height - fh) / 2.0f);
+				this->viewport.rectangle.height = (INT)MathRound(fh);
+				this->viewport.rectangle.y = (INT)MathRound(((FLOAT)this->viewport.height - fh) / 2.0f);
 				this->viewport.clipFactor.y = this->viewport.viewFactor.x;
 			}
 		}
@@ -1930,8 +1928,8 @@ BOOL DirectDraw::CheckView()
 
 VOID DirectDraw::ScaleMouse(LPPOINT p)
 {
-	p->x = Main::Round((FLOAT)(p->x - this->viewport.rectangle.x) * (FLOAT)RES_WIDTH / (FLOAT)this->viewport.rectangle.width);
-	p->y = Main::Round((FLOAT)(p->y - this->viewport.rectangle.y) * (FLOAT)RES_HEIGHT / (FLOAT)this->viewport.rectangle.height);
+	p->x = (LONG)MathRound((FLOAT)(p->x - this->viewport.rectangle.x) * (FLOAT)RES_WIDTH / (FLOAT)this->viewport.rectangle.width);
+	p->y = (LONG)MathRound((FLOAT)(p->y - this->viewport.rectangle.y) * (FLOAT)RES_HEIGHT / (FLOAT)this->viewport.rectangle.height);
 }
 
 VOID DirectDraw::CheckMenu(HMENU hMenu)
@@ -2019,6 +2017,8 @@ DirectDraw::DirectDraw(DirectDraw* lastObj)
 
 DirectDraw::~DirectDraw()
 {
+	this->RenderStop();
+
 	DirectDrawSurface* surfaceEntry = this->surfaceEntries;
 	while (surfaceEntry)
 	{
@@ -2064,8 +2064,6 @@ ULONG DirectDraw::Release()
 
 HRESULT DirectDraw::SetCooperativeLevel(HWND hWnd, DWORD dwFlags)
 {
-	this->windowState = dwFlags & DDSCL_FULLSCREEN ? WinStateFullScreen : WinStateWindowed;
-
 	if (this->hWnd != hWnd)
 	{
 		this->hDc = NULL;
@@ -2074,6 +2072,32 @@ HRESULT DirectDraw::SetCooperativeLevel(HWND hWnd, DWORD dwFlags)
 		if (!OldWindowProc)
 			OldWindowProc = (WNDPROC)SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)WindowProc);
 	}
+
+	if (dwFlags & DDSCL_FULLSCREEN)
+		this->windowState = WinStateFullScreen;
+	else if (this->windowState != WinStateWindowed)
+	{
+		this->windowState = WinStateWindowed;
+		this->RenderStop();
+		this->RenderStart();
+	}
+
+	return DD_OK;
+}
+
+HRESULT DirectDraw::SetDisplayMode(DWORD dwWidth, DWORD dwHeight, DWORD dwBPP)
+{
+	this->width = dwWidth;
+	this->height = dwHeight;
+
+	RECT rect = { 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) };
+	AdjustWindowRect(&rect, GetWindowLong(this->hWnd, GWL_STYLE), FALSE);
+	MoveWindow(this->hWnd, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, TRUE);
+
+	SetForegroundWindow(this->hWnd);
+
+	this->RenderStop();
+	this->RenderStart();
 
 	return DD_OK;
 }
@@ -2117,20 +2141,6 @@ HRESULT DirectDraw::CreateClipper(DWORD dwFlags, LPDIRECTDRAWCLIPPER* lplpDDClip
 {
 	this->clipperEntries = new DirectDrawClipper(this);
 	*lplpDDClipper = (LPDIRECTDRAWCLIPPER)this->clipperEntries;
-
-	return DD_OK;
-}
-
-HRESULT DirectDraw::SetDisplayMode(DWORD dwWidth, DWORD dwHeight, DWORD dwBPP)
-{
-	this->width = dwWidth;
-	this->height = dwHeight;
-
-	RECT rect = { 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) };
-	AdjustWindowRect(&rect, GetWindowLong(this->hWnd, GWL_STYLE), FALSE);
-	MoveWindow(this->hWnd, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, TRUE);
-
-	SetForegroundWindow(this->hWnd);
 
 	return DD_OK;
 }

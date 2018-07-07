@@ -38,6 +38,7 @@ public:
 	HWND hWnd;
 
 	DirectDrawClipper(DirectDraw*);
+	~DirectDrawClipper();
 
 	// Inherited via IDirectDrawClipper
 	HRESULT __stdcall QueryInterface(REFIID riid, LPVOID * ppvObj);
