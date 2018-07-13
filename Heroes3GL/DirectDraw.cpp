@@ -326,15 +326,14 @@ LRESULT __stdcall WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case IDM_HELP_WRAPPER:
 		{
 			INT_PTR res;
-			if (hActCtx && hActCtx != INVALID_HANDLE_VALUE)
-			{
-				ULONG_PTR cookie;
-				ActivateActCtxC(hActCtx, &cookie);
-				res = DialogBoxParam(hDllModule, MAKEINTRESOURCE(configLanguage == LNG_ENGLISH ? IDD_ENGLISH : IDD_RUSSIAN), hWnd, (DLGPROC)AboutProc, NULL);
+			ULONG_PTR cookie = NULL;
+			if (hActCtx && hActCtx != INVALID_HANDLE_VALUE && !ActivateActCtxC(hActCtx, &cookie))
+				cookie = NULL;
+
+			res = DialogBoxParam(hDllModule, MAKEINTRESOURCE(configLanguage == LNG_ENGLISH ? IDD_ENGLISH : IDD_RUSSIAN), hWnd, (DLGPROC)AboutProc, NULL);
+
+			if (cookie)
 				DeactivateActCtxC(0, cookie);
-			}
-			else
-				res = DialogBoxParam(hDllModule, MAKEINTRESOURCE(configLanguage == LNG_ENGLISH ? IDD_ENGLISH : IDD_RUSSIAN), hWnd, (DLGPROC)AboutProc, NULL);
 
 			SetForegroundWindow(hWnd);
 			return NULL;
@@ -461,37 +460,36 @@ LRESULT __stdcall PanelProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 DWORD __stdcall RenderThread(LPVOID lpParameter)
 {
 	DirectDraw* ddraw = (DirectDraw*)lpParameter;
-	ddraw->hDc = ::GetDC(ddraw->hDraw);
+	do
 	{
-		PIXELFORMATDESCRIPTOR pfd;
-		GL::PreparePixelFormatDescription(&pfd);
-		if (!glPixelFormat && !GL::PreparePixelFormat(&pfd))
+		if (ddraw->width)
 		{
-			glPixelFormat = ChoosePixelFormat(ddraw->hDc, &pfd);
-			if (!glPixelFormat)
-				Main::ShowError("ChoosePixelFormat failed", __FILE__, __LINE__);
-			else if (pfd.dwFlags & PFD_NEED_PALETTE)
-				Main::ShowError("Needs palette", __FILE__, __LINE__);
-		}
-
-		if (!SetPixelFormat(ddraw->hDc, glPixelFormat, &pfd))
-			Main::ShowError("SetPixelFormat failed", __FILE__, __LINE__);
-
-		MemoryZero(&pfd, sizeof(PIXELFORMATDESCRIPTOR));
-		pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-		pfd.nVersion = 1;
-		if (DescribePixelFormat(ddraw->hDc, glPixelFormat, sizeof(PIXELFORMATDESCRIPTOR), &pfd) == NULL)
-			Main::ShowError("DescribePixelFormat failed", __FILE__, __LINE__);
-
-		if ((pfd.iPixelType != PFD_TYPE_RGBA) ||
-			(pfd.cRedBits < 5) || (pfd.cGreenBits < 5) || (pfd.cBlueBits < 5))
-			Main::ShowError("Bad pixel type", __FILE__, __LINE__);
-
-		do
-		{
-			WaitForSingleObject(ddraw->hDrawEvent, INFINITE);
-			if (ddraw->width)
+			ddraw->hDc = ::GetDC(ddraw->hDraw);
 			{
+				PIXELFORMATDESCRIPTOR pfd;
+				GL::PreparePixelFormatDescription(&pfd);
+				if (!glPixelFormat && !GL::PreparePixelFormat(&pfd))
+				{
+					glPixelFormat = ChoosePixelFormat(ddraw->hDc, &pfd);
+					if (!glPixelFormat)
+						Main::ShowError("ChoosePixelFormat failed", __FILE__, __LINE__);
+					else if (pfd.dwFlags & PFD_NEED_PALETTE)
+						Main::ShowError("Needs palette", __FILE__, __LINE__);
+				}
+
+				if (!SetPixelFormat(ddraw->hDc, glPixelFormat, &pfd))
+					Main::ShowError("SetPixelFormat failed", __FILE__, __LINE__);
+
+				MemoryZero(&pfd, sizeof(PIXELFORMATDESCRIPTOR));
+				pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+				pfd.nVersion = 1;
+				if (DescribePixelFormat(ddraw->hDc, glPixelFormat, sizeof(PIXELFORMATDESCRIPTOR), &pfd) == NULL)
+					Main::ShowError("DescribePixelFormat failed", __FILE__, __LINE__);
+
+				if ((pfd.iPixelType != PFD_TYPE_RGBA) ||
+					(pfd.cRedBits < 5) || (pfd.cGreenBits < 5) || (pfd.cBlueBits < 5))
+					Main::ShowError("Bad pixel type", __FILE__, __LINE__);
+
 				HGLRC hRc = WGLCreateContext(ddraw->hDc);
 				if (hRc)
 				{
@@ -524,10 +522,11 @@ DWORD __stdcall RenderThread(LPVOID lpParameter)
 					WGLDeleteContext(hRc);
 				}
 			}
-		} while (!ddraw->isFinish);
-	}
-	::ReleaseDC(ddraw->hDraw, ddraw->hDc);
-	ddraw->hDc = NULL;
+			::ReleaseDC(ddraw->hDraw, ddraw->hDc);
+			ddraw->hDc = NULL;
+			break;
+		}
+	} while (!ddraw->isFinish);
 
 	return NULL;
 }
@@ -641,10 +640,9 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 			DWORD clear = TRUE;
 			do
 			{
+				DirectDrawSurface* surface = this->attachedSurface;
 				if (this->attachedSurface)
 				{
-					DirectDrawSurface* surface = this->attachedSurface;
-
 					if (WGLSwapInterval)
 					{
 						if (!isVSync)
@@ -732,16 +730,21 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 
 					if (clear)
 					{
-						if (clear & 1)
+						if (clear < 3)
+						{
+							if (clear & 1)
+							{
+								updateClip = (finClip == surface->clipsList ? surface->endClip : finClip) - 1;
+								updateClip->left = 0;
+								updateClip->top = 0;
+								updateClip->right = this->width;
+								updateClip->bottom = this->height;
+							}
+
 							++clear;
+						}
 						else
 							clear = FALSE;
-
-						updateClip = (finClip == surface->clipsList ? surface->endClip : finClip) - 1;
-						updateClip->left = 0;
-						updateClip->top = 0;
-						updateClip->right = this->width;
-						updateClip->bottom = this->height;
 
 						GLClear(GL_COLOR_BUFFER_BIT);
 					}
@@ -1108,10 +1111,7 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 
 					SwapBuffers(this->hDc);
 					if (fpsState != FpsBenchmark)
-					{
 						WaitForSingleObject(this->hDrawEvent, INFINITE);
-						ResetEvent(this->hDrawEvent);
-					}
 					GLFinish();
 				}
 			} while (!this->isFinish);
@@ -1314,10 +1314,9 @@ VOID DirectDraw::RenderNew()
 																				DWORD clear = TRUE;
 																				do
 																				{
-																					if (this->attachedSurface)
+																					DirectDrawSurface* surface = this->attachedSurface;
+																					if (surface)
 																					{
-																						DirectDrawSurface* surface = this->attachedSurface;
-
 																						if (WGLSwapInterval)
 																						{
 																							if (!isVSync)
@@ -1580,16 +1579,21 @@ VOID DirectDraw::RenderNew()
 
 																							if (clear)
 																							{
-																								if (clear & 1)
+																								if (clear < 3)
+																								{
+																									if (clear & 1)
+																									{
+																										updateClip = (finClip == surface->clipsList ? surface->endClip : finClip) - 1;
+																										updateClip->left = 0;
+																										updateClip->top = 0;
+																										updateClip->right = this->width;
+																										updateClip->bottom = this->height;
+																									}
+
 																									++clear;
+																								}
 																								else
 																									clear = FALSE;
-
-																								updateClip = (finClip == surface->clipsList ? surface->endClip : finClip) - 1;
-																								updateClip->left = 0;
-																								updateClip->top = 0;
-																								updateClip->right = this->width;
-																								updateClip->bottom = this->height;
 
 																								GLClear(GL_COLOR_BUFFER_BIT);
 																							}
@@ -1742,15 +1746,10 @@ VOID DirectDraw::RenderNew()
 																						}
 
 																						// Swap
-																						{
-																							SwapBuffers(this->hDc);
-																							if (fpsState != FpsBenchmark)
-																							{
-																								WaitForSingleObject(this->hDrawEvent, INFINITE);
-																								ResetEvent(this->hDrawEvent);
-																							}
-																							GLFinish();
-																						}
+																						SwapBuffers(this->hDc);
+																						if (fpsState != FpsBenchmark)
+																							WaitForSingleObject(this->hDrawEvent, INFINITE);
+																						GLFinish();
 																					}
 																				} while (!this->isFinish);
 																			}
@@ -1848,6 +1847,7 @@ VOID DirectDraw::RenderStart()
 	DWORD threadId;
 	SECURITY_ATTRIBUTES sAttribs;
 	MemoryZero(&sAttribs, sizeof(SECURITY_ATTRIBUTES));
+	sAttribs.nLength = sizeof(SECURITY_ATTRIBUTES);
 	this->hDrawThread = CreateThread(&sAttribs, NULL, RenderThread, this, NORMAL_PRIORITY_CLASS, &threadId);
 }
 
@@ -1859,6 +1859,7 @@ VOID DirectDraw::RenderStop()
 	this->isFinish = TRUE;
 	SetEvent(this->hDrawEvent);
 	WaitForSingleObject(this->hDrawThread, INFINITE);
+	CloseHandle(this->hDrawThread);
 	this->hDrawThread = NULL;
 
 	BOOL wasFull = GetWindowLong(this->hDraw, GWL_STYLE) & WS_POPUP;
@@ -1928,8 +1929,8 @@ BOOL DirectDraw::CheckView()
 
 VOID DirectDraw::ScaleMouse(LPPOINT p)
 {
-	p->x = (LONG)MathRound((FLOAT)(p->x - this->viewport.rectangle.x) * (FLOAT)RES_WIDTH / (FLOAT)this->viewport.rectangle.width);
-	p->y = (LONG)MathRound((FLOAT)(p->y - this->viewport.rectangle.y) * (FLOAT)RES_HEIGHT / (FLOAT)this->viewport.rectangle.height);
+	p->x = (LONG)MathRound((FLOAT)(p->x + 1 - this->viewport.rectangle.x) * (FLOAT)this->width / (FLOAT)this->viewport.rectangle.width) - 1;
+	p->y = (LONG)MathRound((FLOAT)(p->y + 1 - this->viewport.rectangle.y) * (FLOAT)this->height / (FLOAT)this->viewport.rectangle.height) - 1;
 }
 
 VOID DirectDraw::CheckMenu(HMENU hMenu)
@@ -2012,7 +2013,7 @@ DirectDraw::DirectDraw(DirectDraw* lastObj)
 	this->imageAspect = Config::Get("ImageAspect", TRUE);
 	this->imageVSync = Config::Get("ImageVSync", TRUE);
 
-	this->hDrawEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	this->hDrawEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 }
 
 DirectDraw::~DirectDraw()
@@ -2075,7 +2076,7 @@ HRESULT DirectDraw::SetCooperativeLevel(HWND hWnd, DWORD dwFlags)
 
 	if (dwFlags & DDSCL_FULLSCREEN)
 		this->windowState = WinStateFullScreen;
-	else if (this->windowState != WinStateWindowed)
+	else
 	{
 		this->windowState = WinStateWindowed;
 		this->RenderStop();

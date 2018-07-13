@@ -27,14 +27,12 @@
 #include "windows.h"
 #include "GL\gl.h"
 
-#if !defined(_PTRDIFF_T_DEFINED) && !defined(_PTRDIFF_T_) && !defined(__MINGW64__)
-#  ifdef _WIN64
+#ifndef ptrdiff_t
+#ifdef _WIN64
 typedef __int64 ptrdiff_t;
-#  else
+#else
 typedef _W64 int ptrdiff_t;
-#  endif
-#  define _PTRDIFF_T_DEFINED
-#  define _PTRDIFF_T_
+#endif
 #endif
 
 typedef ptrdiff_t GLintptr;
@@ -286,7 +284,7 @@ namespace GL
 {
 	BOOL __fastcall Load();
 	VOID __fastcall Free();
-	VOID __fastcall CreateContextAttribs(HDC devContext, HGLRC* glContext);
+	VOID __fastcall CreateContextAttribs(HDC hDc, HGLRC* hRc);
 	VOID __fastcall PreparePixelFormatDescription(PIXELFORMATDESCRIPTOR* pfd);
 	BOOL __fastcall PreparePixelFormat(PIXELFORMATDESCRIPTOR* pfd);
 	GLuint __fastcall CompileShaderSource(DWORD name, GLenum type);

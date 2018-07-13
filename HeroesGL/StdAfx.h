@@ -68,8 +68,8 @@ typedef ACTCTXA ACTCTX;
 
 typedef HANDLE(__stdcall *CREATEACTCTXA)(ACTCTX* pActCtx);
 typedef VOID(__stdcall *RELEASEACTCTX)(HANDLE hActCtx);
-typedef HANDLE(__stdcall *ACTIVATEACTCTX)(HANDLE hActCtx, ULONG_PTR* lpCookie);
-typedef HANDLE(__stdcall *DEACTIVATEACTCTX)(DWORD dwFlags, ULONG_PTR ulCookie);
+typedef BOOL(__stdcall *ACTIVATEACTCTX)(HANDLE hActCtx, ULONG_PTR* lpCookie);
+typedef BOOL(__stdcall *DEACTIVATEACTCTX)(DWORD dwFlags, ULONG_PTR ulCookie);
 
 extern CREATEACTCTXA CreateActCtxC;
 extern RELEASEACTCTX ReleaseActCtxC;
@@ -83,8 +83,9 @@ typedef double(__cdecl *CEIL)(double);
 typedef double(__cdecl *FLOOR)(double);
 typedef double(__cdecl *ROUND)(double);
 typedef INT(__cdecl *SPRINTF)(CHAR*, const CHAR*, ...);
-typedef CHAR*(__cdecl *STRSTR)(const char *Str, const char *SubStr);
-typedef size_t(__cdecl *WCSTOMBS)(CHAR* mbstr, const WCHAR* wcstr, size_t count);
+typedef CHAR*(__cdecl *STRSTR)(const CHAR*, const CHAR*);
+typedef size_t(__cdecl *WCSTOMBS)(CHAR*, const WCHAR*, size_t);
+typedef VOID(__cdecl *EXIT)(INT);
 
 extern MALLOC MemoryAlloc;
 extern FREE MemoryFree;
@@ -95,6 +96,7 @@ extern ROUND MathRound;
 extern SPRINTF StrPrint;
 extern STRSTR StrStr;
 extern WCSTOMBS StrToAnsi;
+extern EXIT Exit;
 
 #define MemoryZero(Destination,Length) MemorySet((Destination),0,(Length))
 

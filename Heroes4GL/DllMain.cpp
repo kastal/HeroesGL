@@ -25,6 +25,7 @@
 #include "stdafx.h"
 #include "Hooks.h"
 #include "GLib.h"
+#include "Resource.h"
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved)
 {
@@ -32,23 +33,27 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved)
 	{
 	case DLL_PROCESS_ATTACH:
 		LoadMsvCRT();
+		LoadDDraw();
 		if (Hooks::Load())
 		{
 			LoadKernel32();
 			hDllModule = hModule;
 
-			ACTCTX actCtx;
-			MemoryZero(&actCtx, sizeof(ACTCTX));
-			actCtx.cbSize = sizeof(actCtx);
-			actCtx.hModule = hDllModule;
-			actCtx.lpResourceName = MAKEINTRESOURCE(2);
-			actCtx.dwFlags = ACTCTX_FLAG_HMODULE_VALID | ACTCTX_FLAG_RESOURCE_NAME_VALID;
-			
 			if (CreateActCtxC)
+			{
+				CHAR path[MAX_PATH];
+				GetModuleFileName(hModule, path, MAX_PATH - 1);
+
+				ACTCTX actCtx;
+				MemoryZero(&actCtx, sizeof(ACTCTX));
+				actCtx.cbSize = sizeof(ACTCTX);
+				actCtx.lpSource = path;
+				actCtx.hModule = hModule;
+				actCtx.lpResourceName = MAKEINTRESOURCE(IDM_MANIFEST);
+				actCtx.dwFlags = ACTCTX_FLAG_HMODULE_VALID | ACTCTX_FLAG_RESOURCE_NAME_VALID;
 				hActCtx = CreateActCtxC(&actCtx);
+			}
 		}
-		else
-			LoadDDraw();
 
 		break;
 

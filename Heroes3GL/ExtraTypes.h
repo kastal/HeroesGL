@@ -103,6 +103,8 @@ struct AddressSpace
 	DWORD check_2;
 	DWORD equal_address;
 	DWORD equal_value;
+	BYTE start_offset;
+	VOID* start_hook;
 	DWORD cpu_hook;
 	DWORD renderNop;
 	DWORD cursor_time_1;

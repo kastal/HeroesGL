@@ -62,15 +62,16 @@ namespace Main
 		CHAR dest[400];
 		StrPrint(dest, "%s\n\n\nFILE %s\nLINE %d", message, file, line);
 
-		if (hActCtx && hActCtx != INVALID_HANDLE_VALUE)
-		{
-			ULONG_PTR cookie;
-			ActivateActCtxC(hActCtx, &cookie);
-			MessageBox(NULL, dest, "Error", MB_OK | MB_ICONERROR);
+		ULONG_PTR cookie = NULL;
+		if (hActCtx && hActCtx != INVALID_HANDLE_VALUE && !ActivateActCtxC(hActCtx, &cookie))
+			cookie = NULL;
+
+		MessageBox(NULL, dest, "Error", MB_OK | MB_ICONERROR);
+
+		if (cookie)
 			DeactivateActCtxC(0, cookie);
-		}
-		else
-			MessageBox(NULL, dest, "Error", MB_OK | MB_ICONERROR);
+
+		Exit(EXIT_FAILURE);
 	}
 
 #ifdef _DEBUG

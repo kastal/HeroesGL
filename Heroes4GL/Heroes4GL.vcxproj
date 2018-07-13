@@ -138,6 +138,7 @@
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <CreateHotpatchableImage>false</CreateHotpatchableImage>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ErrorReporting>None</ErrorReporting>
     </ClCompile>
     <ResourceCompile />
     <Link>

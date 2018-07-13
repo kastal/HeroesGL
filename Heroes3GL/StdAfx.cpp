@@ -41,6 +41,7 @@ ROUND MathRound;
 SPRINTF StrPrint;
 STRSTR StrStr;
 WCSTOMBS StrToAnsi;
+EXIT Exit;
 
 DWORD
 	pAcquireDDThreadLock,
@@ -115,7 +116,7 @@ VOID LoadMsvCRT()
 		StrPrint = (SPRINTF)GetProcAddress(hLib, "sprintf");
 
 		CHAR libName[256];
-		for (DWORD i = 12; i >= 7; ++i)
+		for (DWORD i = 12; i >= 7; --i)
 		{
 			StrPrint(libName, "MSVCR%d0.dll", i);
 			HMODULE hCrtLib = LoadLibrary(libName);
@@ -138,7 +139,6 @@ VOID LoadMsvCRT()
 		if (!MathRound)
 			MathRound = round;
 
-		StrPrint = (SPRINTF)GetProcAddress(hLib, "sprintf");
 		StrStr = (STRSTR)GetProcAddress(hLib, "strstr");
 		StrToAnsi = (WCSTOMBS)GetProcAddress(hLib, "wcstombs");
 	}

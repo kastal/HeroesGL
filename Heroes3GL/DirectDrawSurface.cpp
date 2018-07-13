@@ -81,9 +81,6 @@ DirectDrawSurface::DirectDrawSurface(DirectDraw* lpDD, DWORD index)
 
 DirectDrawSurface::~DirectDrawSurface()
 {
-	if (this->ddraw->attachedSurface == this)
-		this->ddraw->attachedSurface = NULL;
-
 	if (this->ddraw->surfaceEntries == this)
 		this->ddraw->surfaceEntries = NULL;
 	else
@@ -127,6 +124,9 @@ VOID DirectDrawSurface::CreateBuffer(DWORD width, DWORD height)
 
 ULONG DirectDrawSurface::Release()
 {
+	if (this->ddraw->attachedSurface == this)
+		this->ddraw->attachedSurface = NULL;
+
 	delete this;
 	return 0;
 }
@@ -209,7 +209,7 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lpDDSrcSur
 			lpSrcRect->right -= clip.left;
 			lpSrcRect->bottom -= clip.top;
 
-			sWidth = RES_WIDTH;
+			sWidth = this->ddraw->width;
 		}
 		else
 			sWidth = surface->width;
@@ -226,7 +226,7 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lpDDSrcSur
 			lpDestRect->right -= clip.left;
 			lpDestRect->bottom -= clip.top;
 
-			dWidth = RES_WIDTH;
+			dWidth = this->ddraw->width;
 		}
 		else
 			dWidth = this->width;

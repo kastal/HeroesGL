@@ -138,6 +138,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ErrorReporting>None</ErrorReporting>
     </ClCompile>
     <ResourceCompile />
     <Link>

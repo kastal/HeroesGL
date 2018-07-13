@@ -349,17 +349,15 @@ namespace Hooks
 	INT __stdcall MessageBoxHook(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
 	{
 		INT res;
+		ULONG_PTR cookie = NULL;
+		if (hActCtx && hActCtx != INVALID_HANDLE_VALUE && !ActivateActCtxC(hActCtx, &cookie))
+			cookie = NULL;
 
-		if (hActCtx && hActCtx != INVALID_HANDLE_VALUE)
-		{
-			ULONG_PTR cookie;
-			ActivateActCtxC(hActCtx, &cookie);
-			res = MessageBox(hWnd, lpText, lpCaption, uType);
+		res = MessageBox(hWnd, lpText, lpCaption, uType);
+
+		if (cookie)
 			DeactivateActCtxC(0, cookie);
-		}
-		else
-			res = MessageBox(hWnd, lpText, lpCaption, uType);
-	
+
 		return res;
 	}
 
@@ -462,15 +460,14 @@ namespace Hooks
 		OldDialogProc = lpDialogFunc;
 
 		INT_PTR res;
-		if (hActCtx && hActCtx != INVALID_HANDLE_VALUE)
-		{
-			ULONG_PTR cookie;
-			ActivateActCtxC(hActCtx, &cookie);
-				res = DialogBoxParam(hInstance, lpTemplateName, hWndParent, (DLGPROC)AboutProc, dwInitParam);
+		ULONG_PTR cookie = NULL;
+		if (hActCtx && hActCtx != INVALID_HANDLE_VALUE && !ActivateActCtxC(hActCtx, &cookie))
+			cookie = NULL;
+
+		res = DialogBoxParam(hInstance, lpTemplateName, hWndParent, (DLGPROC)AboutProc, dwInitParam);
+
+		if (cookie)
 			DeactivateActCtxC(0, cookie);
-		}
-		else
-			res = DialogBoxParam(hInstance, lpTemplateName, hWndParent, (DLGPROC)AboutProc, dwInitParam);
 
 		return res;
 	}
@@ -555,7 +552,7 @@ namespace Hooks
 				configIcon = LoadIcon(hModule, hookSpace->icon);
 				configFont = (HFONT)CreateFont(16, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET,
 					OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-					DEFAULT_PITCH | FF_DONTCARE, TEXT("MS Sans Serif"));
+					DEFAULT_PITCH | FF_DONTCARE, TEXT("MS Shell Dlg"));
 
 				return TRUE;
 			}

@@ -78,9 +78,6 @@ DirectDrawSurface::DirectDrawSurface(DirectDraw* lpDD, DWORD index)
 
 DirectDrawSurface::~DirectDrawSurface()
 {
-	if (this->ddraw->attachedSurface == this)
-		this->ddraw->attachedSurface = NULL;
-
 	if (this->ddraw->surfaceEntries == this)
 		this->ddraw->surfaceEntries = NULL;
 	else
@@ -107,7 +104,8 @@ DirectDrawSurface::~DirectDrawSurface()
 
 ULONG DirectDrawSurface::Release()
 {
-	
+	if (this->ddraw->attachedSurface == this)
+		this->ddraw->attachedSurface = NULL;
 
 	delete this;
 	return 0;

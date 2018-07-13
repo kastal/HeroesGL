@@ -139,6 +139,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <ErrorReporting>None</ErrorReporting>
     </ClCompile>
     <ResourceCompile />
     <Link>
