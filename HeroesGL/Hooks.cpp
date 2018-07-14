@@ -534,8 +534,8 @@ namespace Hooks
 
 				PatchDWord(hookSpace->ddraw_dll + 1, (DWORD)"WING32.dll");
 
-				PatchHook(hookSpace->cpu_hook, hook_cpu);
-				back_cpu = hookSpace->cpu_hook + 5;
+				//PatchHook(hookSpace->cpu_hook, hook_cpu);
+				//back_cpu = hookSpace->cpu_hook + 5;
 
 				PatchNop(hookSpace->method2_nop, hookSpace->method2_nop_size);
 				if (hookSpace->method2_jmp_short)

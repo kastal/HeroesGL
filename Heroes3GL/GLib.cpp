@@ -315,22 +315,30 @@ namespace GL
 		if (GLGetString)
 		{
 			glVersion = 0;
-			WORD shiftVal = 8;
-			const CHAR* strVer = (const CHAR*)GLGetString(GL_VERSION);
+			CHAR* strVer = (CHAR*)GLGetString(GL_VERSION);
 			if (strVer)
 			{
-				WORD j = 0;
-				while (TRUE)
+				BOOL shift = FALSE;
+				WORD* val = (WORD*)&glVersion;
+				for (CHAR* p = strVer; ; ++p)
 				{
-					if (strVer[j] <= '9' && strVer[j] >= '0')
+					CHAR ch = *p;
+					if (ch <= '9' && ch >= '0')
+						*val = *val * 10 + (ch - '0');
+					else
 					{
-						glVersion += (strVer[j] - '0') << shiftVal;
-						shiftVal -= 4;
-					}
-					else if (strVer[j] != '.')
-						break;
+						if (!glVersion)
+							break;
 
-					++j;
+						if (shift)
+							break;
+						
+						shift = TRUE;
+						glVersion <<= 16;
+
+						if (ch != '.')
+							break;
+					}
 				}
 			}
 			else

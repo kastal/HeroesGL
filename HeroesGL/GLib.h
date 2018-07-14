@@ -39,12 +39,9 @@ typedef ptrdiff_t GLintptr;
 typedef ptrdiff_t GLsizeiptr;
 typedef char GLchar;
 
-#define GL_VER_1_1 0x0110
-#define GL_VER_1_2 0x0120
-#define GL_VER_1_3 0x0130
-#define GL_VER_1_4 0x0140
-#define GL_VER_2_0 0x0200
-#define GL_VER_3_0 0x0300
+#define GL_VER_1_1 0x00010001
+#define GL_VER_1_2 0x00010002
+#define GL_VER_3_0 0x00030000
 
 #define WGL_DRAW_TO_WINDOW_ARB         0x2001
 #define WGL_SUPPORT_OPENGL_ARB         0x2010
