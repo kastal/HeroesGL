@@ -280,7 +280,7 @@ namespace Hooks
 				*(BYTE*)addr = *(BYTE*)block;
 				break;
 			default:
-				memcpy((VOID*)addr, block, size);
+				MemoryCopy((VOID*)addr, block, size);
 				break;
 			}
 
@@ -308,7 +308,7 @@ namespace Hooks
 				*(BYTE*)block = *(BYTE*)addr;
 				break;
 			default:
-				memcpy(block, (VOID*)addr, size);
+				MemoryCopy(block, (VOID*)addr, size);
 				break;
 			}
 

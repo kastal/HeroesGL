@@ -88,7 +88,7 @@ HRESULT DirectDrawPalette::SetEntries(DWORD dwFlags, DWORD dwStartingEntry, DWOR
 
 	if (changed)
 	{
-		while (dwCount--) *dst++ = *src++;
+		MemoryCopy(dst, src, dwCount << 2);
 
 		DirectDrawSurface* surfaceEntry = this->ddraw->surfaceEntries;
 		while (surfaceEntry)

@@ -261,37 +261,12 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lpDDSrcSur
 		}
 		else
 		{
-			if (width & 1)
+			do
 			{
-				do
-				{
-					WORD* src = source;
-					WORD* dest = destination;
-					source += sWidth;
-					destination += dWidth;
-
-					DWORD count = width;
-					do
-						*dest++ = *src++;
-					while (--count);
-				} while (--height);
-			}
-			else
-			{
-				width >>= 1;
-				do
-				{
-					DWORD* src = (DWORD*)source;
-					DWORD* dest = (DWORD*)destination;
-					source += sWidth;
-					destination += dWidth;
-
-					DWORD count = width;
-					do
-						*dest++ = *src++;
-					while (--count);
-				} while (--height);
-			}
+				MemoryCopy(destination, source, width << 1);
+				source += sWidth;
+				destination += dWidth;
+			} while (--height);
 		}
 
 		if (this->isDouble != doubled)

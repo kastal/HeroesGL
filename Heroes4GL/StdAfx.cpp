@@ -35,6 +35,7 @@ DEACTIVATEACTCTX DeactivateActCtxC;
 MALLOC MemoryAlloc;
 FREE MemoryFree;
 MEMSET MemorySet;
+MEMCPY MemoryCopy;
 CEIL MathCeil;
 FLOOR MathFloor;
 ROUND MathRound;
@@ -132,6 +133,7 @@ VOID LoadMsvCRT()
 		MemoryAlloc = (MALLOC)GetProcAddress(hLib, "malloc");
 		MemoryFree = (FREE)GetProcAddress(hLib, "free");
 		MemorySet = (MEMSET)GetProcAddress(hLib, "memset");
+		MemoryCopy = (MEMCPY)GetProcAddress(hLib, "memcpy");
 
 		MathCeil = (CEIL)GetProcAddress(hLib, "ceil");
 		MathFloor = (FLOOR)GetProcAddress(hLib, "floor");

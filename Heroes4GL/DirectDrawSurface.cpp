@@ -151,11 +151,11 @@ VOID DirectDrawSurface::CreateBuffer(DWORD width, DWORD height)
 
 		HDC hDc = ::GetDC(NULL);
 		this->hBmp = CreateDIBSection(hDc, bmi, 0, (VOID**)&this->indexBuffer, 0, 0);
-		::ReleaseDC(this->ddraw->hDraw, hDc);
+		::ReleaseDC(NULL, hDc);
 	}
 	MemoryFree(bmi);
 
-	this->hDc = CreateCompatibleDC(this->ddraw->hDc);
+	this->hDc = CreateCompatibleDC(NULL);
 	SelectObject(this->hDc, this->hBmp);
 }
 
@@ -234,39 +234,14 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE7 lpDDSrcSu
 
 	WORD* source = surface->indexBuffer + lpSrcRect->top * sWidth + lpSrcRect->left;
 	WORD* destination = this->indexBuffer + lpDestRect->top * dWidth + lpDestRect->left;
-	DWORD copyWidth = width;
+
 	DWORD copyHeight = height;
-	if (copyWidth & 1)
+	do
 	{
-		do
-		{
-			WORD* src = source;
-			WORD* dest = destination;
-			source += sWidth;
-			destination += dWidth;
-
-			DWORD count = copyWidth;
-			do
-				*dest++ = *src++;
-			while (--count);
-		} while (--copyHeight);
-	}
-	else
-	{
-		copyWidth >>= 1;
-		do
-		{
-			DWORD* src = (DWORD*)source;
-			DWORD* dest = (DWORD*)destination;
-			source += sWidth;
-			destination += dWidth;
-
-			DWORD count = copyWidth;
-			do
-				*dest++ = *src++;
-			while (--count);
-		} while (--copyHeight);
-	}
+		MemoryCopy(destination, source, width << 1);
+		source += sWidth;
+		destination += dWidth;
+	} while (--copyHeight);
 
 	if (!this->index)
 	{
@@ -301,39 +276,14 @@ HRESULT DirectDrawSurface::BltFast(DWORD dwX, DWORD dwY, LPDIRECTDRAWSURFACE7 lp
 
 	WORD* source = surface->indexBuffer + lpSrcRect->top * sWidth + lpSrcRect->left;
 	WORD* destination = this->indexBuffer + dwY * dWidth + dwX;
-	DWORD copyWidth = width;
+
 	DWORD copyHeight = height;
-	if (copyWidth & 1)
+	do
 	{
-		do
-		{
-			WORD* src = source;
-			WORD* dest = destination;
-			source += sWidth;
-			destination += dWidth;
-
-			DWORD count = copyWidth;
-			do
-				*dest++ = *src++;
-			while (--count);
-		} while (--copyHeight);
-	}
-	else
-	{
-		copyWidth >>= 1;
-		do
-		{
-			DWORD* src = (DWORD*)source;
-			DWORD* dest = (DWORD*)destination;
-			source += sWidth;
-			destination += dWidth;
-
-			DWORD count = copyWidth;
-			do
-				*dest++ = *src++;
-			while (--count);
-		} while (--copyHeight);
-	}
+		MemoryCopy(destination, source, width << 1);
+		source += sWidth;
+		destination += dWidth;
+	} while (--copyHeight);
 
 	if (!this->index)
 	{

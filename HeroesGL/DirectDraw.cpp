@@ -797,17 +797,12 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 									{
 										DWORD* source = surface->pixelBuffer + update.top * this->width + update.left;
 										DWORD* dest = (DWORD*)frameBuffer;
-										DWORD copyWidth = texWidth;
 										DWORD copyHeight = texHeight;
 										do
 										{
-											DWORD* src = (DWORD*)source;
+											MemoryCopy(dest, source, texWidth << 2);
 											source += this->width;
-
-											DWORD count = copyWidth;
-											do
-												*dest++ = *src++;
-											while (--count);
+											dest += texWidth;
 										} while (--copyHeight);
 
 										GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
@@ -856,17 +851,12 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 
 										DWORD* source = surface->pixelBuffer + clip.top * this->width + clip.left;
 										DWORD* dest = (DWORD*)frameBuffer;
-										DWORD copyWidth = clipWidth;
 										DWORD copyHeight = clipHeight;
 										do
 										{
-											DWORD* src = (DWORD*)source;
+											MemoryCopy(dest, source, clipWidth << 2);
 											source += this->width;
-
-											DWORD count = copyWidth;
-											do
-												*dest++ = *src++;
-											while (--count);
+											dest += clipWidth;
 										} while (--copyHeight);
 
 										GLTexSubImage2D(GL_TEXTURE_2D, 0, clip.left - rect->x, clip.top - rect->y, clipWidth, clipHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
@@ -1460,17 +1450,12 @@ VOID DirectDraw::RenderNew()
 																									{
 																										DWORD* source = surface->pixelBuffer + update.top * this->width + update.left;
 																										DWORD* dest = (DWORD*)frameBuffer;
-																										DWORD copyWidth = texWidth;
 																										DWORD copyHeight = texHeight;
 																										do
 																										{
-																											DWORD* src = (DWORD*)source;
+																											MemoryCopy(dest, source, texWidth << 2);
 																											source += this->width;
-
-																											DWORD copyCount = copyWidth;
-																											do
-																												*dest++ = *src++;
-																											while (--copyCount);
+																											dest += texWidth;
 																										} while (--copyHeight);
 
 																										GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
