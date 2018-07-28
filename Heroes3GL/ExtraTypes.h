@@ -110,6 +110,9 @@ struct AddressSpace
 	DWORD cursor_time_1;
 	DWORD cursor_time_2;
 	DWORD cursor_time_3;
+	DWORD move_timeout;
+	DWORD move_distance;
+	DWORD move_address;
 	BYTE resLanguage;
 	const CHAR* windowName;
 	const CHAR* configKey;
