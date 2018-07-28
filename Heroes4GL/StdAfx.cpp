@@ -143,6 +143,8 @@ VOID LoadMsvCRT()
 
 		StrStr = (STRSTR)GetProcAddress(hLib, "strstr");
 		StrToAnsi = (WCSTOMBS)GetProcAddress(hLib, "wcstombs");
+
+		Exit = (EXIT)GetProcAddress(hLib, "exit");
 	}
 }
 

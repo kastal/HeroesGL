@@ -369,11 +369,8 @@ namespace GL
 		pfd->dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
 		pfd->iPixelType = PFD_TYPE_RGBA;
 		pfd->cColorBits = 32;
-		pfd->cAlphaBits = 0;
-		pfd->cAccumBits = 0;
 		pfd->cDepthBits = 16;
 		pfd->cStencilBits = 8;
-		pfd->cAuxBuffers = 0;
 		pfd->iLayerType = PFD_MAIN_PLANE;
 	}
 
