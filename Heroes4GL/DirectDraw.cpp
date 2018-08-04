@@ -1165,7 +1165,7 @@ VOID DirectDraw::RenderNew()
 		{ -1.0f, 1.0f, -1.0f, 1.0f }
 	};
 
-	FLOAT* stencil = (FLOAT*)MemoryAlloc(STENCIL_COUNT * 4 * 2);
+	POINTFLOAT* stencil = (POINTFLOAT*)MemoryAlloc((STENCIL_COUNT + 1) * sizeof(POINTFLOAT) * 6); // +1 for FPS counter
 	{
 		GLuint shProgramStencil = GLCreateProgram();
 		{
@@ -1480,18 +1480,23 @@ VOID DirectDraw::RenderNew()
 																										GLBindVertexArray(stArrayName);
 																										GLBindBuffer(GL_ARRAY_BUFFER, stBufferName);
 																										{
-																											FLOAT* pointer = stencil;
-
+																											POINTFLOAT* point = stencil;
 																											RECT* clip = updateClip;
 																											while (clip != finClip)
 																											{
-																												*pointer++ = (FLOAT)clip->left;  *pointer++ = (FLOAT)clip->top;
-																												*pointer++ = (FLOAT)clip->right;  *pointer++ = (FLOAT)clip->top;
-																												*pointer++ = (FLOAT)clip->right;  *pointer++ = (FLOAT)clip->bottom;
+																												point->x = (FLOAT)clip->left;  point->y = (FLOAT)clip->top;
+																												++point;
+																												point->x = (FLOAT)clip->right;  point->y = (FLOAT)clip->top;
+																												++point;
+																												point->x = (FLOAT)clip->right;  point->y = (FLOAT)clip->bottom;
+																												++point;
 
-																												*pointer++ = (FLOAT)clip->left;  *pointer++ = (FLOAT)clip->top;
-																												*pointer++ = (FLOAT)clip->right;  *pointer++ = (FLOAT)clip->bottom;
-																												*pointer++ = (FLOAT)clip->left;  *pointer++ = (FLOAT)clip->bottom;
+																												point->x = (FLOAT)clip->left;  point->y = (FLOAT)clip->top;
+																												++point;
+																												point->x = (FLOAT)clip->right;  point->y = (FLOAT)clip->bottom;
+																												++point;
+																												point->x = (FLOAT)clip->left;  point->y = (FLOAT)clip->bottom;
+																												++point;
 
 																												if (++clip == surface->endClip)
 																													clip = surface->clipsList;
@@ -1499,20 +1504,26 @@ VOID DirectDraw::RenderNew()
 
 																											if (fpsState)
 																											{
-																												*pointer++ = (FLOAT)(FPS_X);  *pointer++ = (FLOAT)(FPS_Y);
-																												*pointer++ = (FLOAT)(FPS_X + (FPS_STEP + FPS_WIDTH) * 4);  *pointer++ = (FLOAT)(FPS_Y);
-																												*pointer++ = (FLOAT)(FPS_X + (FPS_STEP + FPS_WIDTH) * 4);  *pointer++ = (FLOAT)(FPS_Y + FPS_HEIGHT);
+																												point->x = (FLOAT)(FPS_X);  point->y = (FLOAT)(FPS_Y);
+																												++point;
+																												point->x = (FLOAT)(FPS_X + (FPS_STEP + FPS_WIDTH) * 4);  point->y = (FLOAT)(FPS_Y);
+																												++point;
+																												point->x = (FLOAT)(FPS_X + (FPS_STEP + FPS_WIDTH) * 4);  point->y = (FLOAT)(FPS_Y + FPS_HEIGHT);
+																												++point;
 
-																												*pointer++ = (FLOAT)(FPS_X);  *pointer++ = (FLOAT)(FPS_Y);
-																												*pointer++ = (FLOAT)(FPS_X + (FPS_STEP + FPS_WIDTH) * 4);  *pointer++ = (FLOAT)(FPS_Y + FPS_HEIGHT);
-																												*pointer++ = (FLOAT)(FPS_X);  *pointer++ = (FLOAT)(FPS_Y + FPS_HEIGHT);
+																												point->x = (FLOAT)(FPS_X);  point->y = (FLOAT)(FPS_Y);
+																												++point;
+																												point->x = (FLOAT)(FPS_X + (FPS_STEP + FPS_WIDTH) * 4);  point->y = (FLOAT)(FPS_Y + FPS_HEIGHT);
+																												++point;
+																												point->x = (FLOAT)(FPS_X);  point->y = (FLOAT)(FPS_Y + FPS_HEIGHT);
+																												++point;
 																											}
 
-																											DWORD count = pointer - stencil;
+																											DWORD count = point - stencil;
 																											if (count)
 																											{
-																												GLBufferSubData(GL_ARRAY_BUFFER, 0, count * sizeof(FLOAT), stencil);
-																												GLDrawArrays(GL_TRIANGLES, 0, count >> 1);
+																												GLBufferSubData(GL_ARRAY_BUFFER, 0, count * sizeof(POINTFLOAT), stencil);
+																												GLDrawArrays(GL_TRIANGLES, 0, count);
 																											}
 																										}
 																										GLBindVertexArray(arrayName);

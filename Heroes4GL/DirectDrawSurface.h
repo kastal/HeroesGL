@@ -26,7 +26,7 @@
 #include "ddraw.h"
 #include "DirectDrawClipper.h"
 
-#define STENCIL_COUNT 100
+#define STENCIL_COUNT 32
 
 class DirectDraw;
 

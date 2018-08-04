@@ -28,7 +28,7 @@
 
 #define RES_WIDTH 800
 #define RES_HEIGHT 600
-#define STENCIL_COUNT 100
+#define STENCIL_COUNT 32
 
 class DirectDrawSurface : IDirectDrawSurface
 {
