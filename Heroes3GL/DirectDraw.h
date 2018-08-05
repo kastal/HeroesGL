@@ -46,7 +46,7 @@ public:
 
 	DWORD width;
 	DWORD height;
-
+	BOOL isNextIsMode;
 	BOOL isFinish;
 
 	HANDLE hDrawThread;

@@ -1102,7 +1102,8 @@ VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
 					SwapBuffers(this->hDc);
 					if (fpsState != FpsBenchmark)
 						WaitForSingleObject(this->hDrawEvent, INFINITE);
-					GLFinish();
+					if (isVSync)
+						GLFinish();
 				}
 			} while (!this->isFinish);
 		}
@@ -1745,7 +1746,8 @@ VOID DirectDraw::RenderNew()
 																						SwapBuffers(this->hDc);
 																						if (fpsState != FpsBenchmark)
 																							WaitForSingleObject(this->hDrawEvent, INFINITE);
-																						GLFinish();
+																						if (isVSync)
+																							GLFinish();
 																					}
 																				} while (!this->isFinish);
 																			}
@@ -1987,7 +1989,7 @@ DirectDraw::DirectDraw(DirectDraw* lastObj)
 
 	this->width = RES_WIDTH;
 	this->height = RES_HEIGHT;
-
+	this->isNextIsMode = FALSE;
 	this->isFinish = TRUE;
 
 	DWORD filter = Config::Get("ImageFilter", 0);
@@ -2114,6 +2116,13 @@ HRESULT DirectDraw::CreateSurface(LPDDSURFACEDESC lpDDSurfaceDesc, LPDIRECTDRAWS
 	{
 		width = lpDDSurfaceDesc->dwWidth;
 		height = lpDDSurfaceDesc->dwHeight;
+
+		if (this->isNextIsMode)
+		{
+			this->isNextIsMode = FALSE;
+			this->width = width;
+			this->height = height;
+		}
 	}
 	else
 	{
@@ -2121,11 +2130,13 @@ HRESULT DirectDraw::CreateSurface(LPDDSURFACEDESC lpDDSurfaceDesc, LPDIRECTDRAWS
 		{
 			width = this->width;
 			height = this->height;
+			this->isNextIsMode = FALSE;
 		}
 		else
 		{
 			width = GetSystemMetrics(SM_CXSCREEN);
 			height = GetSystemMetrics(SM_CYSCREEN);
+			this->isNextIsMode = TRUE;
 		}
 	}
 
