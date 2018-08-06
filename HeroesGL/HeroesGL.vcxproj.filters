@@ -91,19 +91,19 @@
     <None Include="module.def">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Shaders\linear.fgl">
+    <None Include="..\Common\Shaders\linear.fgl">
       <Filter>Resource Files\Shaders Files</Filter>
     </None>
-    <None Include="Shaders\xbrz.fgl">
+    <None Include="..\Common\Shaders\linear_xbrz.vgl">
       <Filter>Resource Files\Shaders Files</Filter>
     </None>
-    <None Include="Shaders\stencil.fgl">
+    <None Include="..\Common\Shaders\stencil.fgl">
       <Filter>Resource Files\Shaders Files</Filter>
     </None>
-    <None Include="Shaders\stencil.vgl">
+    <None Include="..\Common\Shaders\stencil.vgl">
       <Filter>Resource Files\Shaders Files</Filter>
     </None>
-    <None Include="Shaders\linear_xbrz.vgl">
+    <None Include="..\Common\Shaders\xbrz.fgl">
       <Filter>Resource Files\Shaders Files</Filter>
     </None>
   </ItemGroup>

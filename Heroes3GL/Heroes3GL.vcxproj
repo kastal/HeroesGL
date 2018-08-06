@@ -198,12 +198,12 @@
     <ResourceCompile Include="module.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Common\Shaders\linear.fgl" />
+    <None Include="..\Common\Shaders\linear_xbrz.vgl" />
+    <None Include="..\Common\Shaders\stencil.fgl" />
+    <None Include="..\Common\Shaders\stencil.vgl" />
+    <None Include="..\Common\Shaders\xbrz.fgl" />
     <None Include="module.def" />
-    <None Include="Shaders\linear.fgl" />
-    <None Include="Shaders\linear_xbrz.vgl" />
-    <None Include="Shaders\stencil.fgl" />
-    <None Include="Shaders\stencil.vgl" />
-    <None Include="Shaders\xbrz.fgl" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="module.manifest" />

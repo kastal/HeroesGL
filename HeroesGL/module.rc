@@ -20,28 +20,28 @@ BEGIN
     BEGIN
         POPUP "&Разрешение"
         BEGIN
-            MENUITEM "&640 x 480",                   IDM_RES_640_480
-            MENUITEM "&800 x 600",                   IDM_RES_800_600
-            MENUITEM "&1024 x 768",                  IDM_RES_1024_768
-            MENUITEM "1&280 x 1024",                 IDM_RES_1280_1024
+            MENUITEM "&640 x 480",					IDM_RES_640_480
+            MENUITEM "&800 x 600",					IDM_RES_800_600
+            MENUITEM "&1024 x 768",					IDM_RES_1024_768
+            MENUITEM "1&280 x 1024",				IDM_RES_1280_1024
             MENUITEM SEPARATOR
-            MENUITEM "В &полный экран (F4)",         IDM_RES_FULL_SCREEN
+            MENUITEM "В &полный экран (F4)",		IDM_RES_FULL_SCREEN
         END
         POPUP "&Фильтрация (F3)"
         BEGIN
-            MENUITEM "&Откл.",                       IDM_FILT_OFF
-            MENUITEM "&Линейная",                    IDM_FILT_LINEAR
-            MENUITEM "&xRBz",                        IDM_FILT_XRBZ
+            MENUITEM "&Откл.",						IDM_FILT_OFF
+            MENUITEM "&Линейная",					IDM_FILT_LINEAR
+            MENUITEM "&xRBz",						IDM_FILT_XRBZ
         END
         MENUITEM "Сохр. &пропорции (F5)",			IDM_ASPECT_RATIO
-        MENUITEM "Верт. &синхронизация",				IDM_VSYNC
+        MENUITEM "Верт. &синхронизация",			IDM_VSYNC
     END
     POPUP "&Помощь"
     BEGIN
-        MENUITEM "&Руководство",						IDM_HELP_MANUAL
+        MENUITEM "&Руководство",					IDM_HELP_MANUAL
         MENUITEM SEPARATOR
         MENUITEM "О &враппере",						IDM_HELP_WRAPPER
-        MENUITEM "О &программе",                     IDM_HELP_ABOUT
+        MENUITEM "О &программе",					IDM_HELP_ABOUT
     END
 END
 
@@ -90,18 +90,18 @@ BEGIN
     BEGIN
         POPUP "&Resolution"
         BEGIN
-            MENUITEM "&640 x 480",                   IDM_RES_640_480
-            MENUITEM "&800 x 600",                   IDM_RES_800_600
-            MENUITEM "&1024 x 768",                  IDM_RES_1024_768
-            MENUITEM "1&280 x 1024",                 IDM_RES_1280_1024
+            MENUITEM "&640 x 480",                  IDM_RES_640_480
+            MENUITEM "&800 x 600",                  IDM_RES_800_600
+            MENUITEM "&1024 x 768",                 IDM_RES_1024_768
+            MENUITEM "1&280 x 1024",                IDM_RES_1280_1024
             MENUITEM SEPARATOR
-            MENUITEM "Full &Screen (F4)",            IDM_RES_FULL_SCREEN
+            MENUITEM "Full &Screen (F4)",           IDM_RES_FULL_SCREEN
         END
         POPUP "&Filtering (F3)"
         BEGIN
-            MENUITEM "&Off",                         IDM_FILT_OFF
-            MENUITEM "&Linear",                      IDM_FILT_LINEAR
-            MENUITEM "&xRBz",                        IDM_FILT_XRBZ
+            MENUITEM "&Off",                        IDM_FILT_OFF
+            MENUITEM "&Linear",                     IDM_FILT_LINEAR
+            MENUITEM "&xRBz",                       IDM_FILT_XRBZ
         END
         MENUITEM "Keep &Aspect Ratio (F5)",			IDM_ASPECT_RATIO
         MENUITEM "Enable &VSync",					IDM_VSYNC
@@ -138,15 +138,15 @@ END
 // RCDATA
 //
 
-IDR_VERTEX              RCDATA                  ".\\Shaders\\linear_xbrz.vgl"
+IDR_VERTEX              RCDATA                  "..\\Common\\Shaders\\linear_xbrz.vgl"
 
-IDR_LINEAR_FRAGMENT     RCDATA                  ".\\Shaders\\linear.fgl"
+IDR_LINEAR_FRAGMENT     RCDATA                  "..\\Common\\Shaders\\linear.fgl"
 
-IDR_XBRZ_FRAGMENT       RCDATA                  ".\\Shaders\\xbrz.fgl"
+IDR_XBRZ_FRAGMENT       RCDATA                  "..\\Common\\Shaders\\xbrz.fgl"
 
-IDR_STENCIL_VERTEX      RCDATA                  ".\\Shaders\\stencil.vgl"
+IDR_STENCIL_VERTEX      RCDATA                  "..\\Common\\Shaders\\stencil.vgl"
 
-IDR_STENCIL_FRAGMENT    RCDATA                  ".\\Shaders\\stencil.fgl"
+IDR_STENCIL_FRAGMENT    RCDATA                  "..\\Common\\Shaders\\stencil.fgl"
 
 /////////////////////////////////////////////////////////////////////////////
 //

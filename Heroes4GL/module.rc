@@ -26,20 +26,20 @@ BEGIN
     END
     POPUP "&Экран"
     BEGIN
-        MENUITEM "В &полный экран (F4)",				IDM_RES_FULL_SCREEN
+        MENUITEM "В &полный экран (F4)",			IDM_RES_FULL_SCREEN
         POPUP "&Фильтрация (F3)"
         BEGIN
-            MENUITEM "&Откл.",                       IDM_FILT_OFF
-            MENUITEM "&Линейная",                    IDM_FILT_LINEAR
-            MENUITEM "&xRBz",                        IDM_FILT_XRBZ
+            MENUITEM "&Откл.",						IDM_FILT_OFF
+            MENUITEM "&Линейная",					IDM_FILT_LINEAR
+            MENUITEM "&xRBz",						IDM_FILT_XRBZ
         END
         MENUITEM "Сохр. &пропорции (F5)",			IDM_ASPECT_RATIO
-        MENUITEM "Верт. &синхронизация",				IDM_VSYNC
+        MENUITEM "Верт. &синхронизация",			IDM_VSYNC
     END
     POPUP "&Помощь"
     BEGIN
         MENUITEM "О &враппере",						IDM_HELP_WRAPPER
-        MENUITEM "О &программе",						IDM_HELP_ABOUT
+        MENUITEM "О &программе",					IDM_HELP_ABOUT
     END
 END
 
@@ -97,9 +97,9 @@ BEGIN
         MENUITEM "Full &Screen (F4)",				IDM_RES_FULL_SCREEN
         POPUP "&Filtering (F3)"
         BEGIN
-            MENUITEM "&Off",                         IDM_FILT_OFF
-            MENUITEM "&Linear",                      IDM_FILT_LINEAR
-            MENUITEM "&xRBz",                        IDM_FILT_XRBZ
+            MENUITEM "&Off",						IDM_FILT_OFF
+            MENUITEM "&Linear",						IDM_FILT_LINEAR
+            MENUITEM "&xRBz",						IDM_FILT_XRBZ
         END
         MENUITEM "Keep &Aspect Ratio (F5)",			IDM_ASPECT_RATIO
         MENUITEM "Enable &VSync",					IDM_VSYNC
@@ -133,15 +133,15 @@ END
 // RCDATA
 //
 
-IDR_VERTEX              RCDATA                  ".\\Shaders\\linear_xbrz.vgl"
+IDR_VERTEX              RCDATA                  "..\\Common\\Shaders\\linear_xbrz.vgl"
 
-IDR_LINEAR_FRAGMENT     RCDATA                  ".\\Shaders\\linear.fgl"
+IDR_LINEAR_FRAGMENT     RCDATA                  "..\\Common\\Shaders\\linear.fgl"
 
-IDR_XBRZ_FRAGMENT       RCDATA                  ".\\Shaders\\xbrz.fgl"
+IDR_XBRZ_FRAGMENT       RCDATA                  "..\\Common\\Shaders\\xbrz.fgl"
 
-IDR_STENCIL_VERTEX      RCDATA                  ".\\Shaders\\stencil.vgl"
+IDR_STENCIL_VERTEX      RCDATA                  "..\\Common\\Shaders\\stencil.vgl"
 
-IDR_STENCIL_FRAGMENT    RCDATA                  ".\\Shaders\\stencil.fgl"
+IDR_STENCIL_FRAGMENT    RCDATA                  "..\\Common\\Shaders\\stencil.fgl"
 
 /////////////////////////////////////////////////////////////////////////////
 //

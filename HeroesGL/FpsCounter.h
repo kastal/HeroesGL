@@ -30,7 +30,7 @@
 #define FPS_Y 4
 #define FPS_WIDTH 14
 #define FPS_HEIGHT 24
-#define FPS_STEP sizeof(DWORD)
+#define FPS_STEP 4
 #define FPS_COUNT 120
 
 extern FpsState fpsState;
