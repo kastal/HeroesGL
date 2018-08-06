@@ -287,7 +287,10 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lpDDSrcSur
 		}
 
 		if (this->ddraw->attachedSurface == this)
+		{
 			SetEvent(this->ddraw->hDrawEvent);
+			Sleep(0);
+		}
 	}
 
 	return DD_OK;

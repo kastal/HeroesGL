@@ -165,6 +165,7 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lpDDSrcSur
 	this->currentClip = this->currentClip + 1 != this->endClip ? this->currentClip + 1 : this->clipsList;
 
 	SetEvent(this->ddraw->hDrawEvent);
+	Sleep(0);
 
 	return DD_OK;
 }

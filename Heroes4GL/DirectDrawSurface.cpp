@@ -259,7 +259,10 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE7 lpDDSrcSu
 	}
 
 	if (this->ddraw->attachedSurface == this)
+	{
 		SetEvent(this->ddraw->hDrawEvent);
+		Sleep(0);
+	}
 
 	return DD_OK;
 }
@@ -301,7 +304,10 @@ HRESULT DirectDrawSurface::BltFast(DWORD dwX, DWORD dwY, LPDIRECTDRAWSURFACE7 lp
 	}
 
 	if (this->ddraw->attachedSurface == this)
+	{
 		SetEvent(this->ddraw->hDrawEvent);
+		Sleep(0);
+	}
 
 	return DD_OK;
 }
