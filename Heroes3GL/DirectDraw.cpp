@@ -496,10 +496,6 @@ DWORD __stdcall RenderThread(LPVOID lpParameter)
 					WGLMakeCurrent(ddraw->hDc, hRc);
 					{
 						GL::CreateContextAttribs(ddraw->hDc, &hRc);
-
-						DWORD glMaxTexSize;
-						GLGetIntegerv(GL_MAX_TEXTURE_SIZE, (GLint*)&glMaxTexSize);
-
 						if (glVersion >= GL_VER_3_0)
 						{
 							DWORD maxSize = ddraw->width > ddraw->height ? ddraw->width : ddraw->height;
@@ -508,6 +504,8 @@ DWORD __stdcall RenderThread(LPVOID lpParameter)
 							while (maxTexSize < maxSize)
 								maxTexSize <<= 1;
 
+							DWORD glMaxTexSize;
+							GLGetIntegerv(GL_MAX_TEXTURE_SIZE, (GLint*)&glMaxTexSize);
 							if (maxTexSize > glMaxTexSize)
 								glVersion = GL_VER_1_1;
 						}
@@ -516,7 +514,7 @@ DWORD __stdcall RenderThread(LPVOID lpParameter)
 						if (glVersion >= GL_VER_3_0)
 							ddraw->RenderNew();
 						else
-							ddraw->RenderOld(glMaxTexSize);
+							ddraw->RenderOld();
 					}
 					WGLMakeCurrent(ddraw->hDc, NULL);
 					WGLDeleteContext(hRc);
@@ -531,11 +529,13 @@ DWORD __stdcall RenderThread(LPVOID lpParameter)
 	return NULL;
 }
 
-VOID DirectDraw::RenderOld(DWORD glMaxTexSize)
+VOID DirectDraw::RenderOld()
 {
 	if (this->imageFilter == FilterXRBZ)
 		this->imageFilter = FilterLinear;
 
+	DWORD glMaxTexSize;
+	GLGetIntegerv(GL_MAX_TEXTURE_SIZE, (GLint*)&glMaxTexSize);
 	if (glMaxTexSize < 256)
 		glMaxTexSize = 256;
 
@@ -1341,8 +1341,6 @@ VOID DirectDraw::RenderNew()
 
 																							if (isFpsChanged)
 																							{
-																								isFpsChanged = FALSE;
-
 																								fpsIdx = -1;
 																								fpsTotal = 0;
 																								fpsCount = 0;
@@ -1374,7 +1372,8 @@ VOID DirectDraw::RenderNew()
 																						RECT* finClip = surface->currentClip;
 																						surface->poinetrClip = finClip;
 
-																						if (this->imageFilter == FilterXRBZ)
+																						ImageFilter frameFilter = this->imageFilter;
+																						if (frameFilter == FilterXRBZ)
 																						{
 																							if (this->isStateChanged)
 																							{
@@ -1455,9 +1454,6 @@ VOID DirectDraw::RenderNew()
 																							if (clear)
 																							{
 																								clear = FALSE;
-
-																								SwapBuffers(this->hDc);
-																								GLFinish();
 																								GLClear(GL_COLOR_BUFFER_BIT);
 
 																								updateClip = (finClip == surface->clipsList ? surface->endClip : finClip) - 1;
@@ -1564,7 +1560,6 @@ VOID DirectDraw::RenderNew()
 																							if (this->isStateChanged)
 																							{
 																								this->isStateChanged = FALSE;
-																								clear = TRUE;
 																								GLUseProgram(shProgramLinear);
 
 																								if (uniSize)
@@ -1574,7 +1569,7 @@ VOID DirectDraw::RenderNew()
 																									uniSize = 0;
 																								}
 
-																								filter = this->imageFilter == FilterLinear ? GL_LINEAR : GL_NEAREST;
+																								filter = frameFilter == FilterLinear ? GL_LINEAR : GL_NEAREST;
 																								GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 																								GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
 																							}
@@ -1721,7 +1716,7 @@ VOID DirectDraw::RenderNew()
 																						}
 
 																						// Draw from FBO
-																						if (this->imageFilter == FilterXRBZ)
+																						if (frameFilter == FilterXRBZ)
 																						{
 																							GLDisable(GL_STENCIL_TEST);
 																							//GLFinish();

@@ -68,7 +68,7 @@ public:
 	VOID RenderStart();
 	VOID RenderStop();
 
-	VOID RenderOld(DWORD glMaxTexSize);
+	VOID RenderOld();
 	VOID RenderNew();
 
 	// Inherited via IDirectDraw7
