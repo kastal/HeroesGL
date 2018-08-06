@@ -131,7 +131,7 @@ VOID DirectDrawSurface::CreateBuffer(DWORD width, DWORD height)
 	this->width = width;
 	this->height = height;
 
-	this->clipsList = !this->index ? (RECT*)MemoryAlloc(STENCIL_COUNT * sizeof(RECT)) : NULL;
+	this->clipsList = !this->index ? (UpdateRect*)MemoryAlloc(STENCIL_COUNT * sizeof(UpdateRect)) : NULL;
 	this->endClip = this->clipsList + (!this->index ? STENCIL_COUNT : 0);
 	this->poinetrClip = this->currentClip = this->clipsList;
 
@@ -245,15 +245,44 @@ HRESULT DirectDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE7 lpDDSrcSu
 
 	if (!this->index)
 	{
-		this->currentClip->left = lpDestRect->left;
-		this->currentClip->top = lpDestRect->top;
-		this->currentClip->right = lpDestRect->left + width;
-		this->currentClip->bottom = lpDestRect->top + height;
+		this->currentClip->rect.left = lpDestRect->left;
+		this->currentClip->rect.top = lpDestRect->top;
+		this->currentClip->rect.right = lpDestRect->left + width;
+		this->currentClip->rect.bottom = lpDestRect->top + height;
+		this->currentClip->isActive = TRUE;
 
 		if (!this->ddraw->mode ||
 			(width == this->ddraw->mode->width &&
 			height == this->ddraw->mode->height))
 			this->poinetrClip = this->currentClip;
+		else
+		{
+			UpdateRect* oldClip = surface->poinetrClip;
+			UpdateRect* currClip = surface->currentClip;
+
+			while (oldClip != currClip)
+			{
+				if (oldClip->isActive)
+				{
+					if (oldClip->rect.left >= currClip->rect.left &&
+						oldClip->rect.top >= currClip->rect.top &&
+						oldClip->rect.right <= currClip->rect.right &&
+						oldClip->rect.bottom <= currClip->rect.bottom)
+						oldClip->isActive = FALSE;
+					else if (currClip->rect.left >= oldClip->rect.left &&
+						currClip->rect.top >= oldClip->rect.top &&
+						currClip->rect.right <= oldClip->rect.right &&
+						currClip->rect.bottom <= oldClip->rect.bottom)
+					{
+						currClip->isActive = FALSE;
+						break;
+					}
+				}
+
+				if (++oldClip == surface->endClip)
+					oldClip = surface->clipsList;
+			}
+		}
 
 		this->currentClip = this->currentClip + 1 != this->endClip ? this->currentClip + 1 : this->clipsList;
 	}
@@ -290,15 +319,44 @@ HRESULT DirectDrawSurface::BltFast(DWORD dwX, DWORD dwY, LPDIRECTDRAWSURFACE7 lp
 
 	if (!this->index)
 	{
-		this->currentClip->left = dwX;
-		this->currentClip->top = dwY;
-		this->currentClip->right = dwX + width;
-		this->currentClip->bottom = dwY + height;
+		this->currentClip->rect.left = dwX;
+		this->currentClip->rect.top = dwY;
+		this->currentClip->rect.right = dwX + width;
+		this->currentClip->rect.bottom = dwY + height;
+		this->currentClip->isActive = TRUE;
 
 		if (!this->ddraw->mode ||
 			(width == this->ddraw->mode->width &&
 				height == this->ddraw->mode->height))
 			this->poinetrClip = this->currentClip;
+		else
+		{
+			UpdateRect* oldClip = surface->poinetrClip;
+			UpdateRect* currClip = surface->currentClip;
+
+			while (oldClip != currClip)
+			{
+				if (oldClip->isActive)
+				{
+					if (oldClip->rect.left >= currClip->rect.left &&
+						oldClip->rect.top >= currClip->rect.top &&
+						oldClip->rect.right <= currClip->rect.right &&
+						oldClip->rect.bottom <= currClip->rect.bottom)
+						oldClip->isActive = FALSE;
+					else if (currClip->rect.left >= oldClip->rect.left &&
+						currClip->rect.top >= oldClip->rect.top &&
+						currClip->rect.right <= oldClip->rect.right &&
+						currClip->rect.bottom <= oldClip->rect.bottom)
+					{
+						currClip->isActive = FALSE;
+						break;
+					}
+				}
+
+				if (++oldClip == surface->endClip)
+					oldClip = surface->clipsList;
+			}
+		}
 
 		this->currentClip = this->currentClip + 1 != this->endClip ? this->currentClip + 1 : this->clipsList;
 	}

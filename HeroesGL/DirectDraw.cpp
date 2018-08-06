@@ -748,8 +748,8 @@ VOID DirectDraw::RenderOld()
 							clear = TRUE;
 						}
 
-						RECT* updateClip = surface->poinetrClip;
-						RECT* finClip = surface->currentClip;
+						UpdateRect* updateClip = surface->poinetrClip;
+						UpdateRect* finClip = surface->currentClip;
 						surface->poinetrClip = finClip;
 
 						if (clear)
@@ -759,10 +759,11 @@ VOID DirectDraw::RenderOld()
 								if (clear & 1)
 								{
 									updateClip = (finClip == surface->clipsList ? surface->endClip : finClip) - 1;
-									updateClip->left = 0;
-									updateClip->top = 0;
-									updateClip->right = this->width;
-									updateClip->bottom = this->height;
+									updateClip->rect.left = 0;
+									updateClip->rect.top = 0;
+									updateClip->rect.right = this->width;
+									updateClip->rect.bottom = this->height;
+									updateClip->isActive = TRUE;
 								}
 
 								++clear;
@@ -787,25 +788,28 @@ VOID DirectDraw::RenderOld()
 
 								while (updateClip != finClip)
 								{
-									RECT update = *updateClip;
-									DWORD texWidth = update.right - update.left;
-									DWORD texHeight = update.bottom - update.top;
-
-									if (texWidth == this->width)
-										GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixelBuffer + update.top * texWidth);
-									else
+									if (updateClip->isActive)
 									{
-										DWORD* source = surface->pixelBuffer + update.top * this->width + update.left;
-										DWORD* dest = (DWORD*)frameBuffer;
-										DWORD copyHeight = texHeight;
-										do
-										{
-											MemoryCopy(dest, source, texWidth << 2);
-											source += this->width;
-											dest += texWidth;
-										} while (--copyHeight);
+										RECT update = updateClip->rect;
+										DWORD texWidth = update.right - update.left;
+										DWORD texHeight = update.bottom - update.top;
 
-										GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
+										if (texWidth == this->width)
+											GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixelBuffer + update.top * texWidth);
+										else
+										{
+											DWORD* source = surface->pixelBuffer + update.top * this->width + update.left;
+											DWORD* dest = (DWORD*)frameBuffer;
+											DWORD copyHeight = texHeight;
+											do
+											{
+												MemoryCopy(dest, source, texWidth << 2);
+												source += this->width;
+												dest += texWidth;
+											} while (--copyHeight);
+
+											GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
+										}
 									}
 
 									if (++updateClip == surface->endClip)
@@ -826,40 +830,43 @@ VOID DirectDraw::RenderOld()
 								INT rect_right = rect->x + rect->width;
 								INT rect_bottom = rect->y + rect->height;
 
-								RECT* update = updateClip;
+								UpdateRect* update = updateClip;
 								while (update != finClip)
 								{
-									RECT clip = {
-										rect->x > update->left ? rect->x : update->left,
-										rect->y > update->top ? rect->y : update->top,
-										rect_right < update->right ? rect_right : update->right,
-										rect_bottom < update->bottom ? rect_bottom : update->bottom
-									};
-
-									INT clipWidth = clip.right - clip.left;
-									INT clipHeight = clip.bottom - clip.top;
-									if (clipWidth > 0 && clipHeight > 0)
+									if (update->isActive)
 									{
-										if (clipWidth & 1)
+										RECT clip = {
+											rect->x > update->rect.left ? rect->x : update->rect.left,
+											rect->y > update->rect.top ? rect->y : update->rect.top,
+											rect_right < update->rect.right ? rect_right : update->rect.right,
+											rect_bottom < update->rect.bottom ? rect_bottom : update->rect.bottom
+										};
+
+										INT clipWidth = clip.right - clip.left;
+										INT clipHeight = clip.bottom - clip.top;
+										if (clipWidth > 0 && clipHeight > 0)
 										{
-											++clipWidth;
-											if (clip.left != rect->x)
-												--clip.left;
-											else
-												++clip.right;
+											if (clipWidth & 1)
+											{
+												++clipWidth;
+												if (clip.left != rect->x)
+													--clip.left;
+												else
+													++clip.right;
+											}
+
+											DWORD* source = surface->pixelBuffer + clip.top * this->width + clip.left;
+											DWORD* dest = (DWORD*)frameBuffer;
+											DWORD copyHeight = clipHeight;
+											do
+											{
+												MemoryCopy(dest, source, clipWidth << 2);
+												source += this->width;
+												dest += clipWidth;
+											} while (--copyHeight);
+
+											GLTexSubImage2D(GL_TEXTURE_2D, 0, clip.left - rect->x, clip.top - rect->y, clipWidth, clipHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
 										}
-
-										DWORD* source = surface->pixelBuffer + clip.top * this->width + clip.left;
-										DWORD* dest = (DWORD*)frameBuffer;
-										DWORD copyHeight = clipHeight;
-										do
-										{
-											MemoryCopy(dest, source, clipWidth << 2);
-											source += this->width;
-											dest += clipWidth;
-										} while (--copyHeight);
-
-										GLTexSubImage2D(GL_TEXTURE_2D, 0, clip.left - rect->x, clip.top - rect->y, clipWidth, clipHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
 									}
 
 									if (++update == surface->endClip)
@@ -1213,8 +1220,8 @@ VOID DirectDraw::RenderNew()
 																								*queue = fps;
 																							}
 
-																							RECT* updateClip = surface->poinetrClip;
-																							RECT* finClip = surface->currentClip;
+																							UpdateRect* updateClip = surface->poinetrClip;
+																							UpdateRect* finClip = surface->currentClip;
 																							surface->poinetrClip = finClip;
 
 																							ImageFilter frameFilter = this->imageFilter;
@@ -1294,10 +1301,11 @@ VOID DirectDraw::RenderNew()
 
 																									palette->isChanged = FALSE;
 																									updateClip = (finClip == surface->clipsList ? surface->endClip : finClip) - 1;
-																									updateClip->left = 0;
-																									updateClip->top = 0;
-																									updateClip->right = this->width;
-																									updateClip->bottom = this->height;
+																									updateClip->rect.left = 0;
+																									updateClip->rect.top = 0;
+																									updateClip->rect.right = this->width;
+																									updateClip->rect.bottom = this->height;
+																									updateClip->isActive = TRUE;
 																								}
 																								else
 																								{
@@ -1305,10 +1313,11 @@ VOID DirectDraw::RenderNew()
 																									{
 																										palette->isChanged = FALSE;
 																										updateClip = (finClip == surface->clipsList ? surface->endClip : finClip) - 1;
-																										updateClip->left = 0;
-																										updateClip->top = 0;
-																										updateClip->right = this->width;
-																										updateClip->bottom = this->height;
+																										updateClip->rect.left = 0;
+																										updateClip->rect.top = 0;
+																										updateClip->rect.right = this->width;
+																										updateClip->rect.bottom = this->height;
+																										updateClip->isActive = TRUE;
 																									}
 
 																									GLEnable(GL_STENCIL_TEST);
@@ -1324,22 +1333,25 @@ VOID DirectDraw::RenderNew()
 																											GLBindBuffer(GL_ARRAY_BUFFER, stBufferName);
 																											{
 																												POINTFLOAT* point = stencil;
-																												RECT* clip = updateClip;
+																												UpdateRect* clip = updateClip;
 																												while (clip != finClip)
 																												{
-																													point->x = (FLOAT)clip->left;  point->y = (FLOAT)clip->top;
-																													++point;
-																													point->x = (FLOAT)clip->right;  point->y = (FLOAT)clip->top;
-																													++point;
-																													point->x = (FLOAT)clip->right;  point->y = (FLOAT)clip->bottom;
-																													++point;
+																													if (clip->isActive)
+																													{
+																														point->x = (FLOAT)clip->rect.left;  point->y = (FLOAT)clip->rect.top;
+																														++point;
+																														point->x = (FLOAT)clip->rect.right;  point->y = (FLOAT)clip->rect.top;
+																														++point;
+																														point->x = (FLOAT)clip->rect.right;  point->y = (FLOAT)clip->rect.bottom;
+																														++point;
 
-																													point->x = (FLOAT)clip->left;  point->y = (FLOAT)clip->top;
-																													++point;
-																													point->x = (FLOAT)clip->right;  point->y = (FLOAT)clip->bottom;
-																													++point;
-																													point->x = (FLOAT)clip->left;  point->y = (FLOAT)clip->bottom;
-																													++point;
+																														point->x = (FLOAT)clip->rect.left;  point->y = (FLOAT)clip->rect.top;
+																														++point;
+																														point->x = (FLOAT)clip->rect.right;  point->y = (FLOAT)clip->rect.bottom;
+																														++point;
+																														point->x = (FLOAT)clip->rect.left;  point->y = (FLOAT)clip->rect.bottom;
+																														++point;
+																													}
 
 																													if (++clip == surface->endClip)
 																														clip = surface->clipsList;
@@ -1428,10 +1440,11 @@ VOID DirectDraw::RenderNew()
 																										if (clear & 1)
 																										{
 																											updateClip = (finClip == surface->clipsList ? surface->endClip : finClip) - 1;
-																											updateClip->left = 0;
-																											updateClip->top = 0;
-																											updateClip->right = this->width;
-																											updateClip->bottom = this->height;
+																											updateClip->rect.left = 0;
+																											updateClip->rect.top = 0;
+																											updateClip->rect.right = this->width;
+																											updateClip->rect.bottom = this->height;
+																											updateClip->isActive = TRUE;
 																										}
 
 																										++clear;
@@ -1448,25 +1461,28 @@ VOID DirectDraw::RenderNew()
 																								// Update texture
 																								while (updateClip != finClip)
 																								{
-																									RECT update = *updateClip;
-																									DWORD texWidth = update.right - update.left;
-																									DWORD texHeight = update.bottom - update.top;
-
-																									if (texWidth == this->width)
-																										GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixelBuffer + update.top * texWidth);
-																									else
+																									if (updateClip->isActive)
 																									{
-																										DWORD* source = surface->pixelBuffer + update.top * this->width + update.left;
-																										DWORD* dest = (DWORD*)frameBuffer;
-																										DWORD copyHeight = texHeight;
-																										do
-																										{
-																											MemoryCopy(dest, source, texWidth << 2);
-																											source += this->width;
-																											dest += texWidth;
-																										} while (--copyHeight);
+																										RECT update = updateClip->rect;
+																										DWORD texWidth = update.right - update.left;
+																										DWORD texHeight = update.bottom - update.top;
 
-																										GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
+																										if (texWidth == this->width)
+																											GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixelBuffer + update.top * texWidth);
+																										else
+																										{
+																											DWORD* source = surface->pixelBuffer + update.top * this->width + update.left;
+																											DWORD* dest = (DWORD*)frameBuffer;
+																											DWORD copyHeight = texHeight;
+																											do
+																											{
+																												MemoryCopy(dest, source, texWidth << 2);
+																												source += this->width;
+																												dest += texWidth;
+																											} while (--copyHeight);
+
+																											GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
+																										}
 																									}
 
 																									if (++updateClip == surface->endClip)

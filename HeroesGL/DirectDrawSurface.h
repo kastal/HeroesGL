@@ -26,6 +26,7 @@
 #include "ddraw.h"
 #include "DirectDrawPalette.h"
 #include "DirectDrawClipper.h"
+#include "ExtraTypes.h"
 
 #define RES_WIDTH 640
 #define RES_HEIGHT 480
@@ -47,11 +48,11 @@ public:
 	BYTE indexBuffer[RES_WIDTH * RES_HEIGHT];
 	DWORD* pixelBuffer;
 
-	RECT* clipsList;
-	RECT* endClip;
+	UpdateRect* clipsList;
+	UpdateRect* endClip;
 
-	RECT* currentClip;
-	RECT* poinetrClip;
+	UpdateRect* currentClip;
+	UpdateRect* poinetrClip;
 
 	DirectDrawSurface(DirectDraw*, DWORD);
 	~DirectDrawSurface();

@@ -51,7 +51,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
 FONT 8, "System", 0, 0, 0x1
 BEGIN
     CTEXT           "Герои Меча и Магии III\nOpenGL враппер",1002,0,6,162,18
-    CTEXT           "Версия 1.10   Сборка 101",IDC_STATIC,0,30,162,8
+    CTEXT           "Версия 1.10   Сборка 102",IDC_STATIC,0,30,162,8
     CTEXT           "Copyright © 2018 Verok",1006,0,48,162,8
 	DEFPUSHBUTTON   "OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
 	CONTROL         "verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
@@ -117,7 +117,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
 FONT 8, "System", 0, 0, 0x1
 BEGIN
     CTEXT           "Heroes of Might and Magic III\nOpenGL Wrapper",1002,0,6,162,18
-    CTEXT           "Version 1.10   Build 101",IDC_STATIC,0,30,162,8
+    CTEXT           "Version 1.10   Build 102",IDC_STATIC,0,30,162,8
     CTEXT           "Copyright © 2018 Verok",1006,0,48,162,8
 	DEFPUSHBUTTON   "OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
 	CONTROL         "verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
@@ -145,7 +145,7 @@ IDR_STENCIL_FRAGMENT    RCDATA                  ".\\Shaders\\stencil.fgl"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2018,8,6,101
+ FILEVERSION 2018,8,6,102
  PRODUCTVERSION 1,1,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
@@ -162,7 +162,7 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "HoMM III - OpenGL wrapper"
-            VALUE "FileVersion", "2018.08.06.101"
+            VALUE "FileVersion", "2018.08.06.102"
             VALUE "LegalCopyright", "© 2018 Verok (verokster@gmail.com)"
             VALUE "OriginalFilename", "ddraw.dll"
             VALUE "ProductVersion", "1.1.0"

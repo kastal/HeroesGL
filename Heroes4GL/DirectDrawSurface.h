@@ -25,6 +25,7 @@
 #pragma once
 #include "ddraw.h"
 #include "DirectDrawClipper.h"
+#include "ExtraTypes.h"
 
 #define STENCIL_COUNT 32
 
@@ -48,11 +49,11 @@ public:
 	HBITMAP hBmp;
 	HDC hDc;
 
-	RECT* clipsList;
-	RECT* endClip;
+	UpdateRect* clipsList;
+	UpdateRect* endClip;
 
-	RECT* currentClip;
-	RECT* poinetrClip;
+	UpdateRect* currentClip;
+	UpdateRect* poinetrClip;
 
 	DirectDrawSurface(DirectDraw*, DWORD);
 	~DirectDrawSurface();

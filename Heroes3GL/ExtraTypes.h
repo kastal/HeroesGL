@@ -97,6 +97,12 @@ enum FpsState
 	FpsBenchmark
 };
 
+struct UpdateRect
+{
+	RECT rect;
+	BOOL isActive;
+};
+
 struct AddressSpace
 {
 	DWORD check_1;
