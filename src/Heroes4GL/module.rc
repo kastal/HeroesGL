@@ -1,0 +1,482 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+// Russian (Russia) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(1251)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDM_RUSSIAN MENU
+BEGIN
+    POPUP "&Файл"
+    BEGIN
+        MENUITEM "&Новая игра",						IDM_FILE_NEW_GAME
+        MENUITEM "&Загрузить игру",					IDM_FILE_LOAD_GAME
+        MENUITEM "&Сохранить игру",					IDM_FILE_SAVE_GAME
+        MENUITEM "&Выход",							IDM_FILE_EXIT
+    END
+    POPUP "&Экран"
+    BEGIN
+        MENUITEM "В &полный экран (F4)",			IDM_RES_FULL_SCREEN
+        POPUP "&Фильтрация (F3)"
+        BEGIN
+            MENUITEM "&Откл.",						IDM_FILT_OFF
+            MENUITEM "Би&линейная",					IDM_FILT_LINEAR
+			MENUITEM "Би&кубическая",				IDM_FILT_CUBIC
+			MENUITEM SEPARATOR
+			POPUP "&ScaleNx"
+			BEGIN
+				MENUITEM "+ Би&линейная",			IDM_FILT_SCALENX_LINEAR
+				MENUITEM "+ Би&кубическая",			IDM_FILT_SCALENX_CUBIC
+				MENUITEM SEPARATOR
+				MENUITEM "x2",						IDM_FILT_SCALENX_2X
+				MENUITEM "x3",						IDM_FILT_SCALENX_3X
+			END
+			POPUP "Super &Eagle"
+			BEGIN
+				MENUITEM "+ Би&линейная",			IDM_FILT_EAGLE_LINEAR
+				MENUITEM "+ Би&кубическая",			IDM_FILT_EAGLE_CUBIC
+				MENUITEM SEPARATOR
+				MENUITEM "x2",						IDM_FILT_EAGLE_2X
+			END
+			POPUP "2x&SaI"
+			BEGIN
+				MENUITEM "+ Би&линейная",			IDM_FILT_XSAL_LINEAR
+				MENUITEM "+ Би&кубическая",			IDM_FILT_XSAL_CUBIC
+				MENUITEM SEPARATOR
+				MENUITEM "x2",						IDM_FILT_XSAL_2X
+			END
+			POPUP "Scale&HQ"
+			BEGIN
+				MENUITEM "+ Би&линейная",			IDM_FILT_SCALEHQ_LINEAR
+				MENUITEM "+ Би&кубическая",			IDM_FILT_SCALEHQ_CUBIC
+				MENUITEM SEPARATOR
+				MENUITEM "x2",						IDM_FILT_SCALEHQ_2X
+				MENUITEM "x4",						IDM_FILT_SCALEHQ_4X
+			END
+			POPUP "&xBRz"
+			BEGIN
+				MENUITEM "+ Би&линейная",			IDM_FILT_XRBZ_LINEAR
+				MENUITEM "+ Би&кубическая",			IDM_FILT_XRBZ_CUBIC
+				MENUITEM SEPARATOR
+				MENUITEM "x2",						IDM_FILT_XRBZ_2X
+				MENUITEM "x3",						IDM_FILT_XRBZ_3X
+				MENUITEM "x4",						IDM_FILT_XRBZ_4X
+				MENUITEM "x5",						IDM_FILT_XRBZ_5X
+				MENUITEM "x6",						IDM_FILT_XRBZ_6X
+			END
+        END
+        MENUITEM "Сохр. &пропорции (F5)",			IDM_ASPECT_RATIO
+        MENUITEM "Верт. &синхронизация",			IDM_VSYNC
+    END
+	POPUP "П&атчи"
+	BEGIN
+		MENUITEM "&Холодный ЦП",					IDM_PATCH_CPU
+	END
+    POPUP "&Помощь"
+    BEGIN
+        MENUITEM "О &враппере",						IDM_HELP_WRAPPER
+        MENUITEM "О &программе",					IDM_HELP_ABOUT
+    END
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_RUSSIAN DIALOGEX 22,17,162,90
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+FONT 8, "System", 0, 0, 0x1
+BEGIN
+    CTEXT           "Герои Меча и Магии IV\nOpenGL враппер",1002,0,6,162,18
+    CTEXT           "Версия 1.12   Сборка 144",IDC_STATIC,0,30,162,8
+    CTEXT           "Copyright © 2018 Verok",1006,0,48,162,8
+	DEFPUSHBUTTON   "OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
+	CONTROL         "verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
+    ICON            "",IDC_STATIC,8,17,20,20
+END
+
+IDD_HELP_ABOUT_RUSSIAN_1_0 DIALOGEX 22,17,242,133
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "System"
+BEGIN
+	ICON "",IDC_STATIC,8,19,20,20
+	CTEXT "Герои Меча и Магии IV",IDC_STATIC,31,8,178,8
+	CTEXT "Версия 1.0",IDC_STATIC,73,21,94,10
+	CTEXT "\xA9 2002 The 3DO Company. Все права защищены.",IDC_STATIC,26,36,189,8
+	CTEXT "New World Computing является подразделением The 3DO Company.",IDC_STATIC,26,90,189,18
+	DEFPUSHBUTTON "OK",IDC_BTN_OK,96,110,48,14,WS_GROUP
+	CTEXT "The 3DO Company. Все права защищены. 3DO, Heroes of Might and Magic, New World Computing и их соответствующие логотипы  являются зарегистрированными торговыми знаками The 3DO Company в США и других странах.",IDC_STATIC,26,44,189,40
+	CTEXT "Все другие торговые знаки принадлежат их соответствующим владельцам.  (с) Бука. Все права защищены. На территории РФ издается компанией 'Бука'.",IDC_STATIC,26,76,189,8
+END
+
+IDD_HELP_ABOUT_RUSSIAN_2_2_GS DIALOGEX 22,17,242,133
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "System"
+BEGIN
+	ICON "",IDC_STATIC,8,19,20,20
+	CTEXT "Герои Меча и Магии IV: Грядущая Буря",IDC_STATIC,31,8,178,8
+	CTEXT "Версия 2.2GS",IDC_STATIC,73,21,94,10
+	CTEXT "\xA9 2002 The 3DO Company. Все права защищены.",IDC_STATIC,26,36,189,8
+	CTEXT "New World Computing является подразделением The 3DO Company.",IDC_STATIC,26,90,189,18
+	DEFPUSHBUTTON "OK",IDC_BTN_OK,96,110,48,14,WS_GROUP
+	CTEXT "The 3DO Company. Все права защищены. 3DO, Heroes of Might and Magic, New World Computing и их соответствующие логотипы  являются зарегистрированными торговыми знаками The 3DO Company в США и других странах.",IDC_STATIC,26,44,189,40
+	CTEXT "Все другие торговые знаки принадлежат их соответствующим владельцам.  (с) Бука. Все права защищены. На территории РФ издается компанией 'Бука'.",IDC_STATIC,26,76,189,8
+END
+
+IDD_HELP_ABOUT_RUSSIAN_3_0_WOW DIALOGEX 22,17,242,133
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "System"
+BEGIN
+	ICON "",IDC_STATIC,8,19,20,20
+	CTEXT "Герои Меча и Магии IV: Вихри Войны",IDC_STATIC,31,8,178,8
+	CTEXT "Версия 3.0WoW",IDC_STATIC,73,21,94,10
+	CTEXT "\xA9 2003 The 3DO Company. Все права защищены.",IDC_STATIC,26,36,189,8
+	CTEXT "New World Computing является подразделением The 3DO Company.",IDC_STATIC,26,90,189,18
+	DEFPUSHBUTTON "OK",IDC_BTN_OK,96,110,48,14,WS_GROUP
+	CTEXT "The 3DO Company. Все права защищены. 3DO, Heroes of Might and Magic, New World Computing и их соответствующие логотипы  являются зарегистрированными торговыми знаками The 3DO Company в США и других странах.",IDC_STATIC,26,44,189,40
+	CTEXT "Все другие торговые знаки принадлежат их соответствующим владельцам.  (с) Бука. Все права защищены. На территории РФ издается компанией 'Бука'.",IDC_STATIC,26,76,189,8
+END
+
+#endif    // Russian (Russia) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Manifest
+//
+
+IDM_MANIFEST            RT_MANIFEST             "module.manifest"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDM_ENGLISH MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New Game",						IDM_FILE_NEW_GAME
+        MENUITEM "&Load Game",						IDM_FILE_LOAD_GAME
+        MENUITEM "&Save Game",						IDM_FILE_SAVE_GAME
+        MENUITEM "&Exit",							IDM_FILE_EXIT
+    END
+    POPUP "&Display"
+    BEGIN
+        MENUITEM "Full &Screen (F4)",				IDM_RES_FULL_SCREEN
+        POPUP "&Filtering (F3)"
+        BEGIN
+            MENUITEM "&Off",						IDM_FILT_OFF
+            MENUITEM "Bi&linear",					IDM_FILT_LINEAR
+			MENUITEM "Bi&cubic",					IDM_FILT_CUBIC
+			MENUITEM SEPARATOR
+			POPUP "&ScaleNx"
+			BEGIN
+				MENUITEM "+ Bi&linear",				IDM_FILT_SCALENX_LINEAR
+				MENUITEM "+ Bi&cubic",				IDM_FILT_SCALENX_CUBIC
+				MENUITEM SEPARATOR
+				MENUITEM "x2",						IDM_FILT_SCALENX_2X
+				MENUITEM "x3",						IDM_FILT_SCALENX_3X
+			END
+			POPUP "Super &Eagle"
+			BEGIN
+				MENUITEM "+ Bi&linear",				IDM_FILT_EAGLE_LINEAR
+				MENUITEM "+ Bi&cubic",				IDM_FILT_EAGLE_CUBIC
+				MENUITEM SEPARATOR
+				MENUITEM "x2",						IDM_FILT_EAGLE_2X
+			END
+			POPUP "2x&SaI"
+			BEGIN
+				MENUITEM "+ Bi&linear",				IDM_FILT_XSAL_LINEAR
+				MENUITEM "+ Bi&cubic",				IDM_FILT_XSAL_CUBIC
+				MENUITEM SEPARATOR
+				MENUITEM "x2",						IDM_FILT_XSAL_2X
+			END
+			POPUP "Scale&HQ"
+			BEGIN
+				MENUITEM "+ Bi&linear",				IDM_FILT_SCALEHQ_LINEAR
+				MENUITEM "+ Bi&cubic",				IDM_FILT_SCALEHQ_CUBIC
+				MENUITEM SEPARATOR
+				MENUITEM "x2",						IDM_FILT_SCALEHQ_2X
+				MENUITEM "x4",						IDM_FILT_SCALEHQ_4X
+			END
+			POPUP "&xBRz"
+			BEGIN
+				MENUITEM "+ Bi&linear",				IDM_FILT_XRBZ_LINEAR
+				MENUITEM "+ Bi&cubic",				IDM_FILT_XRBZ_CUBIC
+				MENUITEM SEPARATOR
+				MENUITEM "x2",						IDM_FILT_XRBZ_2X
+				MENUITEM "x3",						IDM_FILT_XRBZ_3X
+				MENUITEM "x4",						IDM_FILT_XRBZ_4X
+				MENUITEM "x5",						IDM_FILT_XRBZ_5X
+				MENUITEM "x6",						IDM_FILT_XRBZ_6X
+			END
+        END
+        MENUITEM "Keep &Aspect Ratio (F5)",			IDM_ASPECT_RATIO
+        MENUITEM "Enable &VSync",					IDM_VSYNC
+    END
+	POPUP "&Patches"
+	BEGIN
+		MENUITEM "&Cold CPU",						IDM_PATCH_CPU
+	END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "About &Wrapper",					IDM_HELP_WRAPPER
+        MENUITEM "About &Application",				IDM_HELP_ABOUT
+    END
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ENGLISH DIALOGEX 22,17,162,90
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+FONT 8, "System", 0, 0, 0x1
+BEGIN
+    CTEXT           "Heroes of Might and Magic IV\nOpenGL Wrapper",1002,0,6,162,18
+    CTEXT           "Version 1.12   Build 144",IDC_STATIC,0,30,162,8
+    CTEXT           "Copyright © 2018 Verok",1006,0,48,162,8
+	DEFPUSHBUTTON   "OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
+	CONTROL         "verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
+    ICON            "",IDC_STATIC,8,17,20,20
+END
+
+IDD_HELP_ABOUT_ENGLISH_1_0 DIALOGEX 22,17,242,133
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "System"
+BEGIN
+	ICON "",IDC_STATIC,8,19,20,20
+	CTEXT "Heroes of Might and Magic IV",IDC_STATIC,31,8,178,8
+	CTEXT "Version 1.0",IDC_STATIC,73,21,94,10
+	CTEXT "\xA9 2002 The 3DO Company. All Rights Reserved.",IDC_STATIC,26,36,189,8
+	CTEXT "New World Computing is a division of The 3DO Company.",IDC_STATIC,26,90,189,18
+	DEFPUSHBUTTON "OK",IDC_BTN_OK,96,110,48,14,WS_GROUP
+	CTEXT "3DO, Heroes, New World Computing, and their respective logos are trademarks and/or service marks of The 3DO Company in the U.S. and other countries. All other trademarks belong to their respective owners.",IDC_STATIC,26,44,189,40
+END
+
+IDD_HELP_ABOUT_ENGLISH_1_2 DIALOGEX 22,17,242,133
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "System"
+BEGIN
+	ICON "",IDC_STATIC,8,19,20,20
+	CTEXT "Heroes of Might and Magic IV",IDC_STATIC,31,8,178,8
+	CTEXT "Version 1.2",IDC_STATIC,73,21,94,10
+	CTEXT "\xA9 2002 The 3DO Company. All Rights Reserved.",IDC_STATIC,26,36,189,8
+	CTEXT "New World Computing is a division of The 3DO Company.",IDC_STATIC,26,90,189,18
+	DEFPUSHBUTTON "OK",IDC_BTN_OK,96,110,48,14,WS_GROUP
+	CTEXT "3DO, Heroes, New World Computing, and their respective logos are trademarks and/or service marks of The 3DO Company in the U.S. and other countries. All other trademarks belong to their respective owners.",IDC_STATIC,26,44,189,40
+END
+
+IDD_HELP_ABOUT_ENGLISH_1_3 DIALOGEX 22,17,242,133
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "System"
+BEGIN
+	ICON "",IDC_STATIC,8,19,20,20
+	CTEXT "Heroes of Might and Magic IV",IDC_STATIC,31,8,178,8
+	CTEXT "Version 1.3",IDC_STATIC,73,21,94,10
+	CTEXT "\xA9 2002 The 3DO Company. All Rights Reserved.",IDC_STATIC,26,36,189,8
+	CTEXT "New World Computing is a division of The 3DO Company.",IDC_STATIC,26,90,189,18
+	DEFPUSHBUTTON "OK",IDC_BTN_OK,96,110,48,14,WS_GROUP
+	CTEXT "3DO, Heroes, New World Computing, and their respective logos are trademarks and/or service marks of The 3DO Company in the U.S. and other countries. All other trademarks belong to their respective owners.",IDC_STATIC,26,44,189,40
+END
+
+IDD_HELP_ABOUT_ENGLISH_2_0 DIALOGEX 22,17,242,133
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "System"
+BEGIN
+	ICON "",IDC_STATIC,8,19,20,20
+	CTEXT "Heroes of Might and Magic IV",IDC_STATIC,31,8,178,8
+	CTEXT "Version 2.0",IDC_STATIC,73,21,94,10
+	CTEXT "\xA9 2002 The 3DO Company. All Rights Reserved.",IDC_STATIC,26,36,189,8
+	CTEXT "New World Computing is a division of The 3DO Company.",IDC_STATIC,26,90,189,18
+	DEFPUSHBUTTON "OK",IDC_BTN_OK,96,110,48,14,WS_GROUP
+	CTEXT "3DO, Heroes, New World Computing, and their respective logos are trademarks and/or service marks of The 3DO Company in the U.S. and other countries. All other trademarks belong to their respective owners.",IDC_STATIC,26,44,189,40
+END
+
+IDD_HELP_ABOUT_ENGLISH_2_2 DIALOGEX 22,17,242,133
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "System"
+BEGIN
+	ICON "",IDC_STATIC,8,19,20,20
+	CTEXT "Heroes of Might and Magic IV",IDC_STATIC,31,8,178,8
+	CTEXT "Version 2.2",IDC_STATIC,73,21,94,10
+	CTEXT "\xA9 2002 The 3DO Company. All Rights Reserved.",IDC_STATIC,26,36,189,8
+	CTEXT "New World Computing is a division of The 3DO Company.",IDC_STATIC,26,90,189,18
+	DEFPUSHBUTTON "OK",IDC_BTN_OK,96,110,48,14,WS_GROUP
+	CTEXT "3DO, Heroes, New World Computing, and their respective logos are trademarks and/or service marks of The 3DO Company in the U.S. and other countries. All other trademarks belong to their respective owners.",IDC_STATIC,26,44,189,40
+END
+
+IDD_HELP_ABOUT_ENGLISH_3_0 DIALOGEX 22,17,242,133
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "System"
+BEGIN
+	ICON "",IDC_STATIC,8,19,20,20
+	CTEXT "Heroes of Might and Magic IV",IDC_STATIC,31,8,178,8
+	CTEXT "Version 3.0",IDC_STATIC,73,21,94,10
+	CTEXT "\xA9 2003 The 3DO Company. All Rights Reserved.",IDC_STATIC,26,36,189,8
+	CTEXT "New World Computing is a division of The 3DO Company.",IDC_STATIC,26,90,189,18
+	DEFPUSHBUTTON "OK",IDC_BTN_OK,96,110,48,14,WS_GROUP
+	CTEXT "3DO, Heroes, New World Computing, and their respective logos are trademarks and/or service marks of The 3DO Company in the U.S. and other countries. All other trademarks belong to their respective owners.",IDC_STATIC,26,44,189,40
+END
+
+IDD_HELP_ABOUT_ENGLISH_2_0_GS DIALOGEX 22,17,242,133
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "System"
+BEGIN
+	ICON "",IDC_STATIC,8,19,20,20
+	CTEXT "Heroes of Might and Magic IV: The Gathering Storm",IDC_STATIC,31,8,178,8
+	CTEXT "Version 2.0GS",IDC_STATIC,73,21,94,10
+	CTEXT "\xA9 2002 The 3DO Company. All Rights Reserved.",IDC_STATIC,26,36,189,8
+	CTEXT "New World Computing is a division of The 3DO Company.",IDC_STATIC,26,90,189,18
+	DEFPUSHBUTTON "OK",IDC_BTN_OK,96,110,48,14,WS_GROUP
+	CTEXT "3DO, Heroes, New World Computing, and their respective logos are trademarks and/or service marks of The 3DO Company in the U.S. and other countries. All other trademarks belong to their respective owners.",IDC_STATIC,26,44,189,40
+END
+
+IDD_HELP_ABOUT_ENGLISH_2_2_GS DIALOGEX 22,17,242,133
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "System"
+BEGIN
+	ICON "",IDC_STATIC,8,19,20,20
+	CTEXT "Heroes of Might and Magic IV: The Gathering Storm",IDC_STATIC,31,8,178,8
+	CTEXT "Version 2.2GS",IDC_STATIC,73,21,94,10
+	CTEXT "\xA9 2002 The 3DO Company. All Rights Reserved.",IDC_STATIC,26,36,189,8
+	CTEXT "New World Computing is a division of The 3DO Company.",IDC_STATIC,26,90,189,18
+	DEFPUSHBUTTON "OK",IDC_BTN_OK,96,110,48,14,WS_GROUP
+	CTEXT "3DO, Heroes, New World Computing, and their respective logos are trademarks and/or service marks of The 3DO Company in the U.S. and other countries. All other trademarks belong to their respective owners.",IDC_STATIC,26,44,189,40
+END
+
+IDD_HELP_ABOUT_ENGLISH_3_0_GS DIALOGEX 22,17,242,133
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "System"
+BEGIN
+	ICON "",IDC_STATIC,8,19,20,20
+	CTEXT "Heroes of Might and Magic IV: The Gathering Storm",IDC_STATIC,31,8,178,8
+	CTEXT "Version 3.0GS",IDC_STATIC,73,21,94,10
+	CTEXT "\xA9 2003 The 3DO Company. All Rights Reserved.",IDC_STATIC,26,36,189,8
+	CTEXT "New World Computing is a division of The 3DO Company.",IDC_STATIC,26,90,189,18
+	DEFPUSHBUTTON "OK",IDC_BTN_OK,96,110,48,14,WS_GROUP
+	CTEXT "3DO, Heroes, New World Computing, and their respective logos are trademarks and/or service marks of The 3DO Company in the U.S. and other countries. All other trademarks belong to their respective owners.",IDC_STATIC,26,44,189,40
+END
+
+IDD_HELP_ABOUT_ENGLISH_3_0_WOW DIALOGEX 22,17,242,133
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+FONT 8, "System"
+BEGIN
+	ICON "",IDC_STATIC,8,19,20,20
+	CTEXT "Heroes of Might and Magic IV: Winds of War",IDC_STATIC,31,8,178,8
+	CTEXT "Version 3.0WoW",IDC_STATIC,73,21,94,10
+	CTEXT "\xA9 2003 The 3DO Company. All Rights Reserved.",IDC_STATIC,26,36,189,8
+	CTEXT "New World Computing is a division of The 3DO Company.",IDC_STATIC,26,90,189,18
+	DEFPUSHBUTTON "OK",IDC_BTN_OK,96,110,48,14,WS_GROUP
+	CTEXT "3DO, Heroes, New World Computing, and their respective logos are trademarks and/or service marks of The 3DO Company in the U.S. and other countries. All other trademarks belong to their respective owners.",IDC_STATIC,26,44,189,40
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RCDATA
+//
+
+IDR_STENCIL_VERTEX			RCDATA                  "..\\glsl\\stencil\\vertex.glsl"
+IDR_STENCIL_FRAGMENT		RCDATA                  "..\\glsl\\stencil\\fragment.glsl"
+
+IDR_LINEAR_VERTEX			RCDATA                  "..\\glsl\\linear\\vertex.glsl"
+IDR_LINEAR_FRAGMENT			RCDATA                  "..\\glsl\\linear\\fragment.glsl"
+
+//IDR_CUBIC_VERTEX			RCDATA                  "..\\glsl\\cubic\\vertex.glsl"
+IDR_CUBIC_FRAGMENT			RCDATA                  "..\\glsl\\cubic\\fragment.glsl"
+
+//IDR_XSAL_VERTEX			RCDATA                  "..\\glsl\\xsal\\vertex.glsl"
+IDR_XSAL_FRAGMENT			RCDATA                  "..\\glsl\\xsal\\fragment.glsl"
+
+IDR_EAGLE_VERTEX			RCDATA                  "..\\glsl\\eagle\\vertex.glsl"
+IDR_EAGLE_FRAGMENT			RCDATA                  "..\\glsl\\eagle\\fragment.glsl"
+
+IDR_XBRZ_VERTEX				RCDATA                  "..\\glsl\\xbrz\\vertex.glsl"
+IDR_XBRZ_FRAGMENT_2X		RCDATA                  "..\\glsl\\xbrz\\fragment_2x.glsl"
+IDR_XBRZ_FRAGMENT_3X		RCDATA                  "..\\glsl\\xbrz\\fragment_3x.glsl"
+IDR_XBRZ_FRAGMENT_4X		RCDATA                  "..\\glsl\\xbrz\\fragment_4x.glsl"
+IDR_XBRZ_FRAGMENT_5X		RCDATA                  "..\\glsl\\xbrz\\fragment_5x.glsl"
+IDR_XBRZ_FRAGMENT_6X		RCDATA                  "..\\glsl\\xbrz\\fragment_6x.glsl"
+
+IDR_SCALEHQ_VERTEX_2X		RCDATA                  "..\\glsl\\scalehq\\vertex_2x.glsl"
+IDR_SCALEHQ_FRAGMENT_2X		RCDATA                  "..\\glsl\\scalehq\\fragment_2x.glsl"
+IDR_SCALEHQ_VERTEX_4X		RCDATA                  "..\\glsl\\scalehq\\vertex_4x.glsl"
+IDR_SCALEHQ_FRAGMENT_4X		RCDATA                  "..\\glsl\\scalehq\\fragment_4x.glsl"
+
+IDR_SCALENX_VERTEX_2X		RCDATA                  "..\\glsl\\scalenx\\vertex_2x.glsl"
+IDR_SCALENX_FRAGMENT_2X		RCDATA                  "..\\glsl\\scalenx\\fragment_2x.glsl"
+IDR_SCALENX_VERTEX_3X		RCDATA                  "..\\glsl\\scalenx\\vertex_3x.glsl"
+IDR_SCALENX_FRAGMENT_3X		RCDATA                  "..\\glsl\\scalenx\\fragment_3x.glsl"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2018,11,5,144
+ PRODUCTVERSION 1,1,2,0
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "FileDescription", "HoMM IV - OpenGL wrapper"
+            VALUE "FileVersion", "2018.11.05.144"
+            VALUE "LegalCopyright", "© 2018 Verok (verokster@gmail.com)"
+            VALUE "OriginalFilename", "ddraw.dll"
+            VALUE "ProductVersion", "1.1.2"
+            VALUE "ProductName", "Heroes4GL"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////

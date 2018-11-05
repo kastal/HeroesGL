@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DllMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GLib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FpsCounter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hooks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Allocation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenDraw.cpp">
+      <Filter>Source Files\Draw\Open</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenDrawClipper.cpp">
+      <Filter>Source Files\Draw\Open</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenDrawPalette.cpp">
+      <Filter>Source Files\Draw\Open</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenDrawSurface.cpp">
+      <Filter>Source Files\Draw\Open</Filter>
+    </ClCompile>
+    <ClCompile Include="IDraw.cpp">
+      <Filter>Source Files\Draw\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="IDrawClipper.cpp">
+      <Filter>Source Files\Draw\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="IDrawPalette.cpp">
+      <Filter>Source Files\Draw\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="IDrawSurface.cpp">
+      <Filter>Source Files\Draw\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectDraw.cpp">
+      <Filter>Source Files\Draw\Direct</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectDrawPalette.cpp">
+      <Filter>Source Files\Draw\Direct</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectDrawSurface.cpp">
+      <Filter>Source Files\Draw\Direct</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenWindow.cpp">
+      <Filter>Source Files\Draw\Open</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectWindow.cpp">
+      <Filter>Source Files\Draw\Direct</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExtraTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FpsCounter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hooks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Allocation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenDraw.h">
+      <Filter>Header Files\Draw\Open</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenDrawClipper.h">
+      <Filter>Header Files\Draw\Open</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenDrawPalette.h">
+      <Filter>Header Files\Draw\Open</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenDrawSurface.h">
+      <Filter>Header Files\Draw\Open</Filter>
+    </ClInclude>
+    <ClInclude Include="IDraw.h">
+      <Filter>Header Files\Draw\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="IDrawClipper.h">
+      <Filter>Header Files\Draw\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="IDrawPalette.h">
+      <Filter>Header Files\Draw\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="IDrawSurface.h">
+      <Filter>Header Files\Draw\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectDraw.h">
+      <Filter>Header Files\Draw\Direct</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectDrawPalette.h">
+      <Filter>Header Files\Draw\Direct</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectDrawSurface.h">
+      <Filter>Header Files\Draw\Direct</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenWindow.h">
+      <Filter>Header Files\Draw\Open</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectWindow.h">
+      <Filter>Header Files\Draw\Direct</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{52949067-004a-4f89-954e-76cac391770d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{9894f9f1-3b2e-44c1-b85b-f89a3c64f6a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{b48440de-744c-470c-835a-b1527d1c4325}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Draw">
+      <UniqueIdentifier>{adaed98e-b73f-49e8-8576-b74ae30e5ee2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Draw\Open">
+      <UniqueIdentifier>{1b66ad8b-53be-4c22-9648-046013105584}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Draw">
+      <UniqueIdentifier>{89587bea-3c7a-4951-b4ad-f825ed2704f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Draw\Open">
+      <UniqueIdentifier>{8af3017e-b393-4c61-8a75-2a75515de3ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Draw\Direct">
+      <UniqueIdentifier>{ea99b648-f96c-491f-b324-e4b4f4767e91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Draw\Direct">
+      <UniqueIdentifier>{f6987e42-b20a-4583-a25a-0da023cb51c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Draw\Base">
+      <UniqueIdentifier>{d935ab40-590e-4e66-b95f-cf618edfa916}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Draw\Base">
+      <UniqueIdentifier>{bb864f69-d6ec-4137-8f45-ad0b3fa222f8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="module.def">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="module.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="module.manifest">
+      <Filter>Resource Files</Filter>
+    </Manifest>
+  </ItemGroup>
+</Project>
