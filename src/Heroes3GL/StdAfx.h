@@ -28,7 +28,13 @@
 #include "windows.h"
 #include "stdlib.h"
 #include "stdio.h"
+#include "mmreg.h"
 #include "ddraw.h"
+
+typedef DWORD(__stdcall *AIL_WAVEOUTOPEN)(LPVOID driver, DWORD a1, DWORD a2, LPPCMWAVEFORMAT waveFormat);
+typedef LPVOID(__stdcall *AIL_OPEN_STREAM)(LPVOID driver, CHAR* filePath, DWORD unknown);
+typedef DWORD(__stdcall *AIL_STREAM_POSITION)(LPVOID stream);
+typedef VOID(__stdcall *AIL_SET_STREAM_POSITION)(LPVOID stream, DWORD position);
 
 typedef HRESULT(__stdcall *DIRECTDRAWCREATE)(GUID* lpGUID, LPDIRECTDRAW* lplpDD, IUnknown* pUnkOuter);
 
@@ -56,8 +62,12 @@ typedef INT(__cdecl *STRCMP)(const CHAR*, const CHAR*);
 typedef CHAR*(__cdecl *STRCPY)(CHAR*, const CHAR*);
 typedef CHAR*(__cdecl *STRCAT)(CHAR*, const CHAR*);
 typedef CHAR*(__cdecl *STRCHR)(const CHAR*, INT);
+typedef CHAR*(__cdecl *STRRCHR)(const CHAR*, INT);
 typedef CHAR*(__cdecl *STRSTR)(const CHAR*, const CHAR*);
+typedef CHAR*(__cdecl *STRDUP)(const CHAR*);
 typedef size_t(__cdecl *WCSTOMBS)(CHAR*, const WCHAR*, size_t);
+typedef INT(__cdecl *RAND)();
+typedef VOID(__cdecl *SRAND)(DWORD);
 typedef VOID(__cdecl *EXIT)(INT);
 
 extern MALLOC MemoryAlloc;
@@ -72,8 +82,12 @@ extern STRCMP StrCompare;
 extern STRCPY StrCopy;
 extern STRCAT StrCat;
 extern STRCHR StrChar;
+extern STRRCHR StrLastChar;
 extern STRSTR StrStr;
+extern STRDUP StrDuplicate;
 extern WCSTOMBS StrToAnsi;
+extern RAND Random;
+extern SRAND SeedRandom;
 extern EXIT Exit;
 
 #define MemoryZero(Destination,Length) MemorySet((Destination),0,(Length))

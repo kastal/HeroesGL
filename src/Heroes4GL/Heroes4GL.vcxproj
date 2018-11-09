@@ -22,6 +22,7 @@
     <ProjectGuid>{b513477c-2cde-4b0f-b807-1c45f426ff0d}</ProjectGuid>
     <RootNamespace>Heroes4GL</RootNamespace>
     <ProjectName>Heroes4GL</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">

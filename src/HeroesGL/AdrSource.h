@@ -24,8 +24,33 @@
 
 #pragma once
 
-namespace Hooks
+#include "Audiere.h"
+#include "Allocation.h"
+#include "ExtraTypes.h"
+
+typedef audiere::SampleSource*(__stdcall *ADROPENSAMPLESOURCE)(CHAR* path);
+
+class AdrSource : public Allocation
 {
-	BOOL __stdcall EnumChildProc(HWND hDlg, LPARAM lParam);
-	BOOL Load();
-}
+private:
+	DWORD count;
+
+public:
+	audiere::SampleSource* source;
+	TrackInfo* track;
+
+	AdrSource(audiere::SampleSource*, TrackInfo*);
+	~AdrSource();
+
+	// Inherited via SampleSource
+	virtual VOID __stdcall ref();
+	virtual VOID __stdcall unref();
+	virtual VOID __stdcall getFormat(INT&, INT&, audiere::SampleFormat&);
+	virtual INT __stdcall read(INT, VOID*);
+	virtual VOID __stdcall reset();
+	virtual bool __stdcall isSeekable();
+	virtual INT __stdcall getLength();
+	virtual VOID __stdcall setPosition(INT);
+	virtual INT __stdcall getPosition();
+};
+

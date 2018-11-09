@@ -59,10 +59,13 @@ typedef CHAR*(__cdecl *STRCHR)(const CHAR*, INT);
 typedef CHAR*(__cdecl *STRRCHR)(const CHAR*, INT);
 typedef CHAR*(__cdecl *STRSTR)(const CHAR*, const CHAR*);
 typedef CHAR*(__cdecl *STRUPR)(CHAR*);
+typedef CHAR*(__cdecl *STRDUP)(const CHAR*);
+typedef INT(__cdecl *ATOI)(const CHAR*);
 typedef size_t(__cdecl *WCSTOMBS)(CHAR*, const WCHAR*, size_t);
 typedef FILE*(__cdecl *FOPEN)(const CHAR*, const CHAR*);
 typedef INT(__cdecl *FCLOSE)(FILE*);
 typedef INT(__cdecl *RAND)();
+typedef VOID(__cdecl *SRAND)(DWORD);
 typedef VOID(__cdecl *EXIT)(INT);
 
 extern MALLOC MemoryAlloc;
@@ -80,10 +83,13 @@ extern STRCHR StrChar;
 extern STRRCHR StrLastChar;
 extern STRSTR StrStr;
 extern STRUPR StrToUpper;
+extern STRDUP StrDuplicate;
+extern ATOI StrToInt;
 extern WCSTOMBS StrToAnsi;
 extern FOPEN FileOpen;
 extern FCLOSE FileClose;
 extern RAND Random;
+extern SRAND SeedRandom;
 extern EXIT Exit;
 
 #define MemoryZero(Destination,Length) MemorySet((Destination),0,(Length))

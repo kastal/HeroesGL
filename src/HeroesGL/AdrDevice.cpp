@@ -22,10 +22,46 @@
 	SOFTWARE.
 */
 
-#pragma once
+#include "stdafx.h"
+#include "AdrDevice.h"
+#include "AdrStream.h"
+#include "AdrSource.h"
 
-namespace Hooks
+AdrDevice::AdrDevice(audiere::AudioDevice* device)
 {
-	BOOL __stdcall EnumChildProc(HWND hDlg, LPARAM lParam);
-	BOOL Load();
+	this->count = 0;
+	this->device = device;
+	this->device->ref();
+}
+
+AdrDevice::~AdrDevice()
+{
+	this->device->unref();
+}
+
+VOID __stdcall AdrDevice::ref()
+{
+	++this->count;
+}
+
+VOID __stdcall AdrDevice::unref()
+{
+	if (!--this->count)
+		delete this;
+}
+
+VOID __stdcall AdrDevice::update()
+{
+	this->device->update();
+}
+
+audiere::OutputStream* __stdcall AdrDevice::openStream(audiere::SampleSource* source)
+{
+	audiere::OutputStream* stream = this->device->openStream(source);
+	return stream ? (audiere::OutputStream*)new AdrStream(stream, ((AdrSource*)source)->track) : NULL;
+}
+
+audiere::OutputStream* __stdcall AdrDevice::openBuffer(VOID* samples, INT frame_count, INT channel_count, INT sample_rate, audiere::SampleFormat sample_format)
+{
+	return this->device->openBuffer(samples, frame_count, channel_count, sample_rate, sample_format);
 }

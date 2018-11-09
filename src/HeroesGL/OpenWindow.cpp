@@ -287,7 +287,7 @@ namespace OpenWindow
 				return NULL;
 			}
 
-			case VK_F5:
+			case VK_F9:
 			{
 				configImageAspect = !configImageAspect;
 				Config::Set("ImageAspect", configImageAspect);

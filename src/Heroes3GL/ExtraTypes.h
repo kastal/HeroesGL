@@ -147,3 +147,11 @@ struct AddressSpace
 	CHAR* windowName;
 	CHAR* configKey;
 };
+
+struct TrackInfo
+{
+	TrackInfo* last;
+	DWORD position;
+	CHAR* group;
+	CHAR* path;
+};

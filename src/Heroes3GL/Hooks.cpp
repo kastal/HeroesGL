@@ -622,18 +622,143 @@ namespace Hooks
 		return res;
 	}
 
+#pragma region Music
 	AIL_WAVEOUTOPEN AIL_waveOutOpen;
-	DWORD __stdcall AIL_waveOutOpenHook(LPVOID driver, DWORD a1, DWORD a2, LPWAVEFORMATEX waveFormat)
-	{
-		waveFormat->wFormatTag = 1;
-		waveFormat->nChannels = 2;
-		waveFormat->nSamplesPerSec = 44100;
-		waveFormat->nAvgBytesPerSec = 176400;
-		waveFormat->nBlockAlign = 4;
-		waveFormat->wBitsPerSample = 16;
+	AIL_OPEN_STREAM AIL_open_stream;
+	AIL_STREAM_POSITION AIL_stream_position;
+	AIL_SET_STREAM_POSITION AIL_set_stream_position;
+	CHAR* audioExtList[] = { ".wav", ".mp3" };
+	TrackInfo* tracksList, *trackInfo;
 
-		return AIL_waveOutOpen(driver, a1, a2, waveFormat);
+	DWORD __stdcall AIL_waveOutOpenHook(LPVOID driver, DWORD a1, DWORD a2, LPPCMWAVEFORMAT pcmFormat)
+	{
+		pcmFormat->wf.wFormatTag = WAVE_FORMAT_PCM;
+		pcmFormat->wf.nChannels = 2;
+		pcmFormat->wf.nSamplesPerSec = 44100;
+
+		pcmFormat->wBitsPerSample = 16;
+
+		pcmFormat->wf.nBlockAlign = pcmFormat->wf.nChannels * pcmFormat->wBitsPerSample / 8;
+		pcmFormat->wf.nAvgBytesPerSec = pcmFormat->wf.nSamplesPerSec * pcmFormat->wf.nBlockAlign;
+
+		return AIL_waveOutOpen(driver, a1, a2, pcmFormat);
 	}
+
+	LPVOID __fastcall OpenTrack(LPVOID driver, CHAR* group, CHAR* path, DWORD unknown)
+	{
+		trackInfo = tracksList;
+		while (trackInfo)
+		{
+			if (!StrCompare(trackInfo->path, path))
+				goto lbl_return;
+
+			trackInfo = trackInfo->last;
+		}
+
+		trackInfo = (TrackInfo*)MemoryAlloc(sizeof(TrackInfo));
+		trackInfo->last = tracksList;
+		tracksList = trackInfo;
+
+		trackInfo->position = 0;
+		trackInfo->group = StrDuplicate(group);
+		trackInfo->path = StrDuplicate(path);
+
+	lbl_return:
+		return AIL_open_stream(driver, trackInfo->path, unknown);
+	}
+
+	LPVOID __stdcall AIL_open_streamHook(LPVOID driver, CHAR* path, DWORD unknown)
+	{
+		if (trackInfo && !StrCompare(trackInfo->group, path))
+			return AIL_open_stream(driver, trackInfo->path, unknown);
+
+		if (StrLastChar(path, '.'))
+		{
+			DWORD total = 0;
+			CHAR filePath[MAX_PATH];
+
+			CHAR** extension = audioExtList;
+			DWORD count = sizeof(audioExtList) / sizeof(CHAR*);
+			do
+			{
+				StrCopy(filePath, path);
+				CHAR* p = StrLastChar(filePath, '.');
+				*p = NULL;
+
+				StrCat(filePath, "*");
+				StrCat(filePath, *extension);
+
+				WIN32_FIND_DATA findData;
+				MemoryZero(&findData, sizeof(WIN32_FIND_DATA));
+
+				HANDLE hFind = FindFirstFile(filePath, &findData);
+				if (hFind != INVALID_HANDLE_VALUE)
+				{
+					do
+						++total;
+					while (FindNextFile(hFind, &findData));
+					FindClose(hFind);
+				}
+				++extension;
+			} while (--count);
+
+			if (total)
+			{
+				SeedRandom(GetTickCount());
+				DWORD random = total != 1 ? Random() % total : 0;
+
+				DWORD index = 0;
+				extension = audioExtList;
+				count = sizeof(audioExtList) / sizeof(CHAR*);
+				do
+				{
+					StrCopy(filePath, path);
+					CHAR* p = StrLastChar(filePath, '.');
+					*p = NULL;
+
+					StrCat(filePath, "*");
+					StrCat(filePath, *extension);
+
+					WIN32_FIND_DATA findData;
+					HANDLE hFind = FindFirstFile(filePath, &findData);
+					if (hFind != INVALID_HANDLE_VALUE)
+					{
+						do
+						{
+							if (index++ == random)
+							{
+								FindClose(hFind);
+
+								p = StrLastChar(filePath, '\\');
+								*(++p) = NULL;
+								StrCat(filePath, findData.cFileName);
+
+								return OpenTrack(driver, path, filePath, unknown);
+							}
+						} while (FindNextFile(hFind, &findData));
+						FindClose(hFind);
+					}
+
+					++extension;
+				} while (--count);
+			}
+		}
+
+		return OpenTrack(driver, path, path, unknown);
+	}
+
+	DWORD __stdcall AIL_stream_positionHook(LPVOID stream)
+	{
+		trackInfo->position = AIL_stream_position(stream);
+		return trackInfo->position;
+	}
+
+	VOID __stdcall AIL_set_stream_positionHook(LPVOID stream, DWORD position)
+	{
+		AIL_set_stream_position(stream, trackInfo->position);
+	}
+
+#pragma endregion
 
 	DWORD posIndex;
 	DWORD moveCounter;
@@ -724,6 +849,9 @@ namespace Hooks
 				PatchFunction(hModule, "DirectDrawCreate", Main::DirectDrawCreate);
 
 				AIL_waveOutOpen = (AIL_WAVEOUTOPEN)PatchFunction(hModule, "_AIL_waveOutOpen@16", AIL_waveOutOpenHook);
+				AIL_stream_position = (AIL_STREAM_POSITION)PatchFunction(hModule, "_AIL_stream_position@4", AIL_stream_positionHook);
+				AIL_open_stream = (AIL_OPEN_STREAM)PatchFunction(hModule, "_AIL_open_stream@12", AIL_open_streamHook);
+				AIL_set_stream_position = (AIL_SET_STREAM_POSITION)PatchFunction(hModule, "_AIL_set_stream_position@8", AIL_set_stream_positionHook);
 
 				if (!isNoGL)
 				{

@@ -47,8 +47,12 @@ STRCMP StrCompare;
 STRCPY StrCopy;
 STRCAT StrCat;
 STRCHR StrChar;
+STRRCHR StrLastChar;
 STRSTR StrStr;
+STRDUP StrDuplicate;
 WCSTOMBS StrToAnsi;
+RAND Random;
+SRAND SeedRandom;
 EXIT Exit;
 
 DWORD
@@ -151,9 +155,13 @@ VOID LoadMsvCRT()
 		StrCopy = (STRCPY)GetProcAddress(hLib, "strcpy");
 		StrCat = (STRCAT)GetProcAddress(hLib, "strcat");
 		StrChar = (STRCHR)GetProcAddress(hLib, "strchr");
+		StrLastChar = (STRRCHR)GetProcAddress(hLib, "strrchr");
 		StrStr = (STRSTR)GetProcAddress(hLib, "strstr");
+		StrDuplicate = (STRDUP)GetProcAddress(hLib, "_strdup");
 		StrToAnsi = (WCSTOMBS)GetProcAddress(hLib, "wcstombs");
 
+		Random = (RAND)GetProcAddress(hLib, "rand");
+		SeedRandom = (SRAND)GetProcAddress(hLib, "srand");
 		Exit = (EXIT)GetProcAddress(hLib, "exit");
 	}
 }

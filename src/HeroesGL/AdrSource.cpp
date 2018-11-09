@@ -22,10 +22,64 @@
 	SOFTWARE.
 */
 
-#pragma once
+#include "stdafx.h"
+#include "AdrSource.h"
 
-namespace Hooks
+AdrSource::AdrSource(audiere::SampleSource* source, TrackInfo* track)
 {
-	BOOL __stdcall EnumChildProc(HWND hDlg, LPARAM lParam);
-	BOOL Load();
+	this->count = 0;
+	this->source = source;
+	this->source->ref();
+	this->track = track;
+}
+
+AdrSource::~AdrSource()
+{
+	this->source->unref();
+}
+
+VOID __stdcall AdrSource::ref()
+{
+	++this->count;
+}
+
+VOID __stdcall AdrSource::unref()
+{
+	if (!--this->count)
+		delete this;
+}
+
+VOID __stdcall AdrSource::getFormat(INT& channel_count, INT& sample_rate, audiere::SampleFormat& sample_format)
+{
+	this->source->getFormat(channel_count, sample_rate, sample_format);
+}
+
+INT __stdcall AdrSource::read(INT frame_count, VOID* buffer)
+{
+	return this->source->read(frame_count, buffer);
+}
+
+VOID __stdcall AdrSource::reset()
+{
+	this->source->reset();
+}
+
+bool __stdcall AdrSource::isSeekable()
+{
+	return this->source->isSeekable();
+}
+
+INT __stdcall AdrSource::getLength()
+{
+	return this->source->getLength();
+}
+
+VOID __stdcall AdrSource::setPosition(INT position)
+{
+	this->source->setPosition(position);
+}
+
+INT __stdcall AdrSource::getPosition()
+{
+	return this->source->getPosition();
 }

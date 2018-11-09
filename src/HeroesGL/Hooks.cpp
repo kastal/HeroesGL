@@ -30,6 +30,9 @@
 #include "Resource.h"
 #include "Window.h"
 
+#include "AdrDevice.h"
+#include "AdrSource.h"
+
 #define BASE_ADDRESS 0x00400000
 #define STYLE_FULL_OLD (WS_VISIBLE | WS_CLIPSIBLINGS)
 #define STYLE_FULL_NEW (WS_VISIBLE | WS_CLIPSIBLINGS | WS_SYSMENU)
@@ -986,11 +989,25 @@ namespace Hooks
 
 #pragma region More music formats
 	CHAR* audioExtList[] = { ".wav", ".flac", ".mp3", ".ogg", ".mod", ".s3m", ".xm", ".it" };
-	DWORD adrOpenSampleSource;
+	TrackInfo* tracksList, *trackInfo;
+	ADROPENDEVICE AudiereOpenDevice;
+	ADROPENSAMPLESOURCE AudiereOpenSampleSource;
 
-	DWORD __fastcall OpenAudioFile(CHAR* path)
+	BYTE positionalList[3][10] = {
+		{ 0, 1, 2, 3, 4, 5, 6, 53, 54, 99 },
+		{ 2, 3, 4, 5, 6, 7, 8, 48, 49, 50 },
+		{ 11, 12, 13, 14, 15, 16, 17, 18, 28, 42 }
+	};
+
+	AdrDevice* __stdcall AdrOpenDeviceHook(CHAR* name, CHAR* parameters)
 	{
-		if (StrLastChar(path, '.'))
+		audiere::AudioDevice* device = AudiereOpenDevice(name, parameters);
+		return device ? new AdrDevice(device) : NULL;
+	}
+
+	AdrSource* __fastcall OpenTrack(TrackInfo* track)
+	{
+		if (StrLastChar(track->path, '.'))
 		{
 			DWORD total = 0;
 			CHAR filePath[MAX_PATH];
@@ -999,7 +1016,7 @@ namespace Hooks
 			DWORD count = sizeof(audioExtList) / sizeof(CHAR*);
 			do
 			{
-				StrCopy(filePath, path);
+				StrCopy(filePath, track->path);
 				CHAR* p = StrLastChar(filePath, '.');
 				*p = NULL;
 
@@ -1023,6 +1040,7 @@ namespace Hooks
 
 			if (total)
 			{
+				SeedRandom(GetTickCount());
 				DWORD random = total != 1 ? Random() % total : 0;
 
 				DWORD index = 0;
@@ -1030,7 +1048,7 @@ namespace Hooks
 				count = sizeof(audioExtList) / sizeof(CHAR*);
 				do
 				{
-					StrCopy(filePath, path);
+					StrCopy(filePath, track->path);
 					CHAR* p = StrLastChar(filePath, '.');
 					*p = NULL;
 
@@ -1051,7 +1069,8 @@ namespace Hooks
 								*(++p) = NULL;
 								StrCat(filePath, findData.cFileName);
 
-								return ((DWORD(__stdcall*)(CHAR*))adrOpenSampleSource)(filePath);
+								audiere::SampleSource* source = AudiereOpenSampleSource(filePath);
+								return source ? new AdrSource(source, track) : NULL;
 							}
 						} while (FindNextFile(hFind, &findData));
 						FindClose(hFind);
@@ -1065,34 +1084,75 @@ namespace Hooks
 		return NULL;
 	}
 
-	DWORD __stdcall AdrOpenSampleSourceHook(CHAR* originalPath)
+	AdrSource* __stdcall AdrOpenSampleSourceHook(CHAR* originalPath)
 	{
-		CHAR path[MAX_PATH];
-		StrCopy(path, originalPath);
-		CHAR* p = StrChar(path, '\\');
-		if (p)
-			*p = NULL;
-
-		if (GetDriveType(path) == DRIVE_CDROM)
+		if (!trackInfo || StrCompare(trackInfo->group, originalPath))
 		{
-			CHAR* o = StrChar(originalPath, '\\');
-			if (o)
-			{
-				GetModuleFileName(hModule, path, MAX_PATH - 1);
-				p = StrLastChar(path, '\\');
-				if (p)
-				{
-					*p = NULL;
-					StrCat(path, o);
+			CHAR* openPath = originalPath;
 
-					DWORD res = OpenAudioFile(path);
-					if (res)
-						return res;
+			CHAR path[MAX_PATH];
+			StrCopy(path, originalPath);
+			CHAR* p = StrChar(path, '\\');
+			if (p)
+				*p = NULL;
+
+			if (GetDriveType(path) == DRIVE_CDROM)
+			{
+				CHAR* o = StrChar(originalPath, '\\');
+				if (o)
+				{
+					GetModuleFileName(hModule, path, MAX_PATH - 1);
+					p = StrLastChar(path, '\\');
+					if (p)
+					{
+						*p = NULL;
+						StrCat(path, o);
+						openPath = path;
+					}
 				}
 			}
+
+
+			trackInfo = tracksList;
+			while (trackInfo)
+			{
+				if (!StrCompare(trackInfo->path, openPath))
+					goto lbl_return;
+
+				trackInfo = trackInfo->last;
+			}
+
+			trackInfo = (TrackInfo*)MemoryAlloc(sizeof(TrackInfo));
+			trackInfo->last = tracksList;
+			tracksList = trackInfo;
+
+			trackInfo->position = 0;
+			trackInfo->group = StrDuplicate(originalPath);
+			trackInfo->path = StrDuplicate(openPath);
+			trackInfo->isPositional = FALSE;
+
+			StrCopy(path, originalPath);
+			p = StrLastChar(path, '.');
+			*p = NULL;
+			p -= 2;
+			BYTE index = (BYTE)StrToInt(p);
+			DWORD type = hookSpace->game_version;
+			if (type == 1 && *(--p) != ' ')
+				type = 0;
+
+			BYTE* listItem = positionalList[type];
+			DWORD count = sizeof(positionalList) / 3;
+			do
+			{
+				if (*listItem == index)
+					trackInfo->isPositional = TRUE;
+
+				++listItem;
+			} while (--count);
 		}
 
-		return OpenAudioFile(originalPath);
+	lbl_return:
+		return OpenTrack(trackInfo);;
 	}
 #pragma endregion
 
@@ -1234,7 +1294,8 @@ namespace Hooks
 					PatchFunction(hModule, "PeekMessageA", PeekMessageHook);
 					PatchFunction(hModule, "RegisterClassA", RegisterClassHook);
 
-					adrOpenSampleSource = PatchFunction(hModule, "_AdrOpenSampleSource@4", AdrOpenSampleSourceHook);
+					AudiereOpenDevice = (ADROPENDEVICE)PatchFunction(hModule, "_AdrOpenDevice@8", AdrOpenDeviceHook);
+					AudiereOpenSampleSource = (ADROPENSAMPLESOURCE)PatchFunction(hModule, "_AdrOpenSampleSource@4", AdrOpenSampleSourceHook);
 
 					if (!isNoGL)
 					{

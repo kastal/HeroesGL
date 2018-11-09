@@ -24,8 +24,27 @@
 
 #pragma once
 
-namespace Hooks
+#include "Audiere.h"
+#include "Allocation.h"
+
+typedef audiere::AudioDevice*(__stdcall *ADROPENDEVICE)(CHAR* name, CHAR* parameters);
+
+class AdrDevice : public Allocation
 {
-	BOOL __stdcall EnumChildProc(HWND hDlg, LPARAM lParam);
-	BOOL Load();
-}
+private:
+	DWORD count;
+
+public:
+	audiere::AudioDevice* device;
+
+	AdrDevice(audiere::AudioDevice*);
+	~AdrDevice();
+
+	// Inherited via AudioDevice
+	virtual VOID __stdcall ref();
+	virtual VOID __stdcall unref();
+	virtual VOID __stdcall update();
+	virtual audiere::OutputStream* __stdcall openStream(audiere::SampleSource*);
+	virtual audiere::OutputStream* __stdcall openBuffer(VOID*, INT, INT, INT, audiere::SampleFormat);
+};
+

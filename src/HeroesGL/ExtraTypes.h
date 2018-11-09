@@ -168,3 +168,12 @@ struct AddressSpace
 	CHAR* configKey;
 	CHAR* configPrefix;
 };
+
+struct TrackInfo
+{
+	TrackInfo* last;
+	DWORD position;
+	BOOL isPositional;
+	CHAR* group;
+	CHAR* path;
+};

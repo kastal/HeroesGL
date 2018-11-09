@@ -24,8 +24,40 @@
 
 #pragma once
 
-namespace Hooks
+#include "Audiere.h"
+#include "Allocation.h"
+#include "ExtraTypes.h"
+
+class AdrStream : public Allocation
 {
-	BOOL __stdcall EnumChildProc(HWND hDlg, LPARAM lParam);
-	BOOL Load();
-}
+private:
+	DWORD count;
+
+public:
+	audiere::OutputStream* stream;
+	TrackInfo* track;
+
+	AdrStream(audiere::OutputStream*, TrackInfo*);
+	~AdrStream();
+
+	// Inherited via OutputStream
+	virtual VOID __stdcall ref();
+	virtual VOID __stdcall unref();
+	virtual VOID __stdcall play();
+	virtual VOID __stdcall stop();
+	virtual bool __stdcall isPlaying();
+	virtual VOID __stdcall reset();
+	virtual VOID __stdcall setRepeat(bool);
+	virtual bool __stdcall getRepeat();
+	virtual VOID __stdcall setVolume(FLOAT);
+	virtual FLOAT __stdcall getVolume();
+	virtual VOID __stdcall setPan(FLOAT);
+	virtual FLOAT __stdcall getPan();
+	virtual VOID __stdcall setPitchShift(FLOAT);
+	virtual FLOAT __stdcall getPitchShift();
+	virtual bool __stdcall isSeekable();
+	virtual INT __stdcall getLength();
+	virtual VOID __stdcall setPosition(INT);
+	virtual INT __stdcall getPosition();
+};
+

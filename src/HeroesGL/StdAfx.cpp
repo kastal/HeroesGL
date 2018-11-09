@@ -50,10 +50,13 @@ STRCHR StrChar;
 STRRCHR StrLastChar;
 STRSTR StrStr;
 STRUPR StrToUpper;
+STRDUP StrDuplicate;
+ATOI StrToInt;
 WCSTOMBS StrToAnsi;
 FOPEN FileOpen;
 FCLOSE FileClose;
 RAND Random;
+SRAND SeedRandom;
 EXIT Exit;
 
 DWORD
@@ -128,13 +131,15 @@ VOID LoadMsvCRT()
 		StrLastChar = (STRRCHR)GetProcAddress(hLib, "strrchr");
 		StrStr = (STRSTR)GetProcAddress(hLib, "strstr");
 		StrToUpper = (STRUPR)GetProcAddress(hLib, "_strupr");
+		StrDuplicate = (STRDUP)GetProcAddress(hLib, "_strdup");
+		StrToInt = (ATOI)GetProcAddress(hLib, "atoi");
 		StrToAnsi = (WCSTOMBS)GetProcAddress(hLib, "wcstombs");
 
 		FileOpen = (FOPEN)GetProcAddress(hLib, "fopen");
 		FileClose = (FCLOSE)GetProcAddress(hLib, "fclose");
 
 		Random = (RAND)GetProcAddress(hLib, "rand");
-
+		SeedRandom = (SRAND)GetProcAddress(hLib, "srand");
 		Exit = (EXIT)GetProcAddress(hLib, "exit");
 	}
 }
