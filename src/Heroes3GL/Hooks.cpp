@@ -928,6 +928,7 @@ namespace Hooks
 			back_move = hookSpace->move_address + 5;
 			// ==========================================================
 
+			hookSpace->video_address += baseOffset;
 			ResetVideoTable();
 
 			configKey = hookSpace->configKey;
