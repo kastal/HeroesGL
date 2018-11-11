@@ -44,12 +44,12 @@ FLOOR MathFloor;
 ROUND MathRound;
 SPRINTF StrPrint;
 STRCMP StrCompare;
+STRICMP StrCompareInsensitive;
 STRCPY StrCopy;
 STRCAT StrCat;
 STRCHR StrChar;
 STRRCHR StrLastChar;
 STRSTR StrStr;
-STRUPR StrToUpper;
 STRDUP StrDuplicate;
 ATOI StrToInt;
 WCSTOMBS StrToAnsi;
@@ -125,12 +125,12 @@ VOID LoadMsvCRT()
 			MathRound = round;
 
 		StrCompare = (STRCMP)GetProcAddress(hLib, "strcmp");
+		StrCompareInsensitive = (STRICMP)GetProcAddress(hLib, "_stricmp");
 		StrCopy = (STRCPY)GetProcAddress(hLib, "strcpy");
 		StrCat = (STRCAT)GetProcAddress(hLib, "strcat");
 		StrChar = (STRCHR)GetProcAddress(hLib, "strchr");
 		StrLastChar = (STRRCHR)GetProcAddress(hLib, "strrchr");
 		StrStr = (STRSTR)GetProcAddress(hLib, "strstr");
-		StrToUpper = (STRUPR)GetProcAddress(hLib, "_strupr");
 		StrDuplicate = (STRDUP)GetProcAddress(hLib, "_strdup");
 		StrToInt = (ATOI)GetProcAddress(hLib, "atoi");
 		StrToAnsi = (WCSTOMBS)GetProcAddress(hLib, "wcstombs");

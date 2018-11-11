@@ -575,7 +575,7 @@ namespace Hooks
 
 	HMODULE __stdcall LoadLibraryAHook(LPCSTR lpLibFileName)
 	{
-		if (!StrCompare(lpLibFileName, "DDRAW.DLL"))
+		if (!StrCompareInsensitive(lpLibFileName, "DDRAW.dll"))
 			return hDllModule;
 		return LoadLibrary(lpLibFileName);
 	}
@@ -1214,9 +1214,7 @@ namespace Hooks
 								for (DWORD idx = 0; imports->Name; ++idx, ++imports)
 								{
 									CHAR* libraryName = (CHAR*)(base + imports->Name);
-									StrToUpper(libraryName);
-
-									if (!StrCompare(libraryName, "WINMM.DLL"))
+									if (!StrCompareInsensitive(libraryName, "WINMM.dll"))
 									{
 										PIMAGE_THUNK_DATA addressThunk = (PIMAGE_THUNK_DATA)(base + imports->FirstThunk);
 										PIMAGE_THUNK_DATA nameThunk;

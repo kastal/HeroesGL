@@ -143,6 +143,8 @@ struct AddressSpace
 	DWORD move_timeout;
 	DWORD move_distance;
 	DWORD move_address;
+	DWORD video_address;
+	DWORD video_count;
 	BYTE resLanguage;
 	CHAR* windowName;
 	CHAR* configKey;
@@ -154,4 +156,18 @@ struct TrackInfo
 	DWORD position;
 	CHAR* group;
 	CHAR* path;
+};
+
+struct VideoInfo
+{
+	CHAR* fileName;
+	CHAR* altName;
+	BYTE isBink;
+	BYTE flags[11];
+};
+
+struct VideoFile
+{
+	CHAR name[40];
+	DWORD stride;
 };
