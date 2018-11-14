@@ -36,8 +36,6 @@
 #define STYLE_WIN_OLD (WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX)
 #define STYLE_WIN_NEW (WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX | WS_MAXIMIZEBOX)
 
-#define RESOURCE_ICON 107
-
 AddressSpace* hookSpace;
 
 AddressSpace addressArray[] = {
@@ -45,61 +43,48 @@ AddressSpace addressArray[] = {
 
 	0x00844A4D, 0x00844B35, 0x00401D18, 0x90909090, 0x0084497C, 0x006D59BB, 0x00843736, 0x00843F0E, LNG_RUSSIAN, IDD_HELP_ABOUT_RUSSIAN_1_0, // Heroes IV - 1.0
 	"Герои Меча и Магии IV", //"Heroes of Might and Magic IV",
-	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
 	0x008C6411, 0x008C64F9, 0x00000000, 0x00000000, 0x008C6340, 0x00736E79, 0x008C4EEE, 0x008C58B2, LNG_RUSSIAN, IDD_HELP_ABOUT_RUSSIAN_2_2_GS, // Heroes IV - 2.2GS
 	"Герои Меча и Магии IV: Грядущая Буря",
-	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
 	0x008D38B1, 0x008D3999, 0x00000000, 0x00000000, 0x008D37E0, 0x0073D780, 0x008D238E, 0x008D2D52, LNG_RUSSIAN, IDD_HELP_ABOUT_RUSSIAN_3_0_WOW, // Heroes IV - 3.0WoW
 	"Герои Меча и Магии IV: Вихри Войны",
-	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
 	// =====================================================================================================================
 
 	0x00844A4D, 0x00844B35, 0x00000000, 0x00000000, 0x0084497C, 0x006D59BB, 0x00843736, 0x00843F0E, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_1_0, // Heroes IV - 1.0
 	"Heroes of Might and Magic IV",
-	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
 	0x0084C0FD, 0x0084C1E5, 0x00000000, 0x00000000, 0x0084C02C, 0x006DAC3B, 0x0084AD96, 0x0084B5BE, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_1_2, // Heroes IV - 1.2
 	"Heroes of Might and Magic IV",
-	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
 	0x008533C1, 0x008534A9, 0x00000000, 0x00000000, 0x008532F0, 0x006DF4F5, 0x0085201E, 0x00852862, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_1_3, // Heroes IV - 1.3
 	"Heroes of Might and Magic IV",
-	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
 	0x008C5F51, 0x008C6039, 0x00000000, 0x00000000, 0x008C5E80, 0x007362D9, 0x008C4A2E, 0x008C53F2, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_2_0, // Heroes IV - 2.0
 	"Heroes of Might and Magic IV",
-	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
 	0x008C63F1, 0x008C64D9, 0x00000000, 0x00000000, 0x008C6320, 0x007369F9, 0x008C4ECE, 0x008C5892, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_2_2, // Heroes IV - 2.2
 	"Heroes of Might and Magic IV",
-	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
 	0x008D3881, 0x008D3969, 0x00000000, 0x00000000, 0x008D37B0, 0x0073D9B0, 0x008D235E, 0x008D2D22, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_3_0, // Heroes IV - 3.0
 	"Heroes of Might and Magic IV",
-	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
 	// ---------------------------------------------------------------------------------------------------------------------
 
 	0x008C5F51, 0x008C6039, 0x00401448, 0x00961278, 0x008C5E80, 0x007362D9, 0x008C4A2E, 0x008C53F2, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_2_0_GS, // Heroes IV - 2.0GS
 	"Heroes of Might and Magic IV: The Gathering Storm",
-	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
 	0x008C63F1, 0x008C64D9, 0x00401448, 0x00961278, 0x008C6320, 0x007369F9, 0x008C4ECE, 0x008C5892, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_2_2_GS, // Heroes IV - 2.2GS
 	"Heroes of Might and Magic IV: The Gathering Storm",
-	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
 	0x008D3881, 0x008D3969, 0x00401448, 0x00970278, 0x008D37B0, 0x0073D9B0, 0x008D235E, 0x008D2D22, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_3_0_GS, // Heroes IV - 3.0GS
 	"Heroes of Might and Magic IV: The Gathering Storm",
-	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
 	// ---------------------------------------------------------------------------------------------------------------------
 
 	0x008D3881, 0x008D3969, 0x00401448, 0x00970200, 0x008D37B0, 0x0073D9B0, 0x008D235E, 0x008D2D22, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_3_0_WOW, // Heroes IV - 3.0WoW
 	"Heroes of Might and Magic IV: Winds of War",
-	"SOFTWARE\\New World Computing\\Heroes of Might and Magic IV\\1.0",
 
 	NULL
 };
@@ -522,6 +507,68 @@ namespace Hooks
 		return FALSE;
 	}
 
+#pragma region Registry
+	LSTATUS __stdcall RegCreateKeyExHook(HKEY hKey, LPCSTR lpSubKey, DWORD Reserved, LPSTR lpClass, DWORD dwOptions, REGSAM samDesired, const LPSECURITY_ATTRIBUTES lpSecurityAttributes, PHKEY phkResult, LPDWORD lpdwDisposition)
+	{
+		return configIsExist ? ERROR_SUCCESS : RegCreateKeyEx(hKey, lpSubKey, Reserved, lpClass, dwOptions, samDesired, lpSecurityAttributes, phkResult, lpdwDisposition);
+	}
+
+	LSTATUS __stdcall RegOpenKeyExHook(HKEY hKey, LPCSTR lpSubKey, DWORD ulOptions, REGSAM samDesired, PHKEY phkResult)
+	{
+		return configIsExist ? ERROR_SUCCESS : RegOpenKeyEx(hKey, lpSubKey, ulOptions, samDesired, phkResult);
+	}
+
+	LSTATUS __stdcall RegCloseKeyHook(HKEY hKey)
+	{
+		return configIsExist ? ERROR_SUCCESS : RegCloseKey(hKey);
+	}
+
+	LSTATUS __stdcall RegQueryValueExHook(HKEY hKey, LPCSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData)
+	{
+		DWORD size = *lpcbData;
+
+		if (!configIsExist)
+		{
+			LSTATUS res = RegQueryValueEx(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
+			if (res == ERROR_SUCCESS)
+			{
+				if (size == sizeof(DWORD))
+					Config::Set(CONFIG_APP, lpValueName, *(INT*)lpData);
+				else
+					Config::Set(CONFIG_APP, lpValueName, (CHAR*)lpData);
+			}
+			return res;
+		}
+		else
+		{
+			if (size == sizeof(DWORD))
+			{
+				*(INT*)lpData = Config::Get(CONFIG_APP, lpValueName, 0);
+				if (lpType)
+					*lpType = REG_DWORD;
+			}
+			else
+			{
+				Config::Get(CONFIG_APP, lpValueName, "", (CHAR*)lpData, *lpcbData);
+				if (lpType)
+					*lpType = *lpcbData ? REG_BINARY : REG_SZ;
+			}
+
+			return ERROR_SUCCESS;
+		}
+	}
+
+	LSTATUS __stdcall RegSetValueExHook(HKEY hKey, LPCSTR lpValueName, DWORD Reserved, DWORD dwType, const BYTE* lpData, DWORD cbData)
+	{
+		if (dwType == REG_DWORD)
+			Config::Set(CONFIG_APP, lpValueName, *(INT*)lpData);
+		else
+			Config::Set(CONFIG_APP, lpValueName, (CHAR*)lpData);
+
+		return ERROR_SUCCESS;
+	}
+#pragma endregion
+
 	BOOL Load()
 	{
 		hookSpace = addressArray;
@@ -553,9 +600,7 @@ namespace Hooks
 		if (hookSpace)
 		{
 			{
-
 				PatchFunction(hModule, "CreateWindowExA", CreateWindowExHook);
-
 				PatchFunction(hModule, "MessageBoxA", MessageBoxHook);
 
 				PatchFunction(hModule, "LoadMenuA", LoadMenuHook);
@@ -563,12 +608,16 @@ namespace Hooks
 				PatchFunction(hModule, "EnableMenuItem", EnableMenuItemHook);
 				PatchFunction(hModule, "PeekMessageA", PeekMessageHook);
 
+				PatchFunction(hModule, "RegCreateKeyExA", RegCreateKeyExHook);
+				PatchFunction(hModule, "RegOpenKeyExA", RegOpenKeyExHook);
+				PatchFunction(hModule, "RegCloseKey", RegCloseKeyHook);
+				PatchFunction(hModule, "RegQueryValueExA", RegQueryValueExHook);
+				PatchFunction(hModule, "RegSetValueExA", RegSetValueExHook);
+
 				PatchFunction(hModule, "DirectDrawCreateEx", Main::DirectDrawCreateEx);
 
 				if (!isNoGL)
 				{
-
-
 					PatchFunction(hModule, "SetWindowLongA", SetWindowLongHook);
 					PatchFunction(hModule, "AdjustWindowRectEx", AdjustWindowRectExHook);
 					PatchFunction(hModule, "MoveWindow", MoveWindowHook);
@@ -589,33 +638,7 @@ namespace Hooks
 				PatchNop(hookSpace->clientrect_nop2, 2);
 			}
 
-			configKey = hookSpace->configKey;
-			configLanguage = hookSpace->resLanguage;
-			configDialog = hookSpace->resDialog;
-			configIcon = LoadIcon(hModule, MAKEINTRESOURCE(RESOURCE_ICON));
-			configFont = (HFONT)CreateFont(16, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET,
-				OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-				DEFAULT_PITCH | FF_DONTCARE, TEXT("MS Shell Dlg"));
-
-			configColdCPU = Config::Get("ColdCPU", FALSE);
-			if (!isNoGL)
-			{
-				configImageAspect = Config::Get("ImageAspect", TRUE);
-				configImageVSync = Config::Get("ImageVSync", TRUE);
-				configImageFilter = (ImageFilter)Config::Get("ImageFilter", FilterNearest);
-				configImageScaleNx = Config::Get("ImageScaleNx", 2);
-				configImageScaleHQ = Config::Get("ImageScaleHQ", 2);
-				configImageXBRZ = Config::Get("ImageXBRZ", 2);
-			}
-			else
-			{
-				configImageAspect = FALSE;
-				configImageVSync = FALSE;
-				configImageFilter = FilterNearest;
-				configImageScaleNx = 1;
-				configImageScaleHQ = 1;
-				configImageXBRZ = 1;
-			}
+			Config::Load(hModule, hookSpace);
 
 			return TRUE;
 		}

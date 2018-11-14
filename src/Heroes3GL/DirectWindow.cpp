@@ -41,7 +41,7 @@ namespace DirectWindow
 			case IDM_PATCH_CPU:
 			{
 				configColdCPU = !configColdCPU;
-				Config::Set("ColdCPU", configColdCPU);
+				Config::Set(CONFIG_WRAPPER, "ColdCPU", configColdCPU);
 				Window::CheckMenu(hWnd);
 
 				return NULL;

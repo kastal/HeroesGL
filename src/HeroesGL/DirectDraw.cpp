@@ -84,14 +84,7 @@ HRESULT __stdcall DirectDraw::RestoreDisplayMode()
 
 HRESULT __stdcall DirectDraw::SetCooperativeLevel(HWND hWnd, DWORD dwFlags)
 {
-	if (this->hWnd != hWnd)
-	{
-		this->hWnd = hWnd;
-
-		if (!Window::OldWindowProc)
-			Window::OldWindowProc = (WNDPROC)SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)DirectWindow::WindowProc);
-	}
-
+	this->hWnd = hWnd;
 	return this->lpDD->SetCooperativeLevel(hWnd, dwFlags);
 }
 

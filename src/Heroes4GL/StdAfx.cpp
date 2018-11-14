@@ -47,8 +47,11 @@ STRCMP StrCompare;
 STRCPY StrCopy;
 STRCAT StrCat;
 STRCHR StrChar;
+STRRCHR StrLastChar;
 STRSTR StrStr;
 WCSTOMBS StrToAnsi;
+FOPEN FileOpen;
+FCLOSE FileClose;
 EXIT Exit;
 
 DWORD
@@ -151,8 +154,12 @@ VOID LoadMsvCRT()
 		StrCopy = (STRCPY)GetProcAddress(hLib, "strcpy");
 		StrCat = (STRCAT)GetProcAddress(hLib, "strcat");
 		StrChar = (STRCHR)GetProcAddress(hLib, "strchr");
+		StrLastChar = (STRRCHR)GetProcAddress(hLib, "strrchr");
 		StrStr = (STRSTR)GetProcAddress(hLib, "strstr");
 		StrToAnsi = (WCSTOMBS)GetProcAddress(hLib, "wcstombs");
+
+		FileOpen = (FOPEN)GetProcAddress(hLib, "fopen");
+		FileClose = (FCLOSE)GetProcAddress(hLib, "fclose");
 
 		Exit = (EXIT)GetProcAddress(hLib, "exit");
 	}

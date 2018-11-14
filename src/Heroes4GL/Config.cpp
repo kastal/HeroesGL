@@ -25,7 +25,6 @@
 #include "stdafx.h"
 #include "Config.h"
 
-const CHAR* configKey;
 DWORD configLanguage;
 DWORD configDialog;
 HICON configIcon;
@@ -43,35 +42,71 @@ DWORD configImageEagle;
 DWORD configImageScaleHQ;
 DWORD configImageXBRZ;
 
+BOOL configIsExist;
+CHAR configFile[MAX_PATH];
+
 namespace Config
 {
-	DWORD __fastcall Get(const CHAR* name, DWORD def)
+	VOID __fastcall Load(HMODULE hModule, AddressSpace* hookSpace)
 	{
-		HKEY regKey;
-		if (RegCreateKeyEx(HKEY_LOCAL_MACHINE, configKey, NULL, NULL, REG_OPTION_NON_VOLATILE, KEY_READ, NULL, &regKey, NULL) == ERROR_SUCCESS)
-		{
-			BYTE data[256];
-			DWORD size = 256;
-			if (RegQueryValueEx(regKey, name, NULL, 0, data, &size) == ERROR_SUCCESS)
-				def = *(DWORD*)data;
+		GetModuleFileName(hModule, configFile, MAX_PATH - 1);
+		CHAR* p = StrLastChar(configFile, '\\');
+		*p = NULL;
+		StrCopy(p, "\\config.ini");
 
-			RegCloseKey(regKey);
+		FILE* file = FileOpen(configFile, "rb");
+		if (file)
+		{
+			configIsExist = TRUE;
+			FileClose(file);
 		}
 
-		return def;
+		configLanguage = hookSpace->resLanguage;
+		configIcon = LoadIcon(hModule, MAKEINTRESOURCE(RESOURCE_ICON));
+		configFont = (HFONT)CreateFont(16, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET,
+			OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+			DEFAULT_PITCH | FF_DONTCARE, TEXT("MS Shell Dlg"));
+
+		configColdCPU = (BOOL)Config::Get(CONFIG_WRAPPER, "ColdCPU", FALSE);
+		if (!isNoGL)
+		{
+			configImageAspect = (BOOL)Config::Get(CONFIG_WRAPPER, "ImageAspect", TRUE);
+			configImageVSync = (BOOL)Config::Get(CONFIG_WRAPPER, "ImageVSync", TRUE);
+			configImageFilter = (ImageFilter)Config::Get(CONFIG_WRAPPER, "ImageFilter", FilterNearest);
+			configImageScaleNx = (DWORD)Config::Get(CONFIG_WRAPPER, "ImageScaleNx", 2);
+			configImageScaleHQ = (DWORD)Config::Get(CONFIG_WRAPPER, "ImageScaleHQ", 2);
+			configImageXBRZ = (DWORD)Config::Get(CONFIG_WRAPPER, "ImageXBRZ", 2);
+		}
+		else
+		{
+			configImageAspect = FALSE;
+			configImageVSync = FALSE;
+			configImageFilter = FilterNearest;
+			configImageScaleNx = 2;
+			configImageScaleHQ = 2;
+			configImageXBRZ = 2;
+		}
 	}
 
-	BOOL __fastcall Set(const CHAR* name, DWORD value)
+	INT __fastcall Get(const CHAR* app, const CHAR* key, INT default)
 	{
-		BOOL res = FALSE;
+		return GetPrivateProfileInt(app, key, (INT)default, configFile);
+	}
 
-		HKEY regKey;
-		if (RegCreateKeyEx(HKEY_LOCAL_MACHINE, configKey, NULL, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &regKey, NULL) == ERROR_SUCCESS)
-		{
-			res = RegSetValueEx(regKey, name, NULL, REG_DWORD, (BYTE*)&value, sizeof(DWORD)) == ERROR_SUCCESS;
-			RegCloseKey(regKey);
-		}
+	DWORD __fastcall Get(const CHAR* app, const CHAR* key, CHAR* default, CHAR* returnString, DWORD nSize)
+	{
+		return GetPrivateProfileString(app, key, default, returnString, nSize, configFile);
+	}
 
-		return res;
+	BOOL __fastcall Set(const CHAR* app, const CHAR* key, INT value)
+	{
+		CHAR res[20];
+		StrPrint(res, "%d", value);
+		return WritePrivateProfileString(app, key, res, configFile);
+	}
+
+	BOOL __fastcall Set(const CHAR* app, const CHAR* key, CHAR* value)
+	{
+		return WritePrivateProfileString(app, key, value, configFile);
 	}
 }

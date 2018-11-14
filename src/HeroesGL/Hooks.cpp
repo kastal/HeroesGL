@@ -29,7 +29,7 @@
 #include "Config.h"
 #include "Resource.h"
 #include "Window.h"
-
+#include "DirectWindow.h"
 #include "AdrDevice.h"
 #include "AdrSource.h"
 
@@ -43,110 +43,106 @@ AddressSpace addressArray[] = {
 #pragma region Heroes I Rus
 		0x00442EFF, 1, MAKEINTRESOURCE(109), LNG_RUSSIAN, 0x0046827C, 2, 0x004684AA, TRUE,  0x0046F8EC, 6, 0x0046833C, 0x004677A0, 0x00000000, // Heroes I - Buka
 		(AppSettings*)0x004A9440,
-		0x004A98EC, 0x0043DE33, 0x004CEF88, 0x004CF0B4, 0x004CF30C, 0x004463EF, 0x004682F5, 0x0046FB39, 0x0046FB52, 0x0046FBBE, 0x0046FCAE, 0x0046FD2E,
-		"Герои Меча и Магии", "SOFTWARE\\Buka\\3DO\\Heroes of Might and Magic Platinum\\1.000", "HMM1 ",
+		0x004A98EC, 0x0043DE33, 0x004CEF88, 0x004CF0B4, 0x004CF30C, 0x00000000, 0x004463EF, 0x004682F5, 0x0046FB39, 0x0046FB52, 0x0046FBBE, 0x0046FCAE, 0x0046FD2E,
+		"Герои Меча и Магии",
 		0x0040CBFA, 1, MAKEINTRESOURCE(109), LNG_RUSSIAN, 0x0041AFC2, 2, 0x0041B1EA, TRUE,  0x0042170C, 6, 0x0041B082, 0x0041A51D, 0x00000000, // Heroes I Editor - Buka
 		(AppSettings*)0x00452490,
-		0x004528A4, 0x00000000, 0x00454260, 0x0045438C, 0x004545E4, 0x00408650, 0x0041B03B, 0x00421959, 0x00421972, 0x004219DE, 0x00421ACE, 0x00421B4E,
-		"Герои Меча и Магии: Редактор", "SOFTWARE\\Buka\\3DO\\Heroes of Might and Magic Platinum\\1.000", "HMM1 ",
+		0x004528A4, 0x00000000, 0x00454260, 0x0045438C, 0x004545E4, 0x00000000, 0x00408650, 0x0041B03B, 0x00421959, 0x00421972, 0x004219DE, 0x00421ACE, 0x00421B4E,
+		"Герои Меча и Магии: Редактор",
 #pragma endregion
 
 #pragma region Heroes II Rus
 		0x004710BE, 2, "HEROES", LNG_RUSSIAN, 0x004B193C, 2, 0x004B1BB8, TRUE,  0x004D46A1, 6, 0x004B1A25, 0x004B0E4D, 0x004BD200, // Heroes II Gold - Buka
 		(AppSettings*)0x005261FC,
-		0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		"Герои Меча и Магии II: Цена Верности", "SOFTWARE\\Buka\\3DO\\Heroes of Might and Magic Platinum\\1.000", "HMM2POL ",
+		0x00000000, 0x00000000, 0x005352D4, 0x00535454, 0x00000000, 0x004BC572, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		"Герои Меча и Магии II: Цена Верности",
 		0x0041535E, 2, "EDITOR", LNG_RUSSIAN, 0x0042CC58, 2, 0x0042CED4, TRUE,  0x00447E81, 6, 0x0042CD41, 0x0042C19D, 0x00431530, // Heroes II Gold Editor - Buka
 		(AppSettings*)0x004A4670,
-		0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		"Герои Меча и Магии II: Редактор", "SOFTWARE\\Buka\\3DO\\Heroes of Might and Magic Platinum\\1.000", "HMM2POL ",
+		0x00000000, 0x00000000, 0x004A677C, 0x004A68FC, 0x00000000, 0x004308A2, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		"Герои Меча и Магии II: Редактор",
 #pragma endregion
 
 #pragma region Heroes I Eng
 		// ----------------------------------------------------------------------------
 		0x0045B9AA, 1, "HEROES", LNG_ENGLISH, 0x00405547, 6, 0x0040583D, FALSE, 0x004734D3, 2, 0x0040566A, 0x0040490E, 0x00000000, // Heroes I v1.0
 		(AppSettings*)0x004C6AC0,
-		0x00492E28, 0x00450FE0, 0x004CB4C0, 0x004CC538, 0x004CAC88, 0x004644E7, 0x004682F5, 0x004736D4, 0x004736E9, 0x0047372C, 0x004737C1, 0x004737FE,
-		"Heroes of Might and Magic: A Strategic Quest", "SOFTWARE\\New World Computing\\Heroes of Might and Magic\\1.0", NULL,
+		0x00492E28, 0x00450FE0, 0x004CB4C0, 0x004CC538, 0x004CAC88, 0x00000000, 0x004644E7, 0x004682F5, 0x004736D4, 0x004736E9, 0x0047372C, 0x004737C1, 0x004737FE,
+		"Heroes of Might and Magic: A Strategic Quest",
 		0x0041C62A, 1, "EDITOR", LNG_ENGLISH, 0x0041BF70, 6, 0x0041C266, FALSE, 0x00421743, 2, 0x0041C093, 0x0041B398, 0x00000000, // Heroes I Editor v1.0
 		(AppSettings*)0x004480C0,
-		0x00436E60, 0x00000000, 0x00449C30, 0x0044ACA8, 0x004493F8, 0x00409ADC, 0x0041C028, 0x00421964, 0x00421979, 0x004219BC, 0x00421A51, 0x00421A8E,
-		"Heroes of Might and Magic: Editor", "SOFTWARE\\New World Computing\\Heroes of Might and Magic\\1.0", NULL,
+		0x00436E60, 0x00000000, 0x00449C30, 0x0044ACA8, 0x004493F8, 0x00000000, 0x00409ADC, 0x0041C028, 0x00421964, 0x00421979, 0x004219BC, 0x00421A51, 0x00421A8E,
+		"Heroes of Might and Magic: Editor",
 
 		0x0045BAAA, 1, "HEROES", LNG_ENGLISH, 0x00405547, 6, 0x0040583D, FALSE, 0x00473AA3, 2, 0x0040566A, 0x0040490E, 0x00000000, // Heroes I v1.1
 		(AppSettings*)0x004C6F70,
-		0x00492E28, 0x004510E1, 0x004CB970, 0x004CC9E8, 0x004CB138, 0x00464607, 0x004055FF, 0x00473CA4, 0x00473CB9, 0x00473CFC, 0x00473D91, 0x00473DCE,
-		"Heroes of Might and Magic: A Strategic Quest", "SOFTWARE\\New World Computing\\Heroes of Might and Magic\\1.0", NULL,
+		0x00492E28, 0x004510E1, 0x004CB970, 0x004CC9E8, 0x004CB138, 0x00000000, 0x00464607, 0x004055FF, 0x00473CA4, 0x00473CB9, 0x00473CFC, 0x00473D91, 0x00473DCE,
+		"Heroes of Might and Magic: A Strategic Quest",
 		0x0041C64A, 1, "EDITOR", LNG_ENGLISH, 0x0041BF90, 6, 0x0041C286, FALSE, 0x00421773, 2, 0x0041C0B3, 0x0041B3B8, 0x00000000, // Heroes I Editor v1.1
 		(AppSettings*)0x004482A0,
-		0x00436E60, 0x00000000, 0x00449E10, 0x0044AE88, 0x004495D8, 0x00409AEC, 0x0041C048, 0x00421994, 0x004219A9, 0x004219EC, 0x00421A81, 0x00421ABE,
-		"Heroes of Might and Magic: Editor", "SOFTWARE\\New World Computing\\Heroes of Might and Magic\\1.0", NULL,
+		0x00436E60, 0x00000000, 0x00449E10, 0x0044AE88, 0x004495D8, 0x00000000, 0x00409AEC, 0x0041C048, 0x00421994, 0x004219A9, 0x004219EC, 0x00421A81, 0x00421ABE,
+		"Heroes of Might and Magic: Editor",
 
 		0x00432B2A, 1, "HEROES", LNG_ENGLISH, 0x00436E67, 6, 0x0043715D, FALSE, 0x00475CC3, 2, 0x00436F8A, 0x0043622E, 0x00000000, // Heroes I v1.2
 		(AppSettings*)0x004A9B88,
-		0x00492C40, 0x00422571, 0x004CE670, 0x004CE7A0, 0x004CEA00, 0x00439EA7, 0x00436F1F, 0x00475EC4, 0x00475ED9, 0x00475F1C, 0x00475FB1, 0x00475FEE,
-		"Heroes of Might and Magic: A Strategic Quest", "SOFTWARE\\New World Computing\\Heroes of Might and Magic\\1.0", NULL,
+		0x00492C40, 0x00422571, 0x004CE670, 0x004CE7A0, 0x004CEA00, 0x00000000, 0x00439EA7, 0x00436F1F, 0x00475EC4, 0x00475ED9, 0x00475F1C, 0x00475FB1, 0x00475FEE,
+		"Heroes of Might and Magic: A Strategic Quest",
 		0x004012BA, 1, "EDITOR", LNG_ENGLISH, 0x004113AF, 6, 0x004116A5, FALSE, 0x00420CD3, 2, 0x004114D2, 0x004107D8, 0x00000000, // Heroes I Editor v1.2
 		(AppSettings*)0x0044A8B8,
-		0x00439670, 0x00000000, 0x0044BE30, 0x0044BF60, 0x0044C1C0, 0x0041AD4C, 0x00411467, 0x00420EF4, 0x00420F09, 0x00420F4C, 0x00420FE1, 0x0042101E,
-		"Heroes of Might and Magic: Editor", "SOFTWARE\\New World Computing\\Heroes of Might and Magic\\1.0", NULL,
+		0x00439670, 0x00000000, 0x0044BE30, 0x0044BF60, 0x0044C1C0, 0x00000000, 0x0041AD4C, 0x00411467, 0x00420EF4, 0x00420F09, 0x00420F4C, 0x00420FE1, 0x0042101E,
+		"Heroes of Might and Magic: Editor",
 #pragma endregion
 
 #pragma region Heroes II Eng
 		// ----------------------------------------------------------------------------
 		0x00409017, 2, "HEROES", LNG_ENGLISH, 0x004B32A0, 6, 0x004B35F5, FALSE, 0x004CDFAC, 2, 0x004B33E8, 0x004B262A, 0x004BF5A0, // Heroes II v1.0
 		(AppSettings*)0x0051F344,
-		0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		"Heroes of Might and Magic II: The Succession Wars", "SOFTWARE\\New World Computing\\Heroes of Might and Magic 2\\1.0", NULL,
+		0x00000000, 0x00000000, 0x005221C8, 0x00522350, 0x00000000, 0x004BEBF4, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		"Heroes of Might and Magic II: The Succession Wars",
 		0x004028B7, 2, "EDITOR", LNG_ENGLISH, 0x00422160, 6, 0x004224AF, FALSE, 0x0043914C, 2, 0x004222A8, 0x00421546, 0x00432040, // Heroes II Editor v1.0
 		(AppSettings*)0x00481740,
-		0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		"Heroes of Might and Magic II: Editor", "SOFTWARE\\New World Computing\\Heroes of Might and Magic 2\\1.0", NULL,
+		0x00000000, 0x00000000, 0x00487988, 0x00487B10, 0x00000000, 0x004316B4, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		"Heroes of Might and Magic II: Editor",
 
 		0x00408FE7, 2, "HEROES", LNG_ENGLISH, 0x004B398B, 6, 0x004B3CF2, FALSE, 0x004CE8CC, 2, 0x004B3AD3, 0x004B2D00, 0x004BFD70, // Heroes II v1.1
 		(AppSettings*)0x0051C2AC,
-		0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		"Heroes of Might and Magic II: The Succession Wars", "SOFTWARE\\New World Computing\\Heroes of Might and Magic 2\\1.0", NULL,
+		0x00000000, 0x00000000, 0x00520098, 0x00520CA0, 0x00000000, 0x004BF3C4, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		"Heroes of Might and Magic II: The Succession Wars",
 		0x00402987, 2, "EDITOR", LNG_ENGLISH, 0x0042213B, 6, 0x0042249B, FALSE, 0x0043CF6C, 2, 0x00422283, 0x0042150C, 0x00435F00, // Heroes II Editor v1.1
 		(AppSettings*)0x00484290,
-		0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		"Heroes of Might and Magic II: Editor", "SOFTWARE\\New World Computing\\Heroes of Might and Magic 2\\1.0", NULL,
+		0x00000000, 0x00000000, 0x0048AAF8, 0x0048B700, 0x00000000, 0x00435574, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		"Heroes of Might and Magic II: Editor",
 
 		0x0045DE87, 2, "HEROES", LNG_ENGLISH, 0x004A39EB, 6, 0x004A3D52, FALSE, 0x004D2C7C, 2, 0x004A3B33, 0x004A2D60, 0x004C3440, // Heroes II v1.2
 		(AppSettings*)0x0051B464,
-		0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		"Heroes of Might and Magic II: The Succession Wars", "SOFTWARE\\New World Computing\\Heroes of Might and Magic 2\\1.0", NULL,
-		0x00426667, 2, "EDITOR", LNG_ENGLISH, 0x0042194B, 6, 0x00421CAC, FALSE, 0x0043CA5C, 2, 0x00421A93, 0x00420D1C, 0x004368F0, // Heroes II Editor v1.2
+		0x00000000, 0x00000000, 0x0051FED8, 0x00520AE0, 0x00000000, 0x004C2A94, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		"Heroes of Might and Magic II: The Succession Wars",
+		0x00426667, 2, "EDITOR", LNG_ENGLISH, 0x0042194B, 6, 0x00421CAC, FALSE, 0x0043CA5C, 2, 0x00421A93, 0x00420D1C, 0x004368F0, // Heroes II Editor v1.2 - v1.3
 		(AppSettings*)0x00488720,
-		0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		"Heroes of Might and Magic II: Editor", "SOFTWARE\\New World Computing\\Heroes of Might and Magic 2\\1.0", NULL,
+		0x00000000, 0x00000000, 0x0048AA58, 0x0048B660, 0x00000000, 0x00435F64, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		"Heroes of Might and Magic II: Editor",
 
 		0x00434317, 2, "HEROES", LNG_ENGLISH, 0x00437447, 6, 0x004377AE, FALSE, 0x004CF75C, 2, 0x0043758F, 0x004367BA, 0x004C5AF0, // Heroes II v1.3
 		(AppSettings*)0x00520E84,
-		0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		"Heroes of Might and Magic II: The Succession Wars", "SOFTWARE\\New World Computing\\Heroes of Might and Magic 2\\1.0", NULL,
-		0x00426667, 2, "EDITOR", LNG_ENGLISH, 0x0042194B, 6, 0x00421CAC, FALSE, 0x0043CA5C, 2, 0x00421A93, 0x00420D1C, 0x004368F0, // Heroes II Editor v1.3
-		(AppSettings*)0x00488720,
-		0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		"Heroes of Might and Magic II: Editor", "SOFTWARE\\New World Computing\\Heroes of Might and Magic 2\\1.0", NULL,
+		0x00000000, 0x00000000, 0x00521FD0, 0x00522158, 0x00000000, 0x004C5144, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		"Heroes of Might and Magic II: The Succession Wars",
 
 		0x0041BFB7, 2, "HEROES", LNG_ENGLISH, 0x0043733B, 6, 0x004376A2, FALSE, 0x004D85DC, 2, 0x00437483, 0x004366B0, 0x004CE990, // Heroes II v2.0
 		(AppSettings*)0x00528D3C,
-		0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		"Heroes of Might and Magic II: The Price of Loyalty", "SOFTWARE\\New World Computing\\Heroes of Might and Magic 2\\1.0", NULL,
+		0x00000000, 0x00000000, 0x00533B58, 0x00534760, 0x00000000, 0x004CDFD4, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		"Heroes of Might and Magic II: The Price of Loyalty",
 		0x0040FCD7, 2, "EDITOR", LNG_ENGLISH, 0x0042CA64, 6, 0x0042CDB2, FALSE, 0x00439E6C, 2, 0x0042CBAC, 0x0042BE4C, 0x00434350, // Heroes II Editor v2.0
 		(AppSettings*)0x0048EA28,
-		0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		"Heroes of Might and Magic II: Editor", "SOFTWARE\\New World Computing\\Heroes of Might and Magic 2\\1.0", NULL,
+		0x00000000, 0x00000000, 0x0048FE00, 0x00490A08, 0x00000000, 0x004339C4, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		"Heroes of Might and Magic II: Editor",
 
 		0x00484DC1, 2, "HEROES", LNG_ENGLISH, 0x0049CEC3, 6, 0x0049D26D, FALSE, 0x004D88CC, 2, 0x0049D030, 0x0049C1E0, 0x004D1480, // Heroes II v2.1
 		(AppSettings*)0x0052485C,
-		0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		"Heroes of Might and Magic II: The Price of Loyalty", "SOFTWARE\\New World Computing\\Heroes of Might and Magic 2\\1.0", NULL,
+		0x00000000, 0x00000000, 0x005339B8, 0x00533B40, 0x00000000, 0x004D0AD4, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		"Heroes of Might and Magic II: The Price of Loyalty",
 		0x00423EF7, 2, "EDITOR", LNG_ENGLISH, 0x004187CE, 6, 0x00418B1D, FALSE, 0x0043F20C, 2, 0x00418916, 0x00417BB6, 0x00437C90, // Heroes II Editor v2.1
 		(AppSettings*)0x0048EE40,
-		0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		"Heroes of Might and Magic II: Editor", "SOFTWARE\\New World Computing\\Heroes of Might and Magic 2\\1.0", NULL,
+		0x00000000, 0x00000000, 0x00490BB8, 0x00490D40, 0x00000000, 0x00437304, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		"Heroes of Might and Magic II: Editor",
 #pragma endregion
 
 		NULL
@@ -387,13 +383,12 @@ namespace Hooks
 
 			XOR ECX, ECX
 			XOR EDX, EDX
-			PUSH isFullscreen
+			PUSH 1
 			CALL checkChangeCursor
 		}
 
 		RepaintWindow();
 	}
-
 
 	VOID __declspec(naked) hook_mode_v1()
 	{
@@ -413,6 +408,8 @@ namespace Hooks
 
 	BOOL __stdcall AdjustWindowRectHook(LPRECT lpRect, DWORD dwStyle, BOOL bMenu)
 	{
+		Hooks::ScalePointer((FLOAT)(lpRect->right - lpRect->left + 1) / (FLOAT)RES_WIDTH, (FLOAT)(lpRect->bottom - lpRect->top + 1) / (FLOAT)RES_HEIGHT);
+
 		if (dwStyle == STYLE_FULL_OLD)
 			dwStyle = STYLE_FULL_NEW;
 
@@ -425,6 +422,10 @@ namespace Hooks
 			dwStyle = STYLE_FULL_NEW;
 
 		hWnd = CreateWindow(lpClassName, hookSpace->windowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+
+		if (isNoGL && !Window::OldWindowProc)
+			Window::OldWindowProc = (WNDPROC)SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)DirectWindow::WindowProc);
+
 		return hWnd;
 	}
 
@@ -573,15 +574,24 @@ namespace Hooks
 		return res;
 	}
 
-	HMODULE __stdcall LoadLibraryAHook(LPCSTR lpLibFileName)
+	HMODULE __stdcall LoadLibraryHook(LPCSTR lpLibFileName)
 	{
 		if (!StrCompareInsensitive(lpLibFileName, "DDRAW.dll"))
 			return hDllModule;
 		return LoadLibrary(lpLibFileName);
 	}
 
+	BOOL __stdcall FreeLibraryHook(HMODULE hLibModule)
+	{
+		if (hLibModule == hDllModule)
+			return TRUE;
+		return FreeLibrary(hLibModule);
+	}
+
 #pragma region Mouse Pointers
-	const DWORD palette[256] = {
+	DWORD monoEntries[2] = { 0x00000000, 0x00ffffff };
+
+	DWORD palEntries[256] = {
 		0x00000000,
 		0x00800000,
 		0x00008000,
@@ -840,8 +850,6 @@ namespace Hooks
 		0x00ffffff
 	};
 
-	DWORD colorData[32 * 32];
-
 	struct {
 		FLOAT cx;
 		FLOAT cy;
@@ -849,17 +857,17 @@ namespace Hooks
 
 	VOID __fastcall ScalePointer(FLOAT cx, FLOAT cy)
 	{
-		if (!hookSpace->color_pointer || isNoGL)
+		HICON* hIcon = (HICON*)hookSpace->icons_list;
+		if (!hIcon)
 			return;
+
+		HBITMAP* hBmMask = (HBITMAP*)hookSpace->masks_list;
+		HBITMAP* hBmColor = (HBITMAP*)hookSpace->colors_list;
 
 		scale.cx = cx;
 		scale.cy = cy;
 
-		HICON* hIcon = (HICON*)hookSpace->icons_list;
-		HBITMAP* hBmMask = (HBITMAP*)hookSpace->masks_list;
-		HBITMAP* hBmColor = (HBITMAP*)hookSpace->colors_list;
-
-		DWORD count = 75;
+		DWORD count = hookSpace->game_version == 1 ? 75 : 96;
 		do
 		{
 			if (*hIcon)
@@ -876,79 +884,118 @@ namespace Hooks
 			}
 			++hBmMask;
 
-			if (*hBmColor)
+			if (hBmColor)
 			{
-				DeleteObject(*hBmColor);
-				*hBmColor = NULL;
-			}
-			++hBmColor;
-
-		} while (--count);
-	}
-
-	HBITMAP CreateBitmapScaled(BITMAP* pbm)
-	{
-		HBITMAP hBmp1 = CreateBitmapIndirect(pbm);
-		if (isNoGL)
-			return hBmp1;
-
-		HBITMAP hBmp2;
-		{
-			HDC hDc1 = CreateCompatibleDC(NULL);
-			{
-				SelectObject(hDc1, hBmp1);
-
-				BITMAP pbm2;
-				pbm2.bmType = pbm->bmType;
-				pbm2.bmWidth = (LONG)MathRound(scale.cx * pbm->bmWidth);
-				pbm2.bmHeight = (LONG)MathRound(scale.cy * pbm->bmHeight);
-				pbm2.bmWidthBytes = (LONG)MathCeil(FLOAT(pbm2.bmWidth * pbm->bmBitsPixel) / 8.0f);
-
-				if (pbm2.bmWidthBytes & 1)
-					++pbm2.bmWidthBytes;
-
-				pbm2.bmPlanes = pbm->bmPlanes;
-				pbm2.bmBitsPixel = pbm->bmBitsPixel;
-
-				VOID* buffer = MemoryAlloc(pbm2.bmWidth * pbm2.bmHeight * 4);
+				if (*hBmColor)
 				{
-					pbm2.bmBits = buffer;
-
-					hBmp2 = CreateBitmapIndirect(&pbm2);
-					HDC hDc2 = CreateCompatibleDC(NULL);
-					{
-						SelectObject(hDc2, hBmp2);
-						StretchBlt(hDc2, 0, 0, pbm2.bmWidth, pbm2.bmHeight, hDc1, 0, 0, pbm->bmWidth, pbm->bmHeight, SRCCOPY);
-					}
-					DeleteDC(hDc2);
+					DeleteObject(*hBmColor);
+					*hBmColor = NULL;
 				}
-				MemoryFree(buffer);
+				++hBmColor;
 			}
-			DeleteDC(hDc1);
-		}
-		DeleteObject(hBmp1);
-
-		return hBmp2;
+		} while (--count);
 	}
 
 	HBITMAP __stdcall CreateBitmapIndirectHook(BITMAP* pbm)
 	{
-		if (pbm->bmBitsPixel == 8)
+		HDC hDc = GetDC(hWnd);
+		if (hDc)
 		{
-			pbm->bmBitsPixel *= 4;
-			pbm->bmWidthBytes *= 4;
+			HBITMAP hBmp = NULL, hBmp1 = NULL, hBmp2 = NULL;
+			VOID* colorData1, *colorData2;
 
-			BYTE* src = (BYTE*)pbm->bmBits;
-			DWORD* dst = colorData;
-			pbm->bmBits = dst;
+			DWORD width = (DWORD)MathRound(scale.cx * pbm->bmWidth);
 
-			DWORD count = pbm->bmWidth * pbm->bmHeight;
-			do
-				*dst++ = palette[*src++];
-			while (--count);
+			DWORD height;
+			if (hookSpace->color_pointer)
+				height = (DWORD)MathRound(scale.cy * pbm->bmHeight);
+			else
+				height = (DWORD)(MathRound(scale.cy * pbm->bmHeight * 0.5f)) << 1;
+
+			DWORD size = sizeof(BITMAPINFOHEADER) + 256 * sizeof(DWORD);
+			BITMAPINFO* bmi = (BITMAPINFO*)MemoryAlloc(size);
+			{
+				MemoryZero(bmi, size);
+
+				BITMAPINFOHEADER* bmiHeader = &bmi->bmiHeader;
+				bmiHeader->biSize = sizeof(BITMAPINFOHEADER);
+				bmiHeader->biPlanes = pbm->bmPlanes;
+				bmiHeader->biXPelsPerMeter = 1;
+				bmiHeader->biYPelsPerMeter = 1;
+				bmiHeader->biCompression = BI_RGB;
+
+				if (pbm->bmBitsPixel == 8)
+				{
+					bmiHeader->biBitCount = 8;
+					bmiHeader->biClrUsed = 256;
+					MemoryCopy(bmi->bmiColors, palEntries, 256 * sizeof(DWORD));
+				}
+				else
+				{
+					bmiHeader->biBitCount = 1;
+					bmiHeader->biClrUsed = 2;
+					MemoryCopy(bmi->bmiColors, monoEntries, 2 * sizeof(DWORD));
+				}
+
+				bmiHeader->biWidth = pbm->bmWidth;
+				bmiHeader->biHeight = -pbm->bmHeight;
+				hBmp1 = CreateDIBSection(hDc, bmi, 0, &colorData1, 0, 0);
+
+				bmiHeader->biWidth = width;
+				bmiHeader->biHeight = height;
+				hBmp2 = CreateDIBSection(hDc, bmi, 0, &colorData2, 0, 0);
+			}
+			MemoryFree(bmi);
+
+			if (hBmp1 && hBmp2)
+			{
+				if (pbm->bmBitsPixel == 8)
+					MemoryCopy(colorData1, pbm->bmBits, pbm->bmWidth * pbm->bmHeight);
+				else
+					MemoryCopy(colorData1, pbm->bmBits, (DWORD)MathCeil(0.125f * pbm->bmWidth * pbm->bmHeight));
+
+				BOOL stretched = FALSE;
+				HDC hDc1 = CreateCompatibleDC(hDc);
+				if (hDc1)
+				{
+					SelectObject(hDc1, hBmp1);
+
+					HDC hDc2 = CreateCompatibleDC(hDc);
+					if (hDc2)
+					{
+						SelectObject(hDc2, hBmp2);
+						stretched = StretchBlt(hDc2, 0, 0, width, height, hDc1, 0, 0, pbm->bmWidth, pbm->bmHeight, SRCCOPY);
+
+						DeleteDC(hDc2);
+					}
+
+					DeleteDC(hDc1);
+				}
+
+				if (stretched)
+				{
+					DeleteObject(hBmp1);
+					hBmp = hBmp2;
+				}
+				else
+				{
+					DeleteObject(hBmp2);
+					hBmp = hBmp1;
+				}
+			}
+			else
+			{
+				if (hBmp1)
+					DeleteObject(hBmp1);
+
+				if (hBmp2)
+					DeleteObject(hBmp2);
+			}
+
+			return hBmp;
 		}
-
-		return CreateBitmapScaled(pbm);
+		else
+			return NULL;
 	}
 
 	HICON __stdcall CreateIconIndirectHook(PICONINFO piconinfo)
@@ -959,6 +1006,7 @@ namespace Hooks
 	}
 #pragma endregion
 
+#pragma region Smoth Screen Update
 	DWORD savedTick = 0;
 	VOID __cdecl SetTickCount()
 	{
@@ -970,6 +1018,7 @@ namespace Hooks
 		((VOID(__cdecl *)(VOID*))hookSpace->update_palette)(pallete); // UpdatePalette
 		((VOID(__cdecl *)(DWORD))hookSpace->delay_til)(savedTick); // DelayTilMilli
 	}
+#pragma endregion
 
 #pragma region Fix paint rectangle on VM
 	BOOL __stdcall InvalidateRectHook(HWND hWnd, const RECT *lpRect, BOOL bErase)
@@ -1005,9 +1054,9 @@ namespace Hooks
 		return device ? new AdrDevice(device) : NULL;
 	}
 
-	AdrSource* __fastcall OpenTrack(TrackInfo* track)
+	BOOL __fastcall FindTrack(CHAR* path)
 	{
-		if (StrLastChar(track->path, '.'))
+		if (StrLastChar(path, '.'))
 		{
 			DWORD total = 0;
 			CHAR filePath[MAX_PATH];
@@ -1016,7 +1065,7 @@ namespace Hooks
 			DWORD count = sizeof(audioExtList) / sizeof(CHAR*);
 			do
 			{
-				StrCopy(filePath, track->path);
+				StrCopy(filePath, path);
 				CHAR* p = StrLastChar(filePath, '.');
 				*p = NULL;
 
@@ -1048,7 +1097,7 @@ namespace Hooks
 				count = sizeof(audioExtList) / sizeof(CHAR*);
 				do
 				{
-					StrCopy(filePath, track->path);
+					StrCopy(filePath, path);
 					CHAR* p = StrLastChar(filePath, '.');
 					*p = NULL;
 
@@ -1068,9 +1117,9 @@ namespace Hooks
 								p = StrLastChar(filePath, '\\');
 								*(++p) = NULL;
 								StrCat(filePath, findData.cFileName);
+								StrCopy(path, filePath);
 
-								audiere::SampleSource* source = AudiereOpenSampleSource(filePath);
-								return source ? new AdrSource(source, track) : NULL;
+								return TRUE;
 							}
 						} while (FindNextFile(hFind, &findData));
 						FindClose(hFind);
@@ -1081,43 +1130,54 @@ namespace Hooks
 			}
 		}
 
-		return NULL;
+		return FALSE;
 	}
 
 	AdrSource* __stdcall AdrOpenSampleSourceHook(CHAR* originalPath)
 	{
-		if (!trackInfo || StrCompare(trackInfo->group, originalPath))
+		if (trackInfo && !StrCompare(trackInfo->group, originalPath))
 		{
-			CHAR* openPath = originalPath;
+			audiere::SampleSource* source = AudiereOpenSampleSource(trackInfo->path);
+			return source ? new AdrSource(source, trackInfo) : NULL;
+		}
 
-			CHAR path[MAX_PATH];
-			StrCopy(path, originalPath);
-			CHAR* p = StrChar(path, '\\');
-			if (p)
-				*p = NULL;
-
-			if (GetDriveType(path) == DRIVE_CDROM)
+		BOOL found = FALSE;
+		CHAR path[MAX_PATH];
+		StrCopy(path, originalPath);
+		CHAR* p = StrChar(path, '\\');
+		if (p) *p = NULL;
+		if (GetDriveType(path) == DRIVE_CDROM)
+		{
+			CHAR* o = StrChar(originalPath, '\\');
+			if (o)
 			{
-				CHAR* o = StrChar(originalPath, '\\');
-				if (o)
+				GetModuleFileName(hModule, path, MAX_PATH - 1);
+				p = StrLastChar(path, '\\');
+				if (p)
 				{
-					GetModuleFileName(hModule, path, MAX_PATH - 1);
-					p = StrLastChar(path, '\\');
-					if (p)
-					{
-						*p = NULL;
-						StrCat(path, o);
-						openPath = path;
-					}
+					*p = NULL;
+					StrCat(path, o);
+					found = FindTrack(path);
 				}
 			}
+		}
 
+		if (!found)
+		{
+			StrCopy(path, originalPath);
+			found = FindTrack(path);
+		}
 
+		if (found)
+		{
 			trackInfo = tracksList;
 			while (trackInfo)
 			{
-				if (!StrCompare(trackInfo->path, openPath))
-					goto lbl_return;
+				if (!StrCompare(trackInfo->path, path))
+				{
+					audiere::SampleSource* source = AudiereOpenSampleSource(trackInfo->path);
+					return source ? new AdrSource(source, trackInfo) : NULL;
+				}
 
 				trackInfo = trackInfo->last;
 			}
@@ -1128,7 +1188,7 @@ namespace Hooks
 
 			trackInfo->position = 0;
 			trackInfo->group = StrDuplicate(originalPath);
-			trackInfo->path = StrDuplicate(openPath);
+			trackInfo->path = StrDuplicate(path);
 			trackInfo->isPositional = FALSE;
 
 			StrCopy(path, originalPath);
@@ -1149,10 +1209,12 @@ namespace Hooks
 
 				++listItem;
 			} while (--count);
-		}
 
-	lbl_return:
-		return OpenTrack(trackInfo);;
+			audiere::SampleSource* source = AudiereOpenSampleSource(trackInfo->path);
+			return source ? new AdrSource(source, trackInfo) : NULL;
+		}
+		else
+			return NULL;
 	}
 #pragma endregion
 
@@ -1180,7 +1242,7 @@ namespace Hooks
 #pragma region Patch audio on GOG release
 	VOID __inline PatchWinMM()
 	{
-		const CHAR* winmmLibList[] = { "MSS32.DLL" };
+		const CHAR* winmmLibList[] = { "MSS32.dll" };
 
 		CHAR filePath[MAX_PATH];
 		GetModuleFileName(hModule, filePath, sizeof(filePath) - 1);
@@ -1262,6 +1324,68 @@ namespace Hooks
 	}
 #pragma endregion
 
+#pragma region Registry
+	LSTATUS __stdcall RegCreateKeyHook(HKEY hKey, LPCSTR lpSubKey, PHKEY phkResult)
+	{
+		return configIsExist ? ERROR_SUCCESS : RegCreateKey(hKey, lpSubKey, phkResult);
+	}
+
+	LSTATUS __stdcall RegOpenKeyExHook(HKEY hKey, LPCSTR lpSubKey, DWORD ulOptions, REGSAM samDesired, PHKEY phkResult)
+	{
+		return configIsExist ? ERROR_SUCCESS : RegOpenKeyEx(hKey, lpSubKey, ulOptions, samDesired, phkResult);
+	}
+
+	LSTATUS __stdcall RegCloseKeyHook(HKEY hKey)
+	{
+		return configIsExist ? ERROR_SUCCESS : RegCloseKey(hKey);
+	}
+
+	LSTATUS __stdcall RegQueryValueExHook(HKEY hKey, LPCSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData)
+	{
+		DWORD size = *lpcbData;
+
+		if (!configIsExist)
+		{
+			LSTATUS res = RegQueryValueEx(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
+			if (res == ERROR_SUCCESS)
+			{
+				if (size == sizeof(DWORD))
+					Config::Set(CONFIG_APP, lpValueName, *(INT*)lpData);
+				else
+					Config::Set(CONFIG_APP, lpValueName, (CHAR*)lpData);
+			}
+			return res;
+		}
+		else
+		{
+			if (size == sizeof(DWORD))
+			{
+				*(INT*)lpData = Config::Get(CONFIG_APP, lpValueName, 0);
+				if (lpType)
+					*lpType = REG_DWORD;
+			}
+			else
+			{
+				Config::Get(CONFIG_APP, lpValueName, "", (CHAR*)lpData, *lpcbData);
+				if (lpType)
+					*lpType = *lpcbData ? REG_BINARY : REG_SZ;
+			}
+
+			return ERROR_SUCCESS;
+		}
+	}
+
+	LSTATUS __stdcall RegSetValueExHook(HKEY hKey, LPCSTR lpValueName, DWORD Reserved, DWORD dwType, const BYTE* lpData, DWORD cbData)
+	{
+		if (dwType == REG_DWORD)
+			Config::Set(CONFIG_APP, lpValueName, *(INT*)lpData);
+		else
+			Config::Set(CONFIG_APP, lpValueName, (CHAR*)lpData);
+
+		return ERROR_SUCCESS;
+	}
+#pragma endregion
+
 	BOOL Load()
 	{
 		hookSpace = addressArray;
@@ -1274,7 +1398,8 @@ namespace Hooks
 			if (ReadDWord(hookSpace->check + 6, &check) && check == STYLE_FULL_OLD)
 			{
 				{
-					PatchFunction(hModule, "LoadLibraryA", LoadLibraryAHook);
+					PatchFunction(hModule, "LoadLibraryA", LoadLibraryHook);
+					PatchFunction(hModule, "FreeLibrary", FreeLibraryHook);
 
 					PatchFunction(hModule, "AdjustWindowRect", AdjustWindowRectHook);
 					PatchFunction(hModule, "CreateWindowExA", CreateWindowExHook);
@@ -1292,6 +1417,12 @@ namespace Hooks
 					PatchFunction(hModule, "PeekMessageA", PeekMessageHook);
 					PatchFunction(hModule, "RegisterClassA", RegisterClassHook);
 
+					PatchFunction(hModule, "RegCreateKeyA", RegCreateKeyHook);
+					PatchFunction(hModule, "RegOpenKeyExA", RegOpenKeyExHook);
+					PatchFunction(hModule, "RegCloseKey", RegCloseKeyHook);
+					PatchFunction(hModule, "RegQueryValueExA", RegQueryValueExHook);
+					PatchFunction(hModule, "RegSetValueExA", RegSetValueExHook);
+
 					AudiereOpenDevice = (ADROPENDEVICE)PatchFunction(hModule, "_AdrOpenDevice@8", AdrOpenDeviceHook);
 					AudiereOpenSampleSource = (ADROPENSAMPLESOURCE)PatchFunction(hModule, "_AdrOpenSampleSource@4", AdrOpenSampleSourceHook);
 
@@ -1303,19 +1434,17 @@ namespace Hooks
 					}
 				}
 
+				if (hookSpace->fadein_tick && hookSpace->fadein_update_1 && hookSpace->fadein_update_2)
 				{
-					if (hookSpace->fadein_tick && hookSpace->fadein_update_1 && hookSpace->fadein_update_2)
-					{
-						PatchCall(hookSpace->fadein_tick, SetTickCount);
-						PatchCall(hookSpace->fadein_update_1, UpdatePaletteHook);
-						PatchCall(hookSpace->fadein_update_2, UpdatePaletteHook);
-					}
+					PatchCall(hookSpace->fadein_tick, SetTickCount);
+					PatchCall(hookSpace->fadein_update_1, UpdatePaletteHook);
+					PatchCall(hookSpace->fadein_update_2, UpdatePaletteHook);
+				}
 
-					if (hookSpace->fadeout_tick && hookSpace->fadeout_update)
-					{
-						PatchCall(hookSpace->fadeout_tick, SetTickCount);
-						PatchCall(hookSpace->fadeout_update, UpdatePaletteHook);
-					}
+				if (hookSpace->fadeout_tick && hookSpace->fadeout_update)
+				{
+					PatchCall(hookSpace->fadeout_tick, SetTickCount);
+					PatchCall(hookSpace->fadeout_update, UpdatePaletteHook);
 				}
 
 				if (!isNoGL)
@@ -1332,55 +1461,25 @@ namespace Hooks
 					hookSpace->checkChangeCursor += baseOffset;
 				}
 
-				if (hookSpace->color_pointer)
+				if (hookSpace->icons_list)
 				{
-					DEVMODE devMode;
-					MemoryZero(&devMode, sizeof(DEVMODE));
-					devMode.dmSize = sizeof(DEVMODE);
-					if (EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &devMode) && devMode.dmBitsPerPel == 32)
+					if (hookSpace->color_pointer)
 					{
 						PatchDWord(hookSpace->color_pointer, TRUE);
 						if (hookSpace->color_pointer_nop)
 							PatchNop(hookSpace->color_pointer_nop, 10);
-
-						PatchFunction(hModule, "CreateBitmapIndirect", CreateBitmapIndirectHook);
-
-						if (!isNoGL)
-							PatchFunction(hModule, "CreateIconIndirect", CreateIconIndirectHook);
 					}
+
+					PatchFunction(hModule, "CreateBitmapIndirect", CreateBitmapIndirectHook);
+					PatchFunction(hModule, "CreateIconIndirect", CreateIconIndirectHook);
 				}
 
 				PatchWinMM();
 
-				{
-					configKey = hookSpace->configKey;
-					configPrefix = hookSpace->configPrefix;
-					configLanguage = hookSpace->resLanguage;
-					configIcon = LoadIcon(hModule, hookSpace->icon);
-					configFont = (HFONT)CreateFont(16, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET,
-						OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-						DEFAULT_PITCH | FF_DONTCARE, TEXT("MS Shell Dlg"));
+				if (hookSpace->pointer_fs_nop)
+					PatchNop(hookSpace->pointer_fs_nop, 2);
 
-					configColdCPU = Config::Get("ColdCPU", FALSE);
-					if (!isNoGL)
-					{
-						configImageAspect = Config::Get("ImageAspect", TRUE);
-						configImageVSync = Config::Get("ImageVSync", TRUE);
-						configImageFilter = (ImageFilter)Config::Get("ImageFilter", FilterNearest);
-						configImageScaleNx = Config::Get("ImageScaleNx", 2);
-						configImageScaleHQ = Config::Get("ImageScaleHQ", 2);
-						configImageXBRZ = Config::Get("ImageXBRZ", 2);
-					}
-					else
-					{
-						configImageAspect = FALSE;
-						configImageVSync = FALSE;
-						configImageFilter = FilterNearest;
-						configImageScaleNx = 1;
-						configImageScaleHQ = 1;
-						configImageXBRZ = 1;
-					}
-				}
+				Config::Load(hModule, hookSpace);
 
 				return TRUE;
 			}

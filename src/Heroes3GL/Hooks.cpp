@@ -37,7 +37,6 @@
 #define STYLE_WIN_NEW (WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX | WS_CLIPSIBLINGS)
 
 #define STYLE_DIALOG (DS_MODALFRAME | WS_POPUP)
-#define RESOURCE_ICON 115
 
 AddressSpace* hookSpace;
 
@@ -47,121 +46,121 @@ AddressSpace addressArray[] = {
 	// === RUS ======================================================================================================================================
 #pragma region RUS
 	0x004D4A5F, 0x0059308B, 0x00000000, 0x00000000, 0x00592D72, 0x004E6BAF, 0x004E6C1D, 0x004E6C22, 0x005B88F0, 0x005B8904, 0x004759BD, 0x005E3D48, 50, LNG_RUSSIAN, // Heroes III Erathia - v1.0 Buka
-	"Ãåðîè Ìå÷à è Ìàãèè III: Âîçðîæäåíèå Ýðàôèè", "SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
+	"Ãåðîè Ìå÷à è Ìàãèè III: Âîçðîæäåíèå Ýðàôèè",
 
 	0x004F2533, 0x005F9649, 0x00000000, 0x00000000, 0x005F9336, 0x005074CF, 0x0050753B, 0x00507540, 0x0063569C, 0x00635688, 0x0047DFF6, 0x006793D8, 142, LNG_RUSSIAN, // Heroes III Armageddon - v2.1 Buka
-	"Ãåðîè Ìå÷à è Ìàãèè III: Êëèíîê Àðìàãåääîíà", "SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
+	"Ãåðîè Ìå÷à è Ìàãèè III: Êëèíîê Àðìàãåääîíà",
 
 	0x004F7EB3, 0x00602379, 0x00000000, 0x00000000, 0x00602066, 0x0050D58F, 0x0050D5FB, 0x0050D600, 0x0063C6BC, 0x0063C6A8, 0x0048051E, 0x00682A10, 142, LNG_RUSSIAN, // Heroes III Shadow - Buka
-	"Ãåðîè Ìå÷à è Ìàãèè III: Äûõàíèå Cìåðòè", "SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
+	"Ãåðîè Ìå÷à è Ìàãèè III: Äûõàíèå Cìåðòè",
 
 	0x004F7EB3, 0x006021A9, 0x00000000, 0x00000000, 0x00601E96, 0x0050DB1F, 0x0050DB8B, 0x0050DB90, 0x0063E6EC, 0x0063E6D8, 0x0048016E, 0x00684D60, 142, LNG_RUSSIAN, // Heroes III Complete - v4.0 Buka
-	"Ãåðîè Ìå÷à è Ìàãèè III: Ïîëíîå Ñîáðàíèå", "SOFTWARE\\Buka\\3DO\\Heroes of Might and Magic III Complete Platinum",
+	"Ãåðîè Ìå÷à è Ìàãèè III: Ïîëíîå Ñîáðàíèå",
 
 	// ----------------------------------------------------------------------------------------------------------------------------------------------
 
 	0x004EBA34, 0x005AF329, 0x00000000, 0x00000000, 0x005AF016, 0x004FFFAF, 0x0050001B, 0x00500020, 0x005EB1CC, 0x005EB1B8, 0x0047AF86, 0x00620D58, 146, LNG_RUSSIAN, // Heroes Chronicles Warlords & Underworld & Elements & Dragons - v1.0
-	"Õðîíèêè ãåðîåâ", "SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
+	"Õðîíèêè ãåðîåâ",
 
 	0x004EB494, 0x005AF2D9, 0x004027E9, 0x00643234, 0x005AEFC6, 0x004FF98F, 0x004FF9FB, 0x004FFA00, 0x005EB1CC, 0x005EB1B8, 0x0047AF36, 0x00620D80, 146, LNG_RUSSIAN, // Heroes Chronicles Beastmaster - v1.0
-	"Õðîíèêè ãåðîåâ: Âîññòàíèå", "SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
+	"Õðîíèêè ãåðîåâ: Âîññòàíèå",
 
 	0x004EB494, 0x005AF2D9, 0x004027E9, 0x0064322C, 0x005AEFC6, 0x004FF98F, 0x004FF9FB, 0x004FFA00, 0x005EB1CC, 0x005EB1B8, 0x0047AF36, 0x00620D80, 146, LNG_RUSSIAN, // Heroes Chronicles Sword - v1.0
-	"Õðîíèêè ãåðîåâ: Ëåäÿíîé Êëèíîê", "SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
+	"Õðîíèêè ãåðîåâ: Ëåäÿíîé Êëèíîê",
 #pragma endregion 
 
 	// === ENG ======================================================================================================================================
 #pragma region ENG
 	0x004D3363, 0x0058E558, 0x00000000, 0x00000000, 0x0058E246, 0x004E568F, 0x004E56FB, 0x004E5700, 0x005B58B4, 0x005B58A0, 0x004753D2, 0x005E0D48, 50, LNG_ENGLISH, // Heroes III Erathia - v1.0
-	"Heroes of Might and Magic III: The Restoration of Erathia", "SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
+	"Heroes of Might and Magic III: The Restoration of Erathia",
 
 	0x0041E573, 0x004210B8, 0x00000000, 0x00000000, 0x00420DA6, 0x004179AF, 0x00417A1B, 0x00417A20, 0x005B7D64, 0x005B7D50, 0x0048B7A2, 0x005E3900, 50, LNG_ENGLISH, // Heroes III Erathia - v1.1
-	"Heroes of Might and Magic III: The Restoration of Erathia", "SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
+	"Heroes of Might and Magic III: The Restoration of Erathia",
 
 	0x0041E523, 0x00421078, 0x00000000, 0x00000000, 0x00420D66, 0x0041797F, 0x004179EB, 0x004179F0, 0x005B6D54, 0x005B6D40, 0x0048BB12, 0x005E2900, 50, LNG_ENGLISH, // Heroes III Erathia - v1.2
-	"Heroes of Might and Magic III: The Restoration of Erathia", "SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
+	"Heroes of Might and Magic III: The Restoration of Erathia",
 
 	0x004F58F3, 0x005D9679, 0x00000000, 0x00000000, 0x005D9366, 0x0050ABEF, 0x0050AC5B, 0x0050AC60, 0x00613644, 0x00613630, 0x0047F81E, 0x006559A0, 141, LNG_ENGLISH, // Heroes III Erathia - v1.3
-	"Heroes of Might and Magic III: The Restoration of Erathia", "SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
+	"Heroes of Might and Magic III: The Restoration of Erathia",
 
 	0x004F5583, 0x005D8F69, 0x00000000, 0x00000000, 0x005D8C56, 0x0050AAAF, 0x0050AB1B, 0x0050AB20, 0x00613644, 0x00613630, 0x0047FC3E, 0x006559B0, 141, LNG_ENGLISH, // Heroes III Erathia - v1.4
-	"Heroes of Might and Magic III: The Restoration of Erathia", "SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
+	"Heroes of Might and Magic III: The Restoration of Erathia",
 
 	// ----------------------------------------------------------------------------------------------------------------------------------------------
 
 	0x004EB283, 0x005EEFD8, 0x00000000, 0x00000000, 0x005EECC6, 0x0050041F, 0x0050048B, 0x00500490, 0x00628F28, 0x00628F14, 0x0047A472, 0x006692D0, 90, LNG_ENGLISH, // Heroes III Armageddon - v2.0
-	"Heroes of Might and Magic III: Armageddon’s Blade", "SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
+	"Heroes of Might and Magic III: Armageddon’s Blade",
 
 	0x004F5C43, 0x00600299, 0x00000000, 0x00000000, 0x005FFF86, 0x0050B6AF, 0x0050B71B, 0x0050B720, 0x0063B68C, 0x0063B678, 0x0048023E, 0x006808F0, 141, LNG_ENGLISH, // Heroes III Armageddon - v2.1
-	"Heroes of Might and Magic III: Armageddon’s Blade", "SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
+	"Heroes of Might and Magic III: Armageddon’s Blade",
 
 	0x004F5963, 0x005FFBF9, 0x00000000, 0x00000000, 0x005FF8E6, 0x0050B1BF, 0x0050B22B, 0x0050B230, 0x0063B68C, 0x0063B678, 0x0048052E, 0x006808F8, 141, LNG_ENGLISH, // Heroes III Armageddon - v2.2
-	"Heroes of Might and Magic III: Armageddon’s Blade", "SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
+	"Heroes of Might and Magic III: Armageddon’s Blade",
 
 	// ----------------------------------------------------------------------------------------------------------------------------------------------
 
 	0x004F7D73, 0x006027E9, 0x00000000, 0x00000000, 0x006024D6, 0x0050D93F, 0x0050D9AB, 0x0050D9B0, 0x0063E6DC, 0x0063E6C8, 0x004802DE, 0x00684A08, 141, LNG_ENGLISH, // Heroes III Shadow - v3.0
-	"Heroes of Might and Magic III: The Shadow of Death", "SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
+	"Heroes of Might and Magic III: The Shadow of Death",
 
 	0x004F85B3, 0x006027E9, 0x00000000, 0x00000000, 0x006024D6, 0x0050DE4F, 0x0050DEBB, 0x0050DEC0, 0x0063E6DC, 0x0063E6C8, 0x004802EE, 0x00684A08, 141, LNG_ENGLISH, // Heroes III Shadow - v3.1
-	"Heroes of Might and Magic III: The Shadow of Death", "SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
+	"Heroes of Might and Magic III: The Shadow of Death",
 
 	0x004F8193, 0x00602149, 0x00000000, 0x00000000, 0x00601E36, 0x0050D8CF, 0x0050D93B, 0x0050D940, 0x0063D6DC, 0x0063D6C8, 0x0047FE9E, 0x00683A10, 141, LNG_ENGLISH, // Heroes III Shadow - v3.2
-	"Heroes of Might and Magic III: The Shadow of Death", "SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
+	"Heroes of Might and Magic III: The Shadow of Death",
 
 	// ----------------------------------------------------------------------------------------------------------------------------------------------
 
 	0x004F7B03, 0x00601B89, 0x00000000, 0x00000000, 0x00601876, 0x0050D6CF, 0x0050D73B, 0x0050D740, 0x0063D6DC, 0x0063D6C8, 0x0048057E, 0x006839C0, 141, LNG_ENGLISH, // Heroes III Complete - v4.0
-	"Heroes of Might and Magic III: Complete", "SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
+	"Heroes of Might and Magic III: Complete",
 
 	// ==============================================================================================================================================
 
 	0x004F0033, 0x005B5129, 0x004022FD, 0x0063B6C0, 0x005B4E16, 0x00504C8F, 0x00504CFB, 0x00504D00, 0x005EFE3C, 0x005EFE28, 0x0047DF4E, 0x00625B78, 145, LNG_ENGLISH, // Heroes Chronicles Warlords - v1.0
-	"Heroes Chronicles: Warlords of the Wasteland", "SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
+	"Heroes Chronicles: Warlords of the Wasteland",
 
 	0x004F0033, 0x005B5129, 0x004022FD, 0x0063B6B8, 0x005B4E16, 0x00504C8F, 0x00504CFB, 0x00504D00, 0x005EFE3C, 0x005EFE28, 0x0047DF4E, 0x00625B78, 145, LNG_ENGLISH, // Heroes Chronicles Underworld - v1.0
-	"Heroes Chronicles: Conquest of the Underworld", "SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
+	"Heroes Chronicles: Conquest of the Underworld",
 
 	0x004EFE04, 0x005B5469, 0x004022FD, 0x0063B6C0, 0x005B5156, 0x00504B6F, 0x00504BDB, 0x00504BE0, 0x005EFE3C, 0x005EFE28, 0x0047DA0E, 0x00625B68, 145, LNG_ENGLISH, // Heroes Chronicles Elements - v1.0
-	"Heroes Chronicles: Masters of the Elements", "SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
+	"Heroes Chronicles: Masters of the Elements",
 
 	0x004EFE04, 0x005B5469, 0x004022FD, 0x0063B6B8, 0x005B5156, 0x00504B6F, 0x00504BDB, 0x00504BE0, 0x005EFE3C, 0x005EFE28, 0x0047DA0E, 0x00625B70, 145, LNG_ENGLISH, // Heroes Chronicles Dragons - v1.0
-	"Heroes Chronicles: Clash of the Dragons", "SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
+	"Heroes Chronicles: Clash of the Dragons",
 
 	0x004EFA84, 0x005B51B9, 0x00000000, 0x00000000, 0x005B4EA6, 0x00504B6F, 0x00504BDB, 0x00504BE0, 0x005EFE3C, 0x005EFE28, 0x0047D8DE, 0x00625B70, 145, LNG_ENGLISH, // Heroes Chronicles WorldTree - v1.0
-	"Heroes Chronicles: The World Tree", "SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
+	"Heroes Chronicles: The World Tree",
 
 	0x004EF824, 0x005B5249, 0x00000000, 0x00000000, 0x005B4F36, 0x0050418F, 0x005041FB, 0x00504200, 0x005F11BC, 0x005F11A8, 0x0047D36E, 0x00627F60, 145, LNG_ENGLISH, // Heroes Chronicles FieryMoon - v1.0
-	"Heroes Chronicles: The Fiery Moon", "SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
+	"Heroes Chronicles: The Fiery Moon",
 
 	0x004EF874, 0x005B4C09, 0x00401050, 0x00636868, 0x005B48F6, 0x0050460F, 0x0050467B, 0x00504680, 0x005F11CC, 0x005F11B8, 0x0047D5FE, 0x00626FA0, 145, LNG_ENGLISH, // Heroes Chronicles Beastmaster - v1.0
-	"Heroes Chronicles: Revolt of the Beastmasters", "SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
+	"Heroes Chronicles: Revolt of the Beastmasters",
 
 	0x004EF874, 0x005B4C09, 0x00401050, 0x00636878, 0x005B48F6, 0x0050460F, 0x0050467B, 0x00504680, 0x005F11CC, 0x005F11B8, 0x0047D5FE, 0x00626FA8, 145, LNG_ENGLISH, // Heroes Chronicles Sword - v1.0
-	"Heroes Chronicles: The Sword of Frost", "SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
+	"Heroes Chronicles: The Sword of Frost",
 #pragma endregion
 
 	// === GER ======================================================================================================================================
 #pragma region GER
 	0x004D5253, 0x00591B29, 0x00000000, 0x00000000, 0x00591816, 0x004E714F, 0x004E71BB, 0x004E71C0, 0x005B88B4, 0x005B88A0, 0x004761CE, 0x005E3E68, 50, LNG_ENGLISH, // Heroes III Erathia - v1.2
-	"Heroes of Might and Magic III: The Restoration of Erathia", "SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
+	"Heroes of Might and Magic III: The Restoration of Erathia",
 
 	// ==============================================================================================================================================
 
 	0x004EFA04, 0x005B51C9, 0x00000000, 0x00000000, 0x005B4EB6, 0x0050475F, 0x005047CB, 0x005047D0, 0x005F11BC, 0x005F11A8, 0x0047D25E, 0x00627FA8, 145, LNG_ENGLISH, // Heroes Chronicles Dragons - GOG - v1.0
-	"Heroes Chronicles: Clash of the Dragons", "SOFTWARE\\New World Computing\\Heroes Chronicles\\1.0",
+	"Heroes Chronicles: Clash of the Dragons",
 #pragma endregion
 
 	// ==============================================================================================================================================
 #pragma region Others
 	0x004F8193, 0x00602149, 0x0067FEB2, 0x00352E33, 0x00601E36, 0x0050D8CF, 0x0050D93B, 0x0050D940, 0x0063D6DC, 0x0063D6C8, 0x0047FE9E, 0x00683A10, 141, LNG_ENGLISH, // Heroes III WoG - v3.58f
-	"Heroes of Might and Magic III: In the Wake of Gods", "SOFTWARE\\New Life of Heroes\\Heroes of Might and Magic III\\3.5",
+	"Heroes of Might and Magic III: In the Wake of Gods",
 
 	0x004F8193, 0x00602149, 0x0067FEB2, 0x00506F4D, 0x00601E36, 0x0050D8CF, 0x0050D93B, 0x0050D940, 0x0063D6DC, 0x0063D6C8, 0x0047FE9E, 0x00683A10, 141, LNG_ENGLISH, // Heroes III MoP - v3.7.2.7
-	"Heroes of Might and Magic III: Master of Puppets", "SOFTWARE\\New Life of Heroes\\Heroes of Might and Magic III\\MoP",
+	"Heroes of Might and Magic III: Master of Puppets",
 
 	0x004F8193, 0x00602149, 0x00639C01, 0x00639BF4, 0x00601E36, 0x0050D8CF, 0x0050D93B, 0x0050D940, 0x0063D6DC, 0x0063D6C8, 0x0047FE9E, 0x00683A10, 141, LNG_ENGLISH, // Heroes III HotA - v1.5.3
-	"Heroes of Might and Magic III: Horn of the Abyss", "SOFTWARE\\New World Computing\\Heroes of Might and Magic® III\\1.0",
+	"Heroes of Might and Magic III: Horn of the Abyss",
 #pragma endregion
 
 	NULL
@@ -834,6 +833,100 @@ namespace Hooks
 		return hFile;
 	}
 
+	VOID __fastcall CheckRefreshRate()
+	{
+		DEVMODE devMode;
+		MemoryZero(&devMode, sizeof(DEVMODE));
+		devMode.dmSize = sizeof(DEVMODE);
+		DWORD cursorTime;
+		if (EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &devMode) && devMode.dmDisplayFrequency)
+			cursorTime = 1000 / devMode.dmDisplayFrequency;
+		else
+			cursorTime = 16;
+
+		// ==========================================================
+		PatchByte(hookSpace->cursor_time_1 + 2, (BYTE)cursorTime);
+		PatchByte(hookSpace->cursor_time_2 + 2, (BYTE)cursorTime);
+		PatchDWord(hookSpace->cursor_time_3 + 1, cursorTime);
+
+		// ==========================================================
+		moveCounter = DWORD(50.0f / cursorTime);
+
+		PatchDWord(hookSpace->move_timeout + 4, cursorTime);
+		PatchDWord(hookSpace->move_timeout + 8, cursorTime);
+		PatchDWord(hookSpace->move_timeout + 12, cursorTime);
+
+		PatchDWord(hookSpace->move_distance + 4, DWORD((FLOAT)cursorTime / 50.0f * 8.0f));
+		PatchDWord(hookSpace->move_distance + 8, DWORD((FLOAT)cursorTime / 50.0f * 12.0f));
+		PatchDWord(hookSpace->move_distance + 12, DWORD((FLOAT)cursorTime / 50.0f * 16.0f));
+
+		PatchHook(hookSpace->move_address, hook_move);
+		back_move = hookSpace->move_address + 5;
+		// ==========================================================
+	}
+
+#pragma region Registry
+	LSTATUS __stdcall RegCreateKeyHook(HKEY hKey, LPCSTR lpSubKey, PHKEY phkResult)
+	{
+		return configIsExist ? ERROR_SUCCESS : RegCreateKey(hKey, lpSubKey, phkResult);
+	}
+
+	LSTATUS __stdcall RegOpenKeyExHook(HKEY hKey, LPCSTR lpSubKey, DWORD ulOptions, REGSAM samDesired, PHKEY phkResult)
+	{
+		return configIsExist ? ERROR_SUCCESS : RegOpenKeyEx(hKey, lpSubKey, ulOptions, samDesired, phkResult);
+	}
+
+	LSTATUS __stdcall RegCloseKeyHook(HKEY hKey)
+	{
+		return configIsExist ? ERROR_SUCCESS : RegCloseKey(hKey);
+	}
+
+	LSTATUS __stdcall RegQueryValueExHook(HKEY hKey, LPCSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData)
+	{
+		DWORD size = *lpcbData;
+
+		if (!configIsExist)
+		{
+			LSTATUS res = RegQueryValueEx(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
+			if (res == ERROR_SUCCESS)
+			{
+				if (size == sizeof(DWORD))
+					Config::Set(CONFIG_APP, lpValueName, *(INT*)lpData);
+				else
+					Config::Set(CONFIG_APP, lpValueName, (CHAR*)lpData);
+			}
+			return res;
+		}
+		else
+		{
+			if (size == sizeof(DWORD))
+			{
+				*(INT*)lpData = Config::Get(CONFIG_APP, lpValueName, 0);
+				if (lpType)
+					*lpType = REG_DWORD;
+			}
+			else
+			{
+				Config::Get(CONFIG_APP, lpValueName, "", (CHAR*)lpData, *lpcbData);
+				if (lpType)
+					*lpType = *lpcbData ? REG_BINARY : REG_SZ;
+			}
+
+			return ERROR_SUCCESS;
+		}
+	}
+
+	LSTATUS __stdcall RegSetValueExHook(HKEY hKey, LPCSTR lpValueName, DWORD Reserved, DWORD dwType, const BYTE* lpData, DWORD cbData)
+	{
+		if (dwType == REG_DWORD)
+			Config::Set(CONFIG_APP, lpValueName, *(INT*)lpData);
+		else
+			Config::Set(CONFIG_APP, lpValueName, (CHAR*)lpData);
+
+		return ERROR_SUCCESS;
+	}
+#pragma endregion
+
 	BOOL Load()
 	{
 		hookSpace = addressArray;
@@ -877,6 +970,12 @@ namespace Hooks
 
 				PatchFunction(hModule, "CreateFileA", CreateFileHook);
 
+				PatchFunction(hModule, "RegCreateKeyA", RegCreateKeyHook);
+				PatchFunction(hModule, "RegOpenKeyExA", RegOpenKeyExHook);
+				PatchFunction(hModule, "RegCloseKey", RegCloseKeyHook);
+				PatchFunction(hModule, "RegQueryValueExA", RegQueryValueExHook);
+				PatchFunction(hModule, "RegSetValueExA", RegSetValueExHook);
+
 				PatchFunction(hModule, "DirectDrawCreate", Main::DirectDrawCreate);
 
 				AIL_waveOutOpen = (AIL_WAVEOUTOPEN)PatchFunction(hModule, "_AIL_waveOutOpen@16", AIL_waveOutOpenHook);
@@ -899,64 +998,10 @@ namespace Hooks
 			if (!isNoGL)
 				PatchNop(hookSpace->renderNop, 5); // prevent on WM_PAINT
 
-			DEVMODE devMode;
-			MemoryZero(&devMode, sizeof(DEVMODE));
-			devMode.dmSize = sizeof(DEVMODE);
-			DWORD cursorTime;
-			if (EnumDisplaySettings(NULL, ENUM_REGISTRY_SETTINGS, &devMode) && devMode.dmDisplayFrequency)
-				cursorTime = 1000 / devMode.dmDisplayFrequency;
-			else
-				cursorTime = 16;
-
-			// ==========================================================
-			PatchByte(hookSpace->cursor_time_1 + 2, (BYTE)cursorTime);
-			PatchByte(hookSpace->cursor_time_2 + 2, (BYTE)cursorTime);
-			PatchDWord(hookSpace->cursor_time_3 + 1, cursorTime);
-
-			// ==========================================================
-			moveCounter = DWORD(50.0f / cursorTime);
-
-			PatchDWord(hookSpace->move_timeout + 4, cursorTime);
-			PatchDWord(hookSpace->move_timeout + 8, cursorTime);
-			PatchDWord(hookSpace->move_timeout + 12, cursorTime);
-
-			PatchDWord(hookSpace->move_distance + 4, DWORD((FLOAT)cursorTime / 50.0f * 8.0f));
-			PatchDWord(hookSpace->move_distance + 8, DWORD((FLOAT)cursorTime / 50.0f * 12.0f));
-			PatchDWord(hookSpace->move_distance + 12, DWORD((FLOAT)cursorTime / 50.0f * 16.0f));
-
-			PatchHook(hookSpace->move_address, hook_move);
-			back_move = hookSpace->move_address + 5;
-			// ==========================================================
-
 			hookSpace->video_address += baseOffset;
 			ResetVideoTable();
 
-			configKey = hookSpace->configKey;
-			configLanguage = hookSpace->resLanguage;
-			configIcon = LoadIcon(hModule, MAKEINTRESOURCE(RESOURCE_ICON));
-			configFont = (HFONT)CreateFont(16, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET,
-				OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-				DEFAULT_PITCH | FF_DONTCARE, TEXT("MS Shell Dlg"));
-
-			configColdCPU = Config::Get("ColdCPU", FALSE);
-			if (!isNoGL)
-			{
-				configImageAspect = Config::Get("ImageAspect", TRUE);
-				configImageVSync = Config::Get("ImageVSync", TRUE);
-				configImageFilter = (ImageFilter)Config::Get("ImageFilter", FilterNearest);
-				configImageScaleNx = Config::Get("ImageScaleNx", 2);
-				configImageScaleHQ = Config::Get("ImageScaleHQ", 2);
-				configImageXBRZ = Config::Get("ImageXBRZ", 2);
-			}
-			else
-			{
-				configImageAspect = FALSE;
-				configImageVSync = FALSE;
-				configImageFilter = FilterNearest;
-				configImageScaleNx = 1;
-				configImageScaleHQ = 1;
-				configImageXBRZ = 1;
-			}
+			Config::Load(hModule, hookSpace);
 
 			return TRUE;
 		}

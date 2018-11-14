@@ -156,6 +156,7 @@ struct AddressSpace
 	DWORD icons_list;
 	DWORD masks_list;
 	DWORD colors_list;
+	DWORD pointer_fs_nop;
 	DWORD delay_til;
 	DWORD update_palette;
 	DWORD fadein_tick;
@@ -163,10 +164,7 @@ struct AddressSpace
 	DWORD fadein_update_2;
 	DWORD fadeout_tick;
 	DWORD fadeout_update;
-
-	CHAR* windowName;
-	CHAR* configKey;
-	CHAR* configPrefix;
+	const CHAR* windowName;
 };
 
 struct TrackInfo

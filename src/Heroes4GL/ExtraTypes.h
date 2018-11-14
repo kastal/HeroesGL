@@ -142,7 +142,6 @@ struct AddressSpace
 	WORD resLanguage;
 	WORD resDialog;
 	const CHAR* windowName;
-	const CHAR* configKey;
 };
 
 struct RGNRECTDATA

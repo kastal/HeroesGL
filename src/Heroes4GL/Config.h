@@ -26,7 +26,10 @@
 
 #include "ExtraTypes.h"
 
-extern const CHAR* configKey;
+#define CONFIG_APP "App"
+#define CONFIG_WRAPPER "Wrapper"
+#define RESOURCE_ICON 107
+
 extern DWORD configLanguage;
 extern DWORD configDialog;
 extern HICON configIcon;
@@ -44,8 +47,14 @@ extern DWORD configImageEagle;
 extern DWORD configImageScaleHQ;
 extern DWORD configImageXBRZ;
 
+extern BOOL configIsExist;
+extern CHAR configFile[];
+
 namespace Config
 {
-	DWORD __fastcall Get(const CHAR* name, DWORD def);
-	BOOL __fastcall Set(const CHAR* name, DWORD value);
+	VOID __fastcall Load(HMODULE hModule, AddressSpace* hookSpace);
+	INT __fastcall Get(const CHAR* app, const CHAR* key, INT default);
+	DWORD __fastcall Get(const CHAR* app, const CHAR* key, CHAR* default, CHAR* returnString, DWORD nSize);
+	BOOL __fastcall Set(const CHAR* app, const CHAR* key, INT value);
+	BOOL __fastcall Set(const CHAR* app, const CHAR* key, CHAR* value);
 }

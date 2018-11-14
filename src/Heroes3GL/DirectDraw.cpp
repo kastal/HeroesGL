@@ -26,6 +26,7 @@
 #include "DirectDraw.h"
 #include "Window.h"
 #include "DirectWindow.h"
+#include "Hooks.h"
 
 DirectDraw::DirectDraw(IDraw** last, IDirectDraw* lpDD)
 {
@@ -70,10 +71,14 @@ HRESULT __stdcall DirectDraw::SetCooperativeLevel(HWND hWnd, DWORD dwFlags)
 			Window::OldWindowProc = (WNDPROC)SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)DirectWindow::WindowProc);
 	}
 
-	return this->lpDD->SetCooperativeLevel(hWnd, dwFlags);
+	HRESULT res = this->lpDD->SetCooperativeLevel(hWnd, dwFlags);
+	Hooks::CheckRefreshRate();
+	return res;
 }
 
 HRESULT __stdcall DirectDraw::SetDisplayMode(DWORD dwWidth, DWORD dwHeight, DWORD dwBPP)
 {
-	return this->lpDD->SetDisplayMode(dwWidth, dwHeight, dwBPP);
+	HRESULT res = this->lpDD->SetDisplayMode(dwWidth, dwHeight, dwBPP);
+	Hooks::CheckRefreshRate();
+	return res;
 }

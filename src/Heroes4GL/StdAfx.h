@@ -56,8 +56,11 @@ typedef INT(__cdecl *STRCMP)(const CHAR*, const CHAR*);
 typedef CHAR*(__cdecl *STRCPY)(CHAR*, const CHAR*);
 typedef CHAR*(__cdecl *STRCAT)(CHAR*, const CHAR*);
 typedef CHAR*(__cdecl *STRCHR)(const CHAR*, INT);
+typedef CHAR*(__cdecl *STRRCHR)(const CHAR*, INT);
 typedef CHAR*(__cdecl *STRSTR)(const CHAR*, const CHAR*);
 typedef size_t(__cdecl *WCSTOMBS)(CHAR*, const WCHAR*, size_t);
+typedef FILE*(__cdecl *FOPEN)(const CHAR*, const CHAR*);
+typedef INT(__cdecl *FCLOSE)(FILE*);
 typedef VOID(__cdecl *EXIT)(INT);
 
 extern MALLOC MemoryAlloc;
@@ -72,8 +75,11 @@ extern STRCMP StrCompare;
 extern STRCPY StrCopy;
 extern STRCAT StrCat;
 extern STRCHR StrChar;
+extern STRRCHR StrLastChar;
 extern STRSTR StrStr;
 extern WCSTOMBS StrToAnsi;
+extern FOPEN FileOpen;
+extern FCLOSE FileClose;
 extern EXIT Exit;
 
 #define MemoryZero(Destination,Length) MemorySet((Destination),0,(Length))

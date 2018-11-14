@@ -31,6 +31,7 @@
 #include "Config.h"
 #include "Window.h"
 #include "OpenWindow.h"
+#include "Hooks.h"
 
 VOID __fastcall UseShaderProgram(ShaderProgram* program)
 {
@@ -1752,6 +1753,8 @@ HRESULT __stdcall OpenDraw::SetCooperativeLevel(HWND hWnd, DWORD dwFlags)
 		this->RenderStart();
 	}
 
+	Hooks::CheckRefreshRate();
+
 	return DD_OK;
 }
 
@@ -1768,6 +1771,8 @@ HRESULT __stdcall OpenDraw::SetDisplayMode(DWORD dwWidth, DWORD dwHeight, DWORD 
 
 	this->RenderStop();
 	this->RenderStart();
+
+	Hooks::CheckRefreshRate();
 
 	return DD_OK;
 }

@@ -146,8 +146,7 @@ struct AddressSpace
 	DWORD video_address;
 	DWORD video_count;
 	BYTE resLanguage;
-	CHAR* windowName;
-	CHAR* configKey;
+	const CHAR* windowName;
 };
 
 struct TrackInfo

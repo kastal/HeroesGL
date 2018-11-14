@@ -97,7 +97,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
 FONT 8, "System", 0, 0, 0x1
 BEGIN
     CTEXT           "Герои Меча и Магии III\nOpenGL враппер",1002,0,6,162,18
-    CTEXT           "Версия 1.16   Сборка 149",IDC_STATIC,0,30,162,8
+    CTEXT           "Версия 1.17   Сборка 152",IDC_STATIC,0,30,162,8
     CTEXT           "Copyright © 2018 Verok",1006,0,48,162,8
 	DEFPUSHBUTTON   "OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
 	CONTROL         "verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
@@ -209,7 +209,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
 FONT 8, "System", 0, 0, 0x1
 BEGIN
     CTEXT           "Heroes of Might and Magic III\nOpenGL Wrapper",1002,0,6,162,18
-    CTEXT           "Version 1.16   Build 149",IDC_STATIC,0,30,162,8
+    CTEXT           "Version 1.17   Build 152",IDC_STATIC,0,30,162,8
     CTEXT           "Copyright © 2018 Verok",1006,0,48,162,8
 	DEFPUSHBUTTON   "OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
 	CONTROL         "verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
@@ -259,27 +259,27 @@ IDR_SCALENX_FRAGMENT_3X		RCDATA                  "..\\glsl\\scalenx\\fragment_3x
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2018,11,11,149
- PRODUCTVERSION 1,1,6,0
+ FILEVERSION 2018,11,13,152
+ PRODUCTVERSION 1,1,7,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
- FILEFLAGS 0x1L
+ FILEFLAGS VS_FF_DEBUG
 #else
  FILEFLAGS 0x0L
 #endif
- FILEOS 0x4L
- FILETYPE 0x2L
- FILESUBTYPE 0x0L
+ FILEOS VOS__WINDOWS32
+ FILETYPE VFT_DLL
+ FILESUBTYPE VFT2_UNKNOWN
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "HoMM III - OpenGL wrapper"
-            VALUE "FileVersion", "2018.11.11.149"
+            VALUE "FileVersion", "2018.11.13.152"
             VALUE "LegalCopyright", "© 2018 Verok (verokster@gmail.com)"
             VALUE "OriginalFilename", "ddraw.dll"
-            VALUE "ProductVersion", "1.1.6"
+            VALUE "ProductVersion", "1.1.7"
             VALUE "ProductName", "Heroes3GL"
         END
     END

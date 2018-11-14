@@ -27,6 +27,7 @@
 #include "Window.h"
 #include "Resource.h"
 #include "Config.h"
+#include "Hooks.h"
 
 namespace DirectWindow
 {
@@ -34,6 +35,12 @@ namespace DirectWindow
 	{
 		switch (uMsg)
 		{
+		case WM_SIZE:
+		{
+			Hooks::ScalePointer((FLOAT)LOWORD(lParam) / (FLOAT)RES_WIDTH, (FLOAT)HIWORD(lParam) / (FLOAT)RES_HEIGHT);
+			return CallWindowProc(Window::OldWindowProc, hWnd, uMsg, wParam, lParam);
+		}
+
 		case WM_GETMINMAXINFO:
 		{
 			RECT rect = { 0, 0, MIN_WIDTH, MIN_HEIGHT };
@@ -53,7 +60,7 @@ namespace DirectWindow
 			case IDM_PATCH_CPU:
 			{
 				configColdCPU = !configColdCPU;
-				Config::Set("ColdCPU", configColdCPU);
+				Config::Set(CONFIG_WRAPPER, "ColdCPU", configColdCPU);
 				Window::CheckMenu(hWnd);
 				return NULL;
 			}

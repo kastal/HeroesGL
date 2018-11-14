@@ -30,6 +30,9 @@
 #include "stdio.h"
 #include "ddraw.h"
 
+#define RES_WIDTH 640
+#define RES_HEIGHT 480
+
 typedef HRESULT(__stdcall *DIRECTDRAWCREATE)(GUID* lpGUID, LPDIRECTDRAW* lplpDD, IUnknown* pUnkOuter);
 
 extern DIRECTDRAWCREATE DDCreate;
