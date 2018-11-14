@@ -41,14 +41,15 @@
 AddressSpace* hookSpace;
 
 AddressSpace addressArray[] = {
-	// check 1 & 2,         cpu patch,  renderNop                                                                                     move time,  move value, move hook
-
 	// === RUS ======================================================================================================================================
 #pragma region RUS
 	0x004D4A5F, 0x0059308B, 0x00000000, 0x00000000, 0x00592D72, 0x004E6BAF, 0x004E6C1D, 0x004E6C22, 0x005B88F0, 0x005B8904, 0x004759BD, 0x005E3D48, 50, LNG_RUSSIAN, // Heroes III Erathia - v1.0 Buka
 	"Герои Меча и Магии III: Возрождение Эрафии",
 
 	0x004F2533, 0x005F9649, 0x00000000, 0x00000000, 0x005F9336, 0x005074CF, 0x0050753B, 0x00507540, 0x0063569C, 0x00635688, 0x0047DFF6, 0x006793D8, 142, LNG_RUSSIAN, // Heroes III Armageddon - v2.1 Buka
+	"Герои Меча и Магии III: Клинок Армагеддона",
+
+	0x004F2863, 0x005F9609, 0x00000000, 0x00000000, 0x005F92F6, 0x00507A5F, 0x00507ACB, 0x00507AD0, 0x0063569C, 0x00635688, 0x0047DCB6, 0x00679400, 142, LNG_RUSSIAN, // Heroes III Armageddon - v2.2 Buka
 	"Герои Меча и Магии III: Клинок Армагеддона",
 
 	0x004F7EB3, 0x00602379, 0x00000000, 0x00000000, 0x00602066, 0x0050D58F, 0x0050D5FB, 0x0050D600, 0x0063C6BC, 0x0063C6A8, 0x0048051E, 0x00682A10, 142, LNG_RUSSIAN, // Heroes III Shadow - Buka
@@ -160,10 +161,8 @@ AddressSpace addressArray[] = {
 	"Heroes of Might and Magic III: Master of Puppets",
 
 	0x004F8193, 0x00602149, 0x00639C01, 0x00639BF4, 0x00601E36, 0x0050D8CF, 0x0050D93B, 0x0050D940, 0x0063D6DC, 0x0063D6C8, 0x0047FE9E, 0x00683A10, 141, LNG_ENGLISH, // Heroes III HotA - v1.5.3
-	"Heroes of Might and Magic III: Horn of the Abyss",
+	"Heroes of Might and Magic III: Horn of the Abyss"
 #pragma endregion
-
-	NULL
 };
 
 UINT menuIds[] = { IDM_FILT_OFF, IDM_FILT_LINEAR, IDM_FILT_CUBIC, IDM_ASPECT_RATIO, IDM_VSYNC, IDM_HELP_WRAPPER,
@@ -936,6 +935,7 @@ namespace Hooks
 		AddressSpace* defaultSpace = NULL;
 		AddressSpace* equalSpace = NULL;
 
+		DWORD hookCount = sizeof(addressArray) / sizeof(AddressSpace);
 		do
 		{
 			DWORD check1, check2, equal;
@@ -952,7 +952,7 @@ namespace Hooks
 			}
 
 			++hookSpace;
-		} while (hookSpace->check_1);
+		} while (--hookCount);
 
 		hookSpace = equalSpace ? equalSpace : defaultSpace;
 		if (hookSpace)

@@ -39,8 +39,8 @@
 AddressSpace* hookSpace;
 
 AddressSpace addressArray[] = {
-	// check 1 & 2,         renderNop,              cpu patch
-
+	// === RUS ======================================================================================================================================
+#pragma region RUS
 	0x00844A4D, 0x00844B35, 0x00401D18, 0x90909090, 0x0084497C, 0x006D59BB, 0x00843736, 0x00843F0E, LNG_RUSSIAN, IDD_HELP_ABOUT_RUSSIAN_1_0, // Heroes IV - 1.0
 	"Герои Меча и Магии IV", //"Heroes of Might and Magic IV",
 
@@ -49,9 +49,10 @@ AddressSpace addressArray[] = {
 
 	0x008D38B1, 0x008D3999, 0x00000000, 0x00000000, 0x008D37E0, 0x0073D780, 0x008D238E, 0x008D2D52, LNG_RUSSIAN, IDD_HELP_ABOUT_RUSSIAN_3_0_WOW, // Heroes IV - 3.0WoW
 	"Герои Меча и Магии IV: Вихри Войны",
+#pragma endregion 
 
-	// =====================================================================================================================
-
+	// === ENG ======================================================================================================================================
+#pragma region ENG
 	0x00844A4D, 0x00844B35, 0x00000000, 0x00000000, 0x0084497C, 0x006D59BB, 0x00843736, 0x00843F0E, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_1_0, // Heroes IV - 1.0
 	"Heroes of Might and Magic IV",
 
@@ -84,9 +85,8 @@ AddressSpace addressArray[] = {
 	// ---------------------------------------------------------------------------------------------------------------------
 
 	0x008D3881, 0x008D3969, 0x00401448, 0x00970200, 0x008D37B0, 0x0073D9B0, 0x008D235E, 0x008D2D22, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_3_0_WOW, // Heroes IV - 3.0WoW
-	"Heroes of Might and Magic IV: Winds of War",
-
-	NULL
+	"Heroes of Might and Magic IV: Winds of War"
+#pragma endregion 
 };
 
 UINT menuIds[] = { IDM_FILT_OFF, IDM_FILT_LINEAR, IDM_FILT_CUBIC, IDM_ASPECT_RATIO, IDM_VSYNC, IDM_HELP_WRAPPER,
@@ -578,6 +578,7 @@ namespace Hooks
 		AddressSpace* defaultSpace = NULL;
 		AddressSpace* equalSpace = NULL;
 
+		DWORD hookCount = sizeof(addressArray) / sizeof(AddressSpace);
 		do
 		{
 			DWORD check1, check2, equal;
@@ -594,7 +595,7 @@ namespace Hooks
 			}
 
 			++hookSpace;
-		} while (hookSpace->check_1);
+		} while (--hookCount);
 
 		hookSpace = equalSpace ? equalSpace : defaultSpace;
 		if (hookSpace)

@@ -142,10 +142,8 @@ AddressSpace addressArray[] = {
 		0x00423EF7, 2, "EDITOR", LNG_ENGLISH, 0x004187CE, 6, 0x00418B1D, FALSE, 0x0043F20C, 2, 0x00418916, 0x00417BB6, 0x00437C90, // Heroes II Editor v2.1
 		(AppSettings*)0x0048EE40,
 		0x00000000, 0x00000000, 0x00490BB8, 0x00490D40, 0x00000000, 0x00437304, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		"Heroes of Might and Magic II: Editor",
+		"Heroes of Might and Magic II: Editor"
 #pragma endregion
-
-		NULL
 };
 
 UINT menuIds[] = { IDM_FILT_OFF, IDM_FILT_LINEAR, IDM_FILT_CUBIC, IDM_ASPECT_RATIO, IDM_VSYNC, IDM_HELP_WRAPPER,
@@ -1392,6 +1390,7 @@ namespace Hooks
 		hModule = GetModuleHandle(NULL);
 		baseOffset = (INT)hModule - BASE_ADDRESS;
 
+		DWORD hookCount = sizeof(addressArray) / sizeof(AddressSpace);
 		do
 		{
 			DWORD check;
@@ -1484,8 +1483,8 @@ namespace Hooks
 				return TRUE;
 			}
 
-			hookSpace++;
-		} while (hookSpace->check);
+			++hookSpace;
+		} while (--hookCount);
 
 		return FALSE;
 	}
