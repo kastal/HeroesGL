@@ -1345,20 +1345,19 @@ namespace Hooks
 		if (!config.isExist)
 		{
 			LSTATUS res = RegQueryValueEx(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
-			if (res == ERROR_SUCCESS)
-			{
-				if (size == sizeof(DWORD))
-					Config::Set(CONFIG_APP, lpValueName, *(INT*)lpData);
-				else
-					Config::Set(CONFIG_APP, lpValueName, (CHAR*)lpData);
-			}
+
+			if (size == sizeof(DWORD))
+				Config::Set(CONFIG_APP, lpValueName, *(INT*)lpData);
+			else
+				Config::Set(CONFIG_APP, lpValueName, (CHAR*)lpData);
+
 			return res;
 		}
 		else
 		{
 			if (size == sizeof(DWORD))
 			{
-				*(INT*)lpData = Config::Get(CONFIG_APP, lpValueName, 0);
+				*(INT*)lpData = Config::Get(CONFIG_APP, lpValueName, *(INT*)lpData);
 				if (lpType)
 					*lpType = REG_DWORD;
 			}
