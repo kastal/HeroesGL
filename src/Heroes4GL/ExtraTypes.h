@@ -83,6 +83,12 @@ enum ImageFilter
 	FilterScaleNx = 7
 };
 
+struct FilterType
+{
+	WORD value;
+	WORD type;
+};
+
 struct DisplayMode
 {
 	DWORD width;
@@ -148,4 +154,29 @@ struct RGNRECTDATA
 {
 	RGNDATAHEADER   rdh;
 	RECT            rect;
+};
+
+struct ConfigItems
+{
+	BOOL isNoGL;
+	DWORD language;
+	DWORD dialog;
+	HICON icon;
+	HFONT font;
+
+	BOOL coldCPU;
+
+	struct {
+		BOOL aspect;
+		BOOL vSync;
+		ImageFilter filter;
+		FilterType scaleNx;
+		FilterType xSal;
+		FilterType eagle;
+		FilterType scaleHQ;
+		FilterType xBRz;
+	} image;
+
+	BOOL isExist;
+	CHAR file[MAX_PATH];
 };

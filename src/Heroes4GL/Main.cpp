@@ -24,6 +24,7 @@
 
 #include "stdafx.h"
 #include "Main.h"
+#include "Config.h"
 #include "DirectDraw.h"
 
 IDraw7* drawList;
@@ -37,7 +38,7 @@ namespace Main
 {
 	HRESULT __stdcall DirectDrawCreateEx(GUID* lpGuid, LPVOID* lplpDD, REFIID iid, IUnknown* pUnkOuter)
 	{
-		if (isNoGL)
+		if (config.isNoGL)
 		{
 			HRESULT res = DDCreateEx(lpGuid, lplpDD, iid, pUnkOuter);
 			if (res == DD_OK)

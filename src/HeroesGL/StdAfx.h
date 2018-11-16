@@ -100,8 +100,6 @@ extern EXIT Exit;
 extern HMODULE hDllModule;
 extern HANDLE hActCtx;
 
-extern BOOL isNoGL;
-
 VOID LoadKernel32();
 VOID LoadMsvCRT();
 VOID LoadWinG32();

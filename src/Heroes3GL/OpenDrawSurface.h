@@ -28,23 +28,20 @@
 #include "OpenDrawClipper.h"
 #include "ExtraTypes.h"
 
-#define RES_WIDTH 800
-#define RES_HEIGHT 600
 #define STENCIL_COUNT 32
 
 class OpenDrawSurface : public IDrawSurface
 {
 public:
 	DWORD index;
-	DWORD width;
-	DWORD height;
+	DisplayMode mode;
 	FLOAT scale;
 	BOOL isSizeChanged;
 
 	OpenDrawClipper* attachedClipper;
 
-	WORD* indexBuffer;
-	WORD colorKey;
+	VOID* indexBuffer;
+	DWORD colorKey;
 
 	UpdateRect* clipsList;
 	UpdateRect* endClip;

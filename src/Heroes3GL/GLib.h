@@ -56,6 +56,7 @@ typedef char GLchar;
 #define WGL_SUPPORT_GDI_ARB            0x200F
 #define WGL_SWAP_METHOD_ARB            0x2007
 #define WGL_SWAP_EXCHANGE_ARB          0x2028
+#define WGL_SWAP_COPY_ARB              0x2029
 #define WGL_STENCIL_BITS_ARB           0x2023
 #define WGL_ACCUM_BITS_ARB             0x201D
 #define WGL_NUMBER_OVERLAYS_ARB        0x2008
@@ -276,6 +277,7 @@ extern GLFRAMEBUFFERRENDERBUFFER GLFramebufferRenderbuffer;
 extern DWORD glVersion;
 extern DWORD glPixelFormat;
 extern DWORD glCapsClampToEdge;
+extern BOOL glCapsBGRA;
 
 namespace GL
 {

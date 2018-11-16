@@ -35,8 +35,7 @@ public:
 	HWND hDraw;
 	HDC hDc;
 
-	DWORD width;
-	DWORD height;
+	DisplayMode mode;
 	BOOL isNextIsMode;
 	BOOL isFinish;
 

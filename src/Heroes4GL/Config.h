@@ -26,29 +26,11 @@
 
 #include "ExtraTypes.h"
 
-#define CONFIG_APP "App"
+#define CONFIG_APP "Application"
 #define CONFIG_WRAPPER "Wrapper"
 #define RESOURCE_ICON 107
 
-extern DWORD configLanguage;
-extern DWORD configDialog;
-extern HICON configIcon;
-extern HFONT configFont;
-
-extern BOOL configColdCPU;
-
-extern BOOL configImageAspect;
-extern BOOL configImageVSync;
-
-extern ImageFilter configImageFilter;
-extern DWORD configImageScaleNx;
-extern DWORD configImageXSal;
-extern DWORD configImageEagle;
-extern DWORD configImageScaleHQ;
-extern DWORD configImageXBRZ;
-
-extern BOOL configIsExist;
-extern CHAR configFile[];
+extern ConfigItems config;
 
 namespace Config
 {

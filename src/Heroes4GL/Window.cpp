@@ -39,9 +39,9 @@ namespace Window
 	BOOL __stdcall EnumChildProc(HWND hDlg, LPARAM lParam)
 	{
 		if ((GetWindowLong(hDlg, GWL_STYLE) & SS_ICON) == SS_ICON)
-			SendMessage(hDlg, STM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)configIcon);
+			SendMessage(hDlg, STM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)config.icon);
 		else
-			SendMessage(hDlg, WM_SETFONT, (WPARAM)configFont, TRUE);
+			SendMessage(hDlg, WM_SETFONT, (WPARAM)config.font, TRUE);
 
 		return TRUE;
 	}
@@ -159,20 +159,20 @@ namespace Window
 		if (!hMenu)
 			return;
 
-		CheckMenuItem(hMenu, IDM_PATCH_CPU, MF_BYCOMMAND | (configColdCPU ? MF_CHECKED : MF_UNCHECKED));
+		CheckMenuItem(hMenu, IDM_PATCH_CPU, MF_BYCOMMAND | (config.coldCPU ? MF_CHECKED : MF_UNCHECKED));
 
-		EnableMenuItem(hMenu, IDM_ASPECT_RATIO, MF_BYCOMMAND | (!isNoGL ? MF_ENABLED : (MF_DISABLED | MF_GRAYED)));
-		CheckMenuItem(hMenu, IDM_ASPECT_RATIO, MF_BYCOMMAND | (!isNoGL && configImageAspect ? MF_CHECKED : MF_UNCHECKED));
+		EnableMenuItem(hMenu, IDM_ASPECT_RATIO, MF_BYCOMMAND | (!config.isNoGL ? MF_ENABLED : (MF_DISABLED | MF_GRAYED)));
+		CheckMenuItem(hMenu, IDM_ASPECT_RATIO, MF_BYCOMMAND | (!config.isNoGL && config.image.aspect ? MF_CHECKED : MF_UNCHECKED));
 
-		EnableMenuItem(hMenu, IDM_VSYNC, MF_BYCOMMAND | (!isNoGL && (!glVersion || WGLSwapInterval) ? MF_ENABLED : (MF_DISABLED | MF_GRAYED)));
-		CheckMenuItem(hMenu, IDM_VSYNC, MF_BYCOMMAND | (!isNoGL && configImageVSync && (!glVersion || WGLSwapInterval) ? MF_CHECKED : MF_UNCHECKED));
+		EnableMenuItem(hMenu, IDM_VSYNC, MF_BYCOMMAND | (!config.isNoGL && (!glVersion || WGLSwapInterval) ? MF_ENABLED : (MF_DISABLED | MF_GRAYED)));
+		CheckMenuItem(hMenu, IDM_VSYNC, MF_BYCOMMAND | (!config.isNoGL && config.image.vSync && (!glVersion || WGLSwapInterval) ? MF_CHECKED : MF_UNCHECKED));
 
 		CheckMenuItem(hMenu, IDM_FILT_OFF, MF_BYCOMMAND | MF_UNCHECKED);
 
-		EnableMenuItem(hMenu, IDM_FILT_LINEAR, MF_BYCOMMAND | (!isNoGL ? MF_ENABLED : (MF_DISABLED | MF_GRAYED)));
+		EnableMenuItem(hMenu, IDM_FILT_LINEAR, MF_BYCOMMAND | (!config.isNoGL ? MF_ENABLED : (MF_DISABLED | MF_GRAYED)));
 		CheckMenuItem(hMenu, IDM_FILT_LINEAR, MF_BYCOMMAND | MF_UNCHECKED);
 
-		DWORD isFiltersEnabled = !isNoGL && (!glVersion || glVersion >= GL_VER_3_0) ? MF_ENABLED : (MF_DISABLED | MF_GRAYED);
+		DWORD isFiltersEnabled = !config.isNoGL && (!glVersion || glVersion >= GL_VER_3_0) ? MF_ENABLED : (MF_DISABLED | MF_GRAYED);
 		EnableMenuItem(hMenu, IDM_FILT_CUBIC, MF_BYCOMMAND | isFiltersEnabled);
 		CheckMenuItem(hMenu, IDM_FILT_CUBIC, MF_BYCOMMAND | MF_UNCHECKED);
 
@@ -207,6 +207,8 @@ namespace Window
 		CheckMenuItem(hMenu, IDM_FILT_EAGLE_LINEAR, MF_BYCOMMAND | MF_UNCHECKED);
 		EnableMenuItem(hMenu, IDM_FILT_EAGLE_CUBIC, MF_BYCOMMAND | isFiltersEnabled);
 		CheckMenuItem(hMenu, IDM_FILT_EAGLE_CUBIC, MF_BYCOMMAND | MF_UNCHECKED);
+		EnableMenuItem(hMenu, IDM_FILT_EAGLE_2X, MF_BYCOMMAND | isFiltersEnabled);
+		CheckMenuItem(hMenu, IDM_FILT_EAGLE_2X, MF_BYCOMMAND | MF_UNCHECKED);
 
 		// XSal
 		HMENU hMenuXSal = NULL; DWORD posXSal;
@@ -221,6 +223,8 @@ namespace Window
 		CheckMenuItem(hMenu, IDM_FILT_XSAL_LINEAR, MF_BYCOMMAND | MF_UNCHECKED);
 		EnableMenuItem(hMenu, IDM_FILT_XSAL_CUBIC, MF_BYCOMMAND | isFiltersEnabled);
 		CheckMenuItem(hMenu, IDM_FILT_XSAL_CUBIC, MF_BYCOMMAND | MF_UNCHECKED);
+		EnableMenuItem(hMenu, IDM_FILT_XSAL_2X, MF_BYCOMMAND | isFiltersEnabled);
+		CheckMenuItem(hMenu, IDM_FILT_XSAL_2X, MF_BYCOMMAND | MF_UNCHECKED);
 
 		// ScaleHQ
 		HMENU hMenuScaleHQ = NULL; DWORD posScaleHQ;
@@ -264,7 +268,7 @@ namespace Window
 		EnableMenuItem(hMenu, IDM_FILT_XRBZ_6X, MF_BYCOMMAND | isFiltersEnabled);
 		CheckMenuItem(hMenu, IDM_FILT_XRBZ_6X, MF_BYCOMMAND | MF_UNCHECKED);
 
-		switch (configImageFilter)
+		switch (config.image.filter)
 		{
 		case FilterLinear:
 			CheckMenuItem(hMenu, IDM_FILT_LINEAR, MF_BYCOMMAND | MF_CHECKED);
@@ -280,8 +284,8 @@ namespace Window
 				if (hMenuScaleNx)
 					CheckMenuItem(hMenuScaleNx, posScaleNx, MF_BYPOSITION | MF_CHECKED);
 
-				CheckMenuItem(hMenu, HIWORD(configImageScaleNx) ? IDM_FILT_SCALENX_CUBIC : IDM_FILT_SCALENX_LINEAR, MF_BYCOMMAND | MF_CHECKED);
-				switch (LOWORD(configImageScaleNx))
+				CheckMenuItem(hMenu, config.image.scaleNx.type ? IDM_FILT_SCALENX_CUBIC : IDM_FILT_SCALENX_LINEAR, MF_BYCOMMAND | MF_CHECKED);
+				switch (config.image.scaleNx.value)
 				{
 				case 3:
 					CheckMenuItem(hMenu, IDM_FILT_SCALENX_3X, MF_BYCOMMAND | MF_CHECKED);
@@ -303,7 +307,7 @@ namespace Window
 				if (hMenuEagle)
 					CheckMenuItem(hMenuEagle, posEagle, MF_BYPOSITION | MF_CHECKED);
 
-				CheckMenuItem(hMenu, HIWORD(configImageEagle) ? IDM_FILT_EAGLE_CUBIC : IDM_FILT_EAGLE_LINEAR, MF_BYCOMMAND | MF_CHECKED);
+				CheckMenuItem(hMenu, config.image.eagle.type ? IDM_FILT_EAGLE_CUBIC : IDM_FILT_EAGLE_LINEAR, MF_BYCOMMAND | MF_CHECKED);
 				CheckMenuItem(hMenu, IDM_FILT_EAGLE_2X, MF_BYCOMMAND | MF_CHECKED);
 			}
 			else
@@ -317,7 +321,7 @@ namespace Window
 				if (hMenuXSal)
 					CheckMenuItem(hMenuXSal, posXSal, MF_BYPOSITION | MF_CHECKED);
 
-				CheckMenuItem(hMenu, HIWORD(configImageXSal) ? IDM_FILT_XSAL_CUBIC : IDM_FILT_XSAL_LINEAR, MF_BYCOMMAND | MF_CHECKED);
+				CheckMenuItem(hMenu, config.image.xSal.type ? IDM_FILT_XSAL_CUBIC : IDM_FILT_XSAL_LINEAR, MF_BYCOMMAND | MF_CHECKED);
 				CheckMenuItem(hMenu, IDM_FILT_XSAL_2X, MF_BYCOMMAND | MF_CHECKED);
 			}
 			else
@@ -331,8 +335,8 @@ namespace Window
 				if (hMenuScaleHQ)
 					CheckMenuItem(hMenuScaleHQ, posScaleHQ, MF_BYPOSITION | MF_CHECKED);
 
-				CheckMenuItem(hMenu, HIWORD(configImageScaleHQ) ? IDM_FILT_SCALEHQ_CUBIC : IDM_FILT_SCALEHQ_LINEAR, MF_BYCOMMAND | MF_CHECKED);
-				switch (LOWORD(configImageScaleHQ))
+				CheckMenuItem(hMenu, config.image.scaleHQ.type ? IDM_FILT_SCALEHQ_CUBIC : IDM_FILT_SCALEHQ_LINEAR, MF_BYCOMMAND | MF_CHECKED);
+				switch (config.image.scaleHQ.value)
 				{
 				case 4:
 					CheckMenuItem(hMenu, IDM_FILT_SCALEHQ_4X, MF_BYCOMMAND | MF_CHECKED);
@@ -354,8 +358,8 @@ namespace Window
 				if (hMenuXBRZ)
 					CheckMenuItem(hMenuXBRZ, posXBRZ, MF_BYPOSITION | MF_CHECKED);
 
-				CheckMenuItem(hMenu, HIWORD(configImageXBRZ) ? IDM_FILT_XRBZ_CUBIC : IDM_FILT_XRBZ_LINEAR, MF_BYCOMMAND | MF_CHECKED);
-				switch (LOWORD(configImageXBRZ))
+				CheckMenuItem(hMenu, config.image.xBRz.type ? IDM_FILT_XRBZ_CUBIC : IDM_FILT_XRBZ_LINEAR, MF_BYCOMMAND | MF_CHECKED);
+				switch (config.image.xBRz.value)
 				{
 				case 3:
 					CheckMenuItem(hMenu, IDM_FILT_XRBZ_3X, MF_BYCOMMAND | MF_CHECKED);

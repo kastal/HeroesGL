@@ -40,8 +40,8 @@ namespace DirectWindow
 			{
 			case IDM_PATCH_CPU:
 			{
-				configColdCPU = !configColdCPU;
-				Config::Set(CONFIG_WRAPPER, "ColdCPU", configColdCPU);
+				config.coldCPU = !config.coldCPU;
+				Config::Set(CONFIG_WRAPPER, "ColdCPU", config.coldCPU);
 				Window::CheckMenu(hWnd);
 
 				return NULL;
@@ -54,7 +54,7 @@ namespace DirectWindow
 				if (hActCtx && hActCtx != INVALID_HANDLE_VALUE && !ActivateActCtxC(hActCtx, &cookie))
 					cookie = NULL;
 
-				res = DialogBoxParam(hDllModule, MAKEINTRESOURCE(configLanguage == LNG_ENGLISH ? IDD_ENGLISH : IDD_RUSSIAN), hWnd, (DLGPROC)Window::AboutProc, NULL);
+				res = DialogBoxParam(hDllModule, MAKEINTRESOURCE(config.language == LNG_ENGLISH ? IDD_ENGLISH : IDD_RUSSIAN), hWnd, (DLGPROC)Window::AboutProc, NULL);
 
 				if (cookie)
 					DeactivateActCtxC(0, cookie);

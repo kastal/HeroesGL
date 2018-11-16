@@ -84,6 +84,12 @@ enum ImageFilter
 	FilterScaleNx = 7
 };
 
+struct FilterType
+{
+	WORD value;
+	WORD type;
+};
+
 struct DisplayMode
 {
 	DWORD width;
@@ -143,6 +149,7 @@ struct AddressSpace
 	DWORD move_timeout;
 	DWORD move_distance;
 	DWORD move_address;
+	DWORD bpp_address;
 	DWORD video_address;
 	DWORD video_count;
 	BYTE resLanguage;
@@ -169,4 +176,28 @@ struct VideoFile
 {
 	CHAR name[40];
 	DWORD stride;
+};
+
+struct ConfigItems
+{
+	BOOL isNoGL;
+	DWORD language;
+	HICON icon;
+	HFONT font;
+
+	BOOL coldCPU;
+
+	struct {
+		BOOL aspect;
+		BOOL vSync;
+		ImageFilter filter;
+		FilterType scaleNx;
+		FilterType xSal;
+		FilterType eagle;
+		FilterType scaleHQ;
+		FilterType xBRz;
+	} image;
+
+	BOOL isExist;
+	CHAR file[MAX_PATH];
 };

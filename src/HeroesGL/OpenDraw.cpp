@@ -138,9 +138,9 @@ DWORD __stdcall RenderThread(LPVOID lpParameter)
 
 VOID OpenDraw::RenderOld()
 {
-	if (configImageFilter == FilterCubic || configImageFilter == FilterXRBZ || configImageFilter == FilterScaleHQ ||
-		configImageFilter == FilterXSal || configImageFilter == FilterEagle || configImageFilter == FilterScaleNx)
-		configImageFilter = FilterLinear;
+	if (config.image.filter == FilterCubic || config.image.filter == FilterXRBZ || config.image.filter == FilterScaleHQ ||
+		config.image.filter == FilterXSal || config.image.filter == FilterEagle || config.image.filter == FilterScaleNx)
+		config.image.filter = FilterLinear;
 
 	DWORD glMaxTexSize;
 	GLGetIntegerv(GL_MAX_TEXTURE_SIZE, (GLint*)&glMaxTexSize);
@@ -153,7 +153,7 @@ VOID OpenDraw::RenderOld()
 		maxAllow <<= 1;
 
 	DWORD maxTexSize = maxAllow < glMaxTexSize ? maxAllow : glMaxTexSize;
-	DWORD glFilter = configImageFilter == FilterNearest ? GL_NEAREST : GL_LINEAR;
+	DWORD glFilter = config.image.filter == FilterNearest ? GL_NEAREST : GL_LINEAR;
 
 	DWORD framePerWidth = this->width / maxTexSize + (this->width % maxTexSize ? 1 : 0);
 	DWORD framePerHeight = this->height / maxTexSize + (this->height % maxTexSize ? 1 : 0);
@@ -240,7 +240,7 @@ VOID OpenDraw::RenderOld()
 						{
 							if (!isVSync)
 							{
-								if (configImageVSync)
+								if (config.image.vSync)
 								{
 									isVSync = TRUE;
 									WGLSwapInterval(1);
@@ -248,7 +248,7 @@ VOID OpenDraw::RenderOld()
 							}
 							else
 							{
-								if (!configImageVSync)
+								if (!config.image.vSync)
 								{
 									isVSync = FALSE;
 									WGLSwapInterval(0);
@@ -305,7 +305,7 @@ VOID OpenDraw::RenderOld()
 						{
 							this->isStateChanged = FALSE;
 							clear = TRUE;
-							glFilter = configImageFilter == FilterNearest ? GL_NEAREST : GL_LINEAR;
+							glFilter = config.image.filter == FilterNearest ? GL_NEAREST : GL_LINEAR;
 						}
 
 						if (palette->isChanged)
@@ -661,7 +661,7 @@ VOID OpenDraw::RenderNew()
 						GLuint textureId;
 						GLGenTextures(1, &textureId);
 						{
-							DWORD filter = configImageFilter == FilterLinear ? GL_LINEAR : GL_NEAREST;
+							DWORD filter = config.image.filter == FilterLinear ? GL_LINEAR : GL_NEAREST;
 							GLActiveTexture(GL_TEXTURE0);
 							GLBindTexture(GL_TEXTURE_2D, textureId);
 							GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glCapsClampToEdge);
@@ -711,7 +711,7 @@ VOID OpenDraw::RenderNew()
 													{
 														if (!isVSync)
 														{
-															if (configImageVSync)
+															if (config.image.vSync)
 															{
 																isVSync = TRUE;
 																WGLSwapInterval(1);
@@ -719,7 +719,7 @@ VOID OpenDraw::RenderNew()
 														}
 														else
 														{
-															if (!configImageVSync)
+															if (!config.image.vSync)
 															{
 																isVSync = FALSE;
 																WGLSwapInterval(0);
@@ -773,7 +773,7 @@ VOID OpenDraw::RenderNew()
 													UpdateRect* finClip = surface->currentClip;
 													surface->poinetrClip = finClip;
 
-													ImageFilter frameFilter = configImageFilter;
+													ImageFilter frameFilter = config.image.filter;
 													if (frameFilter == FilterXRBZ || frameFilter == FilterScaleHQ ||
 														frameFilter == FilterXSal || frameFilter == FilterEagle || frameFilter == FilterScaleNx)
 													{
@@ -787,7 +787,7 @@ VOID OpenDraw::RenderNew()
 															switch (frameFilter)
 															{
 															case FilterScaleNx:
-																scaleValue = LOWORD(configImageScaleNx);
+																scaleValue = config.image.scaleNx.value;
 																switch (scaleValue)
 																{
 																case 4:
@@ -797,11 +797,11 @@ VOID OpenDraw::RenderNew()
 																	filterProgram = &shaders.scaleNx_2x;
 																	break;
 																}
-																filterProgram2 = HIWORD(configImageScaleNx) ? &shaders.cubic : &shaders.linear;
+																filterProgram2 = config.image.scaleNx.type ? &shaders.cubic : &shaders.linear;
 																break;
 
 															case FilterScaleHQ:
-																scaleValue = LOWORD(configImageScaleHQ);
+																scaleValue = config.image.scaleHQ.value;
 																switch (scaleValue)
 																{
 																case 4:
@@ -811,11 +811,11 @@ VOID OpenDraw::RenderNew()
 																	filterProgram = &shaders.scaleHQ_2x;
 																	break;
 																}
-																filterProgram2 = HIWORD(configImageScaleHQ) ? &shaders.cubic : &shaders.linear;
+																filterProgram2 = config.image.scaleHQ.type ? &shaders.cubic : &shaders.linear;
 																break;
 
 															case FilterXRBZ:
-																scaleValue = LOWORD(configImageXBRZ);
+																scaleValue = config.image.xBRz.value;
 																switch (scaleValue)
 																{
 																case 6:
@@ -834,19 +834,19 @@ VOID OpenDraw::RenderNew()
 																	filterProgram = &shaders.xBRz_2x;
 																	break;
 																}
-																filterProgram2 = HIWORD(configImageXBRZ) ? &shaders.cubic : &shaders.linear;
+																filterProgram2 = config.image.xBRz.type ? &shaders.cubic : &shaders.linear;
 																break;
 
 															case FilterXSal:
-																scaleValue = 2;
+																scaleValue = config.image.xSal.value;
 																filterProgram = &shaders.xSal_2x;
-																filterProgram2 = HIWORD(configImageXSal) ? &shaders.cubic : &shaders.linear;
+																filterProgram2 = config.image.xSal.type ? &shaders.cubic : &shaders.linear;
 																break;
 
 															default:
-																scaleValue = 2;
+																scaleValue = config.image.eagle.value;
 																filterProgram = &shaders.eagle_2x;
-																filterProgram2 = HIWORD(configImageEagle) ? &shaders.cubic : &shaders.linear;
+																filterProgram2 = config.image.eagle.type ? &shaders.cubic : &shaders.linear;
 																break;
 
 															}
@@ -1434,7 +1434,7 @@ BOOL OpenDraw::CheckView()
 		this->viewport.clipFactor.x = this->viewport.viewFactor.x = (FLOAT)this->viewport.width / this->width;
 		this->viewport.clipFactor.y = this->viewport.viewFactor.y = (FLOAT)this->viewport.height / this->height;
 
-		if (configImageAspect && this->viewport.viewFactor.x != this->viewport.viewFactor.y)
+		if (config.image.aspect && this->viewport.viewFactor.x != this->viewport.viewFactor.y)
 		{
 			if (this->viewport.viewFactor.x > this->viewport.viewFactor.y)
 			{
@@ -1454,7 +1454,7 @@ BOOL OpenDraw::CheckView()
 
 		Hooks::ScalePointer(this->viewport.clipFactor.x, this->viewport.clipFactor.y);
 
-		if (configImageAspect && this->windowState != WinStateWindowed)
+		if (config.image.aspect && this->windowState != WinStateWindowed)
 		{
 			RECT clipRect;
 			GetClientRect(this->hWnd, &clipRect);

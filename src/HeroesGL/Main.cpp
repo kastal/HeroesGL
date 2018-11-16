@@ -24,6 +24,7 @@
 
 #include "stdafx.h"
 #include "Main.h"
+#include "Config.h"
 #include "Hooks.h"
 #include "DirectDraw.h"
 
@@ -33,7 +34,7 @@ namespace Main
 {
 	HRESULT __stdcall DirectDrawCreate(GUID* lpGUID, LPDIRECTDRAW* lplpDD, IUnknown* pUnkOuter)
 	{
-		if (isNoGL)
+		if (config.isNoGL)
 		{
 			HRESULT res = DDCreate(lpGUID, lplpDD, pUnkOuter);
 			if (res == DD_OK)

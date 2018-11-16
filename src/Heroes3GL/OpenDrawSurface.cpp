@@ -38,8 +38,10 @@ OpenDrawSurface::OpenDrawSurface(IDraw* lpDD, DWORD index)
 	this->index = index;
 	this->indexBuffer = NULL;
 
-	this->width = 0;
-	this->height = 0;
+	this->mode.width = 0;
+	this->mode.height = 0;
+	this->mode.bpp = 0;
+
 	this->scale = 1.0f;
 	this->isSizeChanged = TRUE;
 
@@ -65,10 +67,13 @@ VOID OpenDrawSurface::ReleaseBuffer()
 VOID OpenDrawSurface::CreateBuffer(DWORD width, DWORD height)
 {
 	this->ReleaseBuffer();
-	this->width = width;
-	this->height = height;
-	this->indexBuffer = (WORD*)MemoryAlloc(width * height * sizeof(WORD));
-	MemoryZero(this->indexBuffer, width * height * sizeof(WORD));
+	this->mode.width = width;
+	this->mode.height = height;
+	this->mode.bpp = ((OpenDraw*)this->ddraw)->mode.bpp;
+
+	DWORD size = width * height * (this->mode.bpp >> 3);
+	this->indexBuffer = MemoryAlloc(size);
+	MemoryZero(this->indexBuffer, size);
 
 	this->clipsList = !this->index ? (UpdateRect*)MemoryAlloc(STENCIL_COUNT * sizeof(UpdateRect)) : NULL;
 	this->endClip = this->clipsList + (!this->index ? STENCIL_COUNT : 0);
@@ -86,6 +91,7 @@ ULONG __stdcall OpenDrawSurface::Release()
 
 HRESULT __stdcall OpenDrawSurface::GetPixelFormat(LPDDPIXELFORMAT lpDDPixelFormat)
 {
+	lpDDPixelFormat->dwRGBBitCount = this->mode.bpp;
 	lpDDPixelFormat->dwRBitMask = 0xF800;
 	lpDDPixelFormat->dwGBitMask = 0x07E0;
 	lpDDPixelFormat->dwBBitMask = 0x001F;
@@ -94,15 +100,15 @@ HRESULT __stdcall OpenDrawSurface::GetPixelFormat(LPDDPIXELFORMAT lpDDPixelForma
 
 HRESULT __stdcall OpenDrawSurface::SetColorKey(DWORD dwFlags, LPDDCOLORKEY lpDDColorKey)
 {
-	this->colorKey = LOWORD(lpDDColorKey->dwColorSpaceLowValue);
+	this->colorKey = lpDDColorKey->dwColorSpaceLowValue;
 	return DD_OK;
 }
 
 HRESULT __stdcall OpenDrawSurface::Lock(LPRECT lpDestRect, LPDDSURFACEDESC lpDDSurfaceDesc, DWORD dwFlags, HANDLE hEvent)
 {
-	lpDDSurfaceDesc->dwWidth = this->width;
-	lpDDSurfaceDesc->dwHeight = this->height;
-	lpDDSurfaceDesc->lPitch = this->width * 2;
+	lpDDSurfaceDesc->dwWidth = this->mode.width;
+	lpDDSurfaceDesc->dwHeight = this->mode.height;
+	lpDDSurfaceDesc->lPitch = this->mode.width * (this->mode.bpp >> 3);
 	lpDDSurfaceDesc->lpSurface = this->indexBuffer;
 	return DD_OK;
 }
@@ -115,8 +121,8 @@ HRESULT __stdcall OpenDrawSurface::SetClipper(LPDIRECTDRAWCLIPPER lpDDClipper)
 
 HRESULT __stdcall OpenDrawSurface::GetSurfaceDesc(LPDDSURFACEDESC lpDDSurfaceDesc)
 {
-	lpDDSurfaceDesc->dwWidth = this->width;
-	lpDDSurfaceDesc->dwHeight = this->height;
+	lpDDSurfaceDesc->dwWidth = this->mode.width;
+	lpDDSurfaceDesc->dwHeight = this->mode.height;
 	return DD_OK;
 }
 
@@ -124,10 +130,19 @@ HRESULT __stdcall OpenDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lp
 {
 	if (dwFlags & DDBLT_COLORFILL)
 	{
-		DWORD count = this->width * this->height;
-		if (count & 1)
+		DWORD count = this->mode.width * this->mode.height;
+
+		if (this->mode.bpp == 32)
 		{
-			WORD* dest = this->indexBuffer;
+			DWORD* dest = (DWORD*)this->indexBuffer;
+			DWORD color = lpDDBltFx->dwFillColor;
+			do
+				*dest++ = color;
+			while (--count);
+		}
+		else if (count & 1)
+		{
+			WORD* dest = (WORD*)this->indexBuffer;
 			WORD color = LOWORD(lpDDBltFx->dwFillColor);
 			do
 				*dest++ = color;
@@ -161,10 +176,10 @@ HRESULT __stdcall OpenDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lp
 			lpSrcRect->right -= clip.left;
 			lpSrcRect->bottom -= clip.top;
 
-			sWidth = ((OpenDraw*)this->ddraw)->width;
+			sWidth = ((OpenDraw*)this->ddraw)->mode.width;
 		}
 		else
-			sWidth = surface->width;
+			sWidth = surface->mode.width;
 
 		DWORD dWidth;
 		if (this->attachedClipper)
@@ -178,47 +193,86 @@ HRESULT __stdcall OpenDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lp
 			lpDestRect->right -= clip.left;
 			lpDestRect->bottom -= clip.top;
 
-			dWidth = ((OpenDraw*)this->ddraw)->width;
+			dWidth = ((OpenDraw*)this->ddraw)->mode.width;
 		}
 		else
-			dWidth = this->width;
+			dWidth = this->mode.width;
 
 		if (currScale != 1.0f)
 			dWidth = DWORD(currScale * dWidth);
 
-		WORD* source = surface->indexBuffer + lpSrcRect->top * sWidth + lpSrcRect->left;
-		WORD* destination = this->indexBuffer + lpDestRect->top * dWidth + lpDestRect->left;
-
 		INT width = lpSrcRect->right - lpSrcRect->left;
 		INT height = lpSrcRect->bottom - lpSrcRect->top;
 
-		if (surface->colorKey)
 		{
-			do
+			if (this->mode.bpp == 32)
 			{
-				WORD* src = source;
-				WORD* dest = destination;
-				source += sWidth;
-				destination += dWidth;
+				DWORD* source = (DWORD*)surface->indexBuffer + lpSrcRect->top * sWidth + lpSrcRect->left;
+				DWORD* destination = (DWORD*)this->indexBuffer + lpDestRect->top * dWidth + lpDestRect->left;
 
-				DWORD count = width;
-				do
+				if (surface->colorKey)
 				{
-					if (*src != surface->colorKey)
-						*dest = *src;
-					++src;
-					++dest;
-				} while (--count);
-			} while (--height);
-		}
-		else
-		{
-			do
+					do
+					{
+						DWORD* src = source;
+						DWORD* dest = destination;
+						source += sWidth;
+						destination += dWidth;
+
+						DWORD count = width;
+						do
+						{
+							if (*src != surface->colorKey)
+								*dest = *src;
+							++src;
+							++dest;
+						} while (--count);
+					} while (--height);
+				}
+				else
+				{
+					do
+					{
+						MemoryCopy(destination, source, width << 2);
+						source += sWidth;
+						destination += dWidth;
+					} while (--height);
+				}
+			}
+			else
 			{
-				MemoryCopy(destination, source, width << 1);
-				source += sWidth;
-				destination += dWidth;
-			} while (--height);
+				WORD* source = (WORD*)surface->indexBuffer + lpSrcRect->top * sWidth + lpSrcRect->left;
+				WORD* destination = (WORD*)this->indexBuffer + lpDestRect->top * dWidth + lpDestRect->left;
+
+				if (LOWORD(surface->colorKey))
+				{
+					do
+					{
+						WORD* src = source;
+						WORD* dest = destination;
+						source += sWidth;
+						destination += dWidth;
+
+						DWORD count = width;
+						do
+						{
+							if (*src != LOWORD(surface->colorKey))
+								*dest = *src;
+							++src;
+							++dest;
+						} while (--count);
+					} while (--height);
+				}
+				else
+				{
+					do
+					{
+						MemoryCopy(destination, source, width << 1);
+						source += sWidth;
+						destination += dWidth;
+					} while (--height);
+				}
+			}
 		}
 
 		if (this->scale != currScale)
@@ -232,8 +286,8 @@ HRESULT __stdcall OpenDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lp
 			this->currentClip->rect = *lpDestRect;
 			this->currentClip->isActive = TRUE;
 
-			if (lpDestRect->right - lpDestRect->left == ((OpenDraw*)this->ddraw)->width &&
-				lpDestRect->bottom - lpDestRect->top == ((OpenDraw*)this->ddraw)->height)
+			if (lpDestRect->right - lpDestRect->left == ((OpenDraw*)this->ddraw)->mode.width &&
+				lpDestRect->bottom - lpDestRect->top == ((OpenDraw*)this->ddraw)->mode.height)
 				this->poinetrClip = this->currentClip;
 			else
 			{

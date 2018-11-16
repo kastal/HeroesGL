@@ -27,7 +27,6 @@
 HMODULE hDllModule;
 HANDLE hActCtx;
 
-BOOL isNoGL;
 DIRECTDRAWCREATE DDCreate;
 
 CREATEACTCTXA CreateActCtxC;

@@ -26,6 +26,7 @@
 #include "Hooks.h"
 #include "GLib.h"
 #include "Main.h"
+#include "Config.h"
 #include "OpenWindow.h"
 #include "Resource.h"
 
@@ -47,7 +48,7 @@ BOOL __stdcall DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved)
 
 			if (StrStr(line, "-nogl") == line)
 			{
-				isNoGL = TRUE;
+				config.isNoGL = TRUE;
 				break;
 			}
 		} while (TRUE);
@@ -57,7 +58,7 @@ BOOL __stdcall DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved)
 			hDllModule = hModule;
 			LoadKernel32();
 
-			if (!isNoGL)
+			if (!config.isNoGL)
 				OpenWindow::OldWindowKeyHook = SetWindowsHookEx(WH_KEYBOARD_LL, OpenWindow::WindowKeyHook, NULL, 0);
 			else
 				LoadDDraw();
@@ -87,7 +88,7 @@ BOOL __stdcall DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved)
 			if (hActCtx && hActCtx != INVALID_HANDLE_VALUE)
 				ReleaseActCtxC(hActCtx);
 
-			if (!isNoGL)
+			if (!config.isNoGL)
 			{
 				GL::Free();
 				ClipCursor(NULL);

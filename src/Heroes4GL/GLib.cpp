@@ -123,19 +123,6 @@ DWORD glCapsClampToEdge;
 
 BOOL isDummyRegistered;
 
-const INT glAttributes[] = {
-	WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
-	WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
-	WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
-	WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
-	WGL_COLOR_BITS_ARB, 32,
-	WGL_DEPTH_BITS_ARB, 16,
-	WGL_STENCIL_BITS_ARB, 8,
-	WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
-	WGL_SWAP_METHOD_ARB, WGL_SWAP_EXCHANGE_ARB,
-	0
-};
-
 namespace GL
 {
 	BOOL __fastcall Load()
@@ -363,13 +350,23 @@ namespace GL
 
 	VOID __fastcall PreparePixelFormatDescription(PIXELFORMATDESCRIPTOR* pfd)
 	{
+		DEVMODE devMode;
+		MemoryZero(&devMode, sizeof(DEVMODE));
+		devMode.dmSize = sizeof(DEVMODE);
+
+		DWORD bpp;
+		if (EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &devMode) && devMode.dmBitsPerPel >= 16 && devMode.dmBitsPerPel <= 32)
+			bpp = devMode.dmBitsPerPel;
+		else
+			bpp = 32;
+
 		MemoryZero(pfd, sizeof(PIXELFORMATDESCRIPTOR));
 		pfd->nSize = sizeof(PIXELFORMATDESCRIPTOR);
 		pfd->nVersion = 1;
-		pfd->dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+		pfd->dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER | PFD_DEPTH_DONTCARE | PFD_STEREO_DONTCARE | PFD_SWAP_EXCHANGE;
 		pfd->iPixelType = PFD_TYPE_RGBA;
-		pfd->cColorBits = 32;
-		pfd->cDepthBits = 16;
+		pfd->cColorBits = bpp;
+		pfd->cDepthBits = 0;
 		pfd->cStencilBits = 8;
 		pfd->iLayerType = PFD_MAIN_PLANE;
 	}
@@ -427,6 +424,20 @@ namespace GL
 									{
 										INT piFormats[128];
 										UINT nNumFormats;
+
+										INT glAttributes[] = {
+											WGL_DRAW_TO_WINDOW_ARB, (pfd->dwFlags & PFD_DRAW_TO_WINDOW) ? GL_TRUE : GL_FALSE,
+											WGL_SUPPORT_OPENGL_ARB, (pfd->dwFlags & PFD_SUPPORT_OPENGL) ? GL_TRUE : GL_FALSE,
+											WGL_DOUBLE_BUFFER_ARB, (pfd->dwFlags & PFD_DOUBLEBUFFER) ? GL_TRUE : GL_FALSE,
+											WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+											WGL_COLOR_BITS_ARB, pfd->cColorBits,
+											WGL_DEPTH_BITS_ARB, pfd->cDepthBits,
+											WGL_STENCIL_BITS_ARB, pfd->cStencilBits,
+											WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
+											WGL_SWAP_METHOD_ARB, (pfd->dwFlags & PFD_SWAP_EXCHANGE) ? WGL_SWAP_EXCHANGE_ARB : WGL_SWAP_COPY_ARB,
+											0
+										};
+
 										if (WGLChoosePixelFormatARB(hDc, glAttributes, NULL, sizeof(piFormats) / sizeof(INT), piFormats, &nNumFormats) && nNumFormats)
 											glPixelFormat = piFormats[0];
 									}

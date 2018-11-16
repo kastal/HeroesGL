@@ -63,7 +63,7 @@ namespace OpenWindow
 
 	VOID __fastcall FilterChanged(HWND hWnd)
 	{
-		Config::Set(CONFIG_WRAPPER, "ImageFilter", configImageFilter);
+		Config::Set(CONFIG_WRAPPER, "ImageFilter", *(INT*)&config.image.filter);
 		Window::CheckMenu(hWnd);
 
 		OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
@@ -76,58 +76,66 @@ namespace OpenWindow
 
 	VOID __fastcall SelectScaleNxMode(HWND hWnd, DWORD value, DWORD isMode)
 	{
-		configImageScaleNx = isMode ?
-			(configImageScaleNx & 0xFFFF0000) | value :
-			(configImageScaleNx & 0x0000FFFF) | (value << 16);
-		Config::Set(CONFIG_WRAPPER, "ImageScaleNx", configImageScaleNx);
+		if (isMode)
+			config.image.scaleNx.value = value;
+		else
+			config.image.scaleNx.type = value;
 
-		configImageFilter = glVersion >= GL_VER_3_0 ? FilterScaleNx : FilterNearest;
+		Config::Set(CONFIG_WRAPPER, "ImageScaleNx", *(INT*)&config.image.scaleNx);
 
+		config.image.filter = glVersion >= GL_VER_3_0 ? FilterScaleNx : FilterNearest;
 		FilterChanged(hWnd);
 	}
 
 	VOID __fastcall SelectXSalMode(HWND hWnd, DWORD value, DWORD isMode)
 	{
-		configImageXSal = isMode ?
-			(configImageXSal & 0xFFFF0000) | value :
-			(configImageXSal & 0x0000FFFF) | (value << 16);
-		Config::Set(CONFIG_WRAPPER, "ImageXSal", configImageXSal);
+		if (isMode)
+			config.image.xSal.value = value;
+		else
+			config.image.xSal.type = value;
 
-		configImageFilter = glVersion >= GL_VER_3_0 ? FilterXSal : FilterNearest;
+		Config::Set(CONFIG_WRAPPER, "ImageXSal", *(INT*)&config.image.xSal);
+
+		config.image.filter = glVersion >= GL_VER_3_0 ? FilterXSal : FilterNearest;
 		FilterChanged(hWnd);
 	}
 
 	VOID __fastcall SelectEagleMode(HWND hWnd, DWORD value, DWORD isMode)
 	{
-		configImageEagle = isMode ?
-			(configImageEagle & 0xFFFF0000) | value :
-			(configImageEagle & 0x0000FFFF) | (value << 16);
-		Config::Set(CONFIG_WRAPPER, "ImageEagle", configImageEagle);
+		if (isMode)
+			config.image.eagle.value = value;
+		else
+			config.image.eagle.type = value;
 
-		configImageFilter = glVersion >= GL_VER_3_0 ? FilterEagle : FilterNearest;
+		Config::Set(CONFIG_WRAPPER, "ImageEagle", *(INT*)&config.image.eagle);
+
+		config.image.filter = glVersion >= GL_VER_3_0 ? FilterEagle : FilterNearest;
 		FilterChanged(hWnd);
 	}
 
 	VOID __fastcall SelectScaleHQMode(HWND hWnd, DWORD value, DWORD isMode)
 	{
-		configImageScaleHQ = isMode ?
-			(configImageScaleHQ & 0xFFFF0000) | value :
-			(configImageScaleHQ & 0x0000FFFF) | (value << 16);
-		Config::Set(CONFIG_WRAPPER, "ImageScaleHQ", configImageScaleHQ);
+		if (isMode)
+			config.image.scaleHQ.value = value;
+		else
+			config.image.scaleHQ.type = value;
 
-		configImageFilter = glVersion >= GL_VER_3_0 ? FilterScaleHQ : FilterNearest;
+		Config::Set(CONFIG_WRAPPER, "ImageScaleHQ", *(INT*)&config.image.scaleHQ);
+
+		config.image.filter = glVersion >= GL_VER_3_0 ? FilterScaleHQ : FilterNearest;
 		FilterChanged(hWnd);
 	}
 
 	VOID __fastcall SelectXBRZMode(HWND hWnd, DWORD value, DWORD isMode)
 	{
-		configImageXBRZ = isMode ?
-			(configImageXBRZ & 0xFFFF0000) | value :
-			(configImageXBRZ & 0x0000FFFF) | (value << 16);
-		Config::Set(CONFIG_WRAPPER, "ImageXBRZ", configImageXBRZ);
+		if (isMode)
+			config.image.xBRz.value = value;
+		else
+			config.image.xBRz.type = value;
 
-		configImageFilter = glVersion >= GL_VER_3_0 ? FilterXRBZ : FilterNearest;
+		Config::Set(CONFIG_WRAPPER, "ImageXBRZ", *(INT*)&config.image.xBRz);
 
+		config.image.filter = glVersion >= GL_VER_3_0 ? FilterXRBZ : FilterNearest;
 		FilterChanged(hWnd);
 	}
 
@@ -247,38 +255,38 @@ namespace OpenWindow
 
 			case VK_F3: // Filtering on/off
 			{
-				switch (configImageFilter)
+				switch (config.image.filter)
 				{
 				case FilterLinear:
-					configImageFilter = glVersion >= GL_VER_3_0 ? FilterCubic : FilterNearest;
+					config.image.filter = glVersion >= GL_VER_3_0 ? FilterCubic : FilterNearest;
 					break;
 
 				case FilterCubic:
-					configImageFilter = glVersion >= GL_VER_3_0 ? FilterScaleNx : FilterNearest;
+					config.image.filter = glVersion >= GL_VER_3_0 ? FilterScaleNx : FilterNearest;
 					break;
 
 				case FilterScaleNx:
-					configImageFilter = glVersion >= GL_VER_3_0 ? FilterEagle : FilterNearest;
+					config.image.filter = glVersion >= GL_VER_3_0 ? FilterEagle : FilterNearest;
 					break;
 
 				case FilterEagle:
-					configImageFilter = glVersion >= GL_VER_3_0 ? FilterXSal : FilterNearest;
+					config.image.filter = glVersion >= GL_VER_3_0 ? FilterXSal : FilterNearest;
 					break;
 
 				case FilterXSal:
-					configImageFilter = glVersion >= GL_VER_3_0 ? FilterScaleHQ : FilterNearest;
+					config.image.filter = glVersion >= GL_VER_3_0 ? FilterScaleHQ : FilterNearest;
 					break;
 
 				case FilterScaleHQ:
-					configImageFilter = glVersion >= GL_VER_3_0 ? FilterXRBZ : FilterNearest;
+					config.image.filter = glVersion >= GL_VER_3_0 ? FilterXRBZ : FilterNearest;
 					break;
 
 				case FilterXRBZ:
-					configImageFilter = FilterNearest;
+					config.image.filter = FilterNearest;
 					break;
 
 				default:
-					configImageFilter = FilterLinear;
+					config.image.filter = FilterLinear;
 					break;
 				}
 
@@ -289,8 +297,8 @@ namespace OpenWindow
 
 			case VK_F9:
 			{
-				configImageAspect = !configImageAspect;
-				Config::Set(CONFIG_WRAPPER, "ImageAspect", configImageAspect);
+				config.image.aspect = !config.image.aspect;
+				Config::Set(CONFIG_WRAPPER, "ImageAspect", config.image.aspect);
 				Window::CheckMenu(hWnd);
 
 				OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
@@ -319,7 +327,7 @@ namespace OpenWindow
 		case WM_RBUTTONDBLCLK:
 		case WM_MOUSEMOVE:
 		{
-			if (configImageAspect)
+			if (config.image.aspect)
 			{
 				OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
 				if (ddraw)
@@ -339,8 +347,8 @@ namespace OpenWindow
 			{
 			case IDM_PATCH_CPU:
 			{
-				configColdCPU = !configColdCPU;
-				Config::Set(CONFIG_WRAPPER, "ColdCPU", configColdCPU);
+				config.coldCPU = !config.coldCPU;
+				Config::Set(CONFIG_WRAPPER, "ColdCPU", config.coldCPU);
 				Window::CheckMenu(hWnd);
 				return NULL;
 			}
@@ -352,7 +360,7 @@ namespace OpenWindow
 				if (hActCtx && hActCtx != INVALID_HANDLE_VALUE && !ActivateActCtxC(hActCtx, &cookie))
 					cookie = NULL;
 
-				res = DialogBoxParam(hDllModule, MAKEINTRESOURCE(configLanguage == LNG_ENGLISH ? IDD_ENGLISH : IDD_RUSSIAN), hWnd, (DLGPROC)Window::AboutProc, NULL);
+				res = DialogBoxParam(hDllModule, MAKEINTRESOURCE(config.language == LNG_ENGLISH ? IDD_ENGLISH : IDD_RUSSIAN), hWnd, (DLGPROC)Window::AboutProc, NULL);
 
 				if (cookie)
 					DeactivateActCtxC(0, cookie);
@@ -363,8 +371,8 @@ namespace OpenWindow
 
 			case IDM_ASPECT_RATIO:
 			{
-				configImageAspect = !configImageAspect;
-				Config::Set(CONFIG_WRAPPER, "ImageAspect", configImageAspect);
+				config.image.aspect = !config.image.aspect;
+				Config::Set(CONFIG_WRAPPER, "ImageAspect", config.image.aspect);
 				Window::CheckMenu(hWnd);
 
 				OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
@@ -379,8 +387,8 @@ namespace OpenWindow
 
 			case IDM_VSYNC:
 			{
-				configImageVSync = !configImageVSync;
-				Config::Set(CONFIG_WRAPPER, "ImageVSync", configImageVSync);
+				config.image.vSync = !config.image.vSync;
+				Config::Set(CONFIG_WRAPPER, "ImageVSync", config.image.vSync);
 				Window::CheckMenu(hWnd);
 
 				OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
@@ -392,21 +400,21 @@ namespace OpenWindow
 
 			case IDM_FILT_OFF:
 			{
-				configImageFilter = FilterNearest;
+				config.image.filter = FilterNearest;
 				FilterChanged(hWnd);
 				return NULL;
 			}
 
 			case IDM_FILT_LINEAR:
 			{
-				configImageFilter = FilterLinear;
+				config.image.filter = FilterLinear;
 				FilterChanged(hWnd);
 				return NULL;
 			}
 
 			case IDM_FILT_CUBIC:
 			{
-				configImageFilter = glVersion >= GL_VER_3_0 ? FilterCubic : FilterNearest;
+				config.image.filter = glVersion >= GL_VER_3_0 ? FilterCubic : FilterNearest;
 				FilterChanged(hWnd);
 				return NULL;
 			}

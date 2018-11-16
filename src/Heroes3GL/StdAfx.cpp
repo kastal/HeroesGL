@@ -27,7 +27,7 @@
 HMODULE hDllModule;
 HANDLE hActCtx;
 
-BOOL isNoGL;
+DisplayMode displayMode = { 800, 600, 16 };
 DIRECTDRAWCREATE DDCreate;
 
 CREATEACTCTXA CreateActCtxC;

@@ -83,6 +83,12 @@ enum ImageFilter
 	FilterScaleNx = 7
 };
 
+struct FilterType
+{
+	WORD value;
+	WORD type;
+};
+
 enum FpsState
 {
 	FpsDisabled = 0,
@@ -174,4 +180,28 @@ struct TrackInfo
 	BOOL isPositional;
 	CHAR* group;
 	CHAR* path;
+};
+
+struct ConfigItems
+{
+	BOOL isNoGL;
+	DWORD language;
+	HICON icon;
+	HFONT font;
+
+	BOOL coldCPU;
+
+	struct {
+		BOOL aspect;
+		BOOL vSync;
+		ImageFilter filter;
+		FilterType scaleNx;
+		FilterType xSal;
+		FilterType eagle;
+		FilterType scaleHQ;
+		FilterType xBRz;
+	} image;
+
+	BOOL isExist;
+	CHAR file[MAX_PATH];
 };

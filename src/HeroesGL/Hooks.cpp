@@ -421,7 +421,7 @@ namespace Hooks
 
 		hWnd = CreateWindow(lpClassName, hookSpace->windowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
 
-		if (isNoGL && !Window::OldWindowProc)
+		if (config.isNoGL && !Window::OldWindowProc)
 			Window::OldWindowProc = (WNDPROC)SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)DirectWindow::WindowProc);
 
 		return hWnd;
@@ -440,7 +440,7 @@ namespace Hooks
 		if (ScreenToClient(hWnd, lpPoint))
 		{
 			OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
-			if (ddraw && configImageAspect)
+			if (ddraw && config.image.aspect)
 				ddraw->ScaleMouse(lpPoint);
 
 			return TRUE;
@@ -469,7 +469,7 @@ namespace Hooks
 		HMENU hMenu = LoadMenu(hInstance, lpMenuName);
 		if (hMenu)
 		{
-			HMENU hNew = LoadMenu(hDllModule, MAKEINTRESOURCE(configLanguage == LNG_ENGLISH ? IDM_ENGLISH : IDM_RUSSIAN));
+			HMENU hNew = LoadMenu(hDllModule, MAKEINTRESOURCE(config.language == LNG_ENGLISH ? IDM_ENGLISH : IDM_RUSSIAN));
 			if (hNew)
 			{
 				DWORD i, index = 0;
@@ -537,9 +537,9 @@ namespace Hooks
 	BOOL __stdcall EnumChildProc(HWND hDlg, LPARAM lParam)
 	{
 		if ((GetWindowLong(hDlg, GWL_STYLE) & SS_ICON) == SS_ICON)
-			SendMessage(hDlg, STM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)configIcon);
+			SendMessage(hDlg, STM_SETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)config.icon);
 		else
-			SendMessage(hDlg, WM_SETFONT, (WPARAM)configFont, TRUE);
+			SendMessage(hDlg, WM_SETFONT, (WPARAM)config.font, TRUE);
 
 		return TRUE;
 	}
@@ -1222,7 +1222,7 @@ namespace Hooks
 		if (PeekMessage(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg))
 			return TRUE;
 
-		if (configColdCPU)
+		if (config.coldCPU)
 			Sleep(1);
 
 		return FALSE;
@@ -1325,24 +1325,24 @@ namespace Hooks
 #pragma region Registry
 	LSTATUS __stdcall RegCreateKeyHook(HKEY hKey, LPCSTR lpSubKey, PHKEY phkResult)
 	{
-		return configIsExist ? ERROR_SUCCESS : RegCreateKey(hKey, lpSubKey, phkResult);
+		return config.isExist ? ERROR_SUCCESS : RegCreateKey(hKey, lpSubKey, phkResult);
 	}
 
 	LSTATUS __stdcall RegOpenKeyExHook(HKEY hKey, LPCSTR lpSubKey, DWORD ulOptions, REGSAM samDesired, PHKEY phkResult)
 	{
-		return configIsExist ? ERROR_SUCCESS : RegOpenKeyEx(hKey, lpSubKey, ulOptions, samDesired, phkResult);
+		return config.isExist ? ERROR_SUCCESS : RegOpenKeyEx(hKey, lpSubKey, ulOptions, samDesired, phkResult);
 	}
 
 	LSTATUS __stdcall RegCloseKeyHook(HKEY hKey)
 	{
-		return configIsExist ? ERROR_SUCCESS : RegCloseKey(hKey);
+		return config.isExist ? ERROR_SUCCESS : RegCloseKey(hKey);
 	}
 
 	LSTATUS __stdcall RegQueryValueExHook(HKEY hKey, LPCSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData)
 	{
 		DWORD size = *lpcbData;
 
-		if (!configIsExist)
+		if (!config.isExist)
 		{
 			LSTATUS res = RegQueryValueEx(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
 			if (res == ERROR_SUCCESS)
@@ -1396,6 +1396,8 @@ namespace Hooks
 			DWORD check;
 			if (ReadDWord(hookSpace->check + 6, &check) && check == STYLE_FULL_OLD)
 			{
+				Config::Load(hModule, hookSpace);
+
 				{
 					PatchFunction(hModule, "LoadLibraryA", LoadLibraryHook);
 					PatchFunction(hModule, "FreeLibrary", FreeLibraryHook);
@@ -1425,7 +1427,7 @@ namespace Hooks
 					AudiereOpenDevice = (ADROPENDEVICE)PatchFunction(hModule, "_AdrOpenDevice@8", AdrOpenDeviceHook);
 					AudiereOpenSampleSource = (ADROPENSAMPLESOURCE)PatchFunction(hModule, "_AdrOpenSampleSource@4", AdrOpenSampleSourceHook);
 
-					if (!isNoGL)
+					if (!config.isNoGL)
 					{
 						PatchFunction(hModule, "ScreenToClient", ScreenToClientHook);
 						PatchFunction(hModule, "InvalidateRect", InvalidateRectHook);
@@ -1446,7 +1448,7 @@ namespace Hooks
 					PatchCall(hookSpace->fadeout_update, UpdatePaletteHook);
 				}
 
-				if (!isNoGL)
+				if (!config.isNoGL)
 				{
 					PatchNop(hookSpace->method2_nop, hookSpace->method2_nop_size);
 					if (hookSpace->method2_jmp_short)
@@ -1477,8 +1479,6 @@ namespace Hooks
 
 				if (hookSpace->pointer_fs_nop)
 					PatchNop(hookSpace->pointer_fs_nop, 2);
-
-				Config::Load(hModule, hookSpace);
 
 				return TRUE;
 			}

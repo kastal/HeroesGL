@@ -344,7 +344,7 @@ namespace Hooks
 			{
 				if (GetMenuItemID(hSub, 0) == IDM_FILE_NEW_GAME && DeleteMenu(hMenu, i, MF_BYPOSITION))
 				{
-					HMENU hNew = LoadMenu(hDllModule, MAKEINTRESOURCE(configLanguage == LNG_ENGLISH ? IDM_ENGLISH : IDM_RUSSIAN));
+					HMENU hNew = LoadMenu(hDllModule, MAKEINTRESOURCE(config.language == LNG_ENGLISH ? IDM_ENGLISH : IDM_RUSSIAN));
 					if (hNew)
 					{
 						for (DWORD j = 0; hSub = GetSubMenu(hNew, j); ++j)
@@ -364,7 +364,7 @@ namespace Hooks
 
 	HWND __stdcall CreateWindowExHook(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, INT X, INT Y, INT nWidth, INT nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam)
 	{
-		if (!isNoGL)
+		if (!config.isNoGL)
 			dwStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX | WS_MAXIMIZEBOX;
 
 		HWND hWnd = CreateWindow(lpClassName, hookSpace->windowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
@@ -501,7 +501,7 @@ namespace Hooks
 		if (PeekMessage(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg))
 			return TRUE;
 
-		if (configColdCPU)
+		if (config.coldCPU)
 			Sleep(1);
 
 		return FALSE;
@@ -510,24 +510,24 @@ namespace Hooks
 #pragma region Registry
 	LSTATUS __stdcall RegCreateKeyExHook(HKEY hKey, LPCSTR lpSubKey, DWORD Reserved, LPSTR lpClass, DWORD dwOptions, REGSAM samDesired, const LPSECURITY_ATTRIBUTES lpSecurityAttributes, PHKEY phkResult, LPDWORD lpdwDisposition)
 	{
-		return configIsExist ? ERROR_SUCCESS : RegCreateKeyEx(hKey, lpSubKey, Reserved, lpClass, dwOptions, samDesired, lpSecurityAttributes, phkResult, lpdwDisposition);
+		return config.isExist ? ERROR_SUCCESS : RegCreateKeyEx(hKey, lpSubKey, Reserved, lpClass, dwOptions, samDesired, lpSecurityAttributes, phkResult, lpdwDisposition);
 	}
 
 	LSTATUS __stdcall RegOpenKeyExHook(HKEY hKey, LPCSTR lpSubKey, DWORD ulOptions, REGSAM samDesired, PHKEY phkResult)
 	{
-		return configIsExist ? ERROR_SUCCESS : RegOpenKeyEx(hKey, lpSubKey, ulOptions, samDesired, phkResult);
+		return config.isExist ? ERROR_SUCCESS : RegOpenKeyEx(hKey, lpSubKey, ulOptions, samDesired, phkResult);
 	}
 
 	LSTATUS __stdcall RegCloseKeyHook(HKEY hKey)
 	{
-		return configIsExist ? ERROR_SUCCESS : RegCloseKey(hKey);
+		return config.isExist ? ERROR_SUCCESS : RegCloseKey(hKey);
 	}
 
 	LSTATUS __stdcall RegQueryValueExHook(HKEY hKey, LPCSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData)
 	{
 		DWORD size = *lpcbData;
 
-		if (!configIsExist)
+		if (!config.isExist)
 		{
 			LSTATUS res = RegQueryValueEx(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
 			if (res == ERROR_SUCCESS)
@@ -600,6 +600,8 @@ namespace Hooks
 		hookSpace = equalSpace ? equalSpace : defaultSpace;
 		if (hookSpace)
 		{
+			Config::Load(hModule, hookSpace);
+
 			{
 				PatchFunction(hModule, "CreateWindowExA", CreateWindowExHook);
 				PatchFunction(hModule, "MessageBoxA", MessageBoxHook);
@@ -617,7 +619,7 @@ namespace Hooks
 
 				PatchFunction(hModule, "DirectDrawCreateEx", Main::DirectDrawCreateEx);
 
-				if (!isNoGL)
+				if (!config.isNoGL)
 				{
 					PatchFunction(hModule, "SetWindowLongA", SetWindowLongHook);
 					PatchFunction(hModule, "AdjustWindowRectEx", AdjustWindowRectExHook);
@@ -630,7 +632,7 @@ namespace Hooks
 			}
 
 			// windowed limitations
-			if (!isNoGL)
+			if (!config.isNoGL)
 			{
 				PatchNop(hookSpace->fullscr_nop1, 20);
 				PatchNop(hookSpace->fullscr_nop2, 4);
@@ -638,8 +640,6 @@ namespace Hooks
 				PatchNop(hookSpace->clientrect_nop1, 2);
 				PatchNop(hookSpace->clientrect_nop2, 2);
 			}
-
-			Config::Load(hModule, hookSpace);
 
 			return TRUE;
 		}

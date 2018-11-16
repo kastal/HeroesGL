@@ -30,6 +30,7 @@
 #include "stdio.h"
 #include "mmreg.h"
 #include "ddraw.h"
+#include "ExtraTypes.h"
 
 typedef DWORD(__stdcall *AIL_WAVEOUTOPEN)(LPVOID driver, DWORD a1, DWORD a2, LPPCMWAVEFORMAT waveFormat);
 typedef LPVOID(__stdcall *AIL_OPEN_STREAM)(LPVOID driver, CHAR* filePath, DWORD unknown);
@@ -101,7 +102,7 @@ extern EXIT Exit;
 extern HMODULE hDllModule;
 extern HANDLE hActCtx;
 
-extern BOOL isNoGL;
+extern DisplayMode displayMode;
 
 VOID LoadKernel32();
 VOID LoadMsvCRT();
