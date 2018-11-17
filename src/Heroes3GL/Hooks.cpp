@@ -457,8 +457,14 @@ namespace Hooks
 		return index != BITSPIXEL ? GetDeviceCaps(hdc, index) : displayMode.bpp;
 	}
 
+	BOOL __stdcall GetCursorPosHook(LPPOINT lpPoint)
+	{
+		return TRUE;
+	}
+
 	BOOL __stdcall ScreenToClientHook(HWND hWnd, LPPOINT lpPoint)
 	{
+		GetCursorPos(lpPoint);
 		if (ScreenToClient(hWnd, lpPoint))
 		{
 			OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
@@ -1002,6 +1008,7 @@ namespace Hooks
 					PatchFunction(hModule, "SetWindowLongA", SetWindowLongHook);
 
 					PatchFunction(hModule, "GetDeviceCaps", GetDeviceCapsHook);
+					PatchFunction(hModule, "GetCursorPos", GetCursorPosHook);
 					PatchFunction(hModule, "ScreenToClient", ScreenToClientHook);
 				}
 			}
