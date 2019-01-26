@@ -1,7 +1,7 @@
 /*
 	MIT License
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+	Copyright (c) 2019 Oleksiy Ryabchun
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -117,24 +117,6 @@ struct ShaderProgram
 	GLfloat* mvp;
 };
 
-struct ShaderProgramsList
-{
-	ShaderProgram stencil;
-	ShaderProgram linear;
-	ShaderProgram cubic;
-	ShaderProgram xBRz_2x;
-	ShaderProgram xBRz_3x;
-	ShaderProgram xBRz_4x;
-	ShaderProgram xBRz_5x;
-	ShaderProgram xBRz_6x;
-	ShaderProgram scaleHQ_2x;
-	ShaderProgram scaleHQ_4x;
-	ShaderProgram xSal_2x;
-	ShaderProgram eagle_2x;
-	ShaderProgram scaleNx_2x;
-	ShaderProgram scaleNx_3x;
-};
-
 struct AddressSpace
 {
 	DWORD check_1;
@@ -143,8 +125,8 @@ struct AddressSpace
 	DWORD equal_value;
 	DWORD fullscr_nop1;
 	DWORD fullscr_nop2;
-	DWORD clientrect_nop1;
-	DWORD clientrect_nop2;
+	DWORD clientrect_nop[2];
+	DWORD updateWindow_nop[4];
 	WORD resLanguage;
 	WORD resDialog;
 	const CHAR* windowName;
@@ -176,6 +158,14 @@ struct ConfigItems
 		FilterType scaleHQ;
 		FilterType xBRz;
 	} image;
+
+	struct {
+		BYTE fpsCounter;
+		BYTE imageFilter;
+		BYTE windowedMode;
+		BYTE aspectRatio;
+		BYTE vSync;
+	} keys;
 
 	BOOL isExist;
 	CHAR file[MAX_PATH];

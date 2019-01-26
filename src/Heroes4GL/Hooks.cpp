@@ -1,7 +1,7 @@
 /*
 	MIT License
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+	Copyright (c) 2019 Oleksiy Ryabchun
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -41,51 +41,64 @@ AddressSpace* hookSpace;
 AddressSpace addressArray[] = {
 	// === RUS ======================================================================================================================================
 #pragma region RUS
-	0x00844A4D, 0x00844B35, 0x00401D18, 0x90909090, 0x0084497C, 0x006D59BB, 0x00843736, 0x00843F0E, LNG_RUSSIAN, IDD_HELP_ABOUT_RUSSIAN_1_0, // Heroes IV - 1.0
-	"Герои Меча и Магии IV", //"Heroes of Might and Magic IV",
+	0x00844A4D, 0x00844B35, 0x00401D18, 0x90909090, 0x0084497C, 0x006D59BB, 0x00843736, 0x00843F0E,
+	0x00000000, 0x00842B01, 0x00842B36, 0x00842BB2,
+	LNG_RUSSIAN, IDD_HELP_ABOUT_RUSSIAN_1_0, "Герои Меча и Магии IV", // Heroes IV - 1.0
 
-	0x008C6411, 0x008C64F9, 0x00000000, 0x00000000, 0x008C6340, 0x00736E79, 0x008C4EEE, 0x008C58B2, LNG_RUSSIAN, IDD_HELP_ABOUT_RUSSIAN_2_2_GS, // Heroes IV - 2.2GS
-	"Герои Меча и Магии IV: Грядущая Буря",
+	0x008C6411, 0x008C64F9, 0x00000000, 0x00000000, 0x008C6340, 0x00736E79, 0x008C4EEE, 0x008C58B2,
+	0x008C4259, 0x008C4290, 0x008C429A, 0x008C4323,
+	LNG_RUSSIAN, IDD_HELP_ABOUT_RUSSIAN_2_2_GS, "Герои Меча и Магии IV: Грядущая Буря", // Heroes IV - 2.2GS
 
-	0x008D38B1, 0x008D3999, 0x00000000, 0x00000000, 0x008D37E0, 0x0073D780, 0x008D238E, 0x008D2D52, LNG_RUSSIAN, IDD_HELP_ABOUT_RUSSIAN_3_0_WOW, // Heroes IV - 3.0WoW
-	"Герои Меча и Магии IV: Вихри Войны",
+	0x008D38B1, 0x008D3999, 0x00000000, 0x00000000, 0x008D37E0, 0x0073D780, 0x008D238E, 0x008D2D52,
+	0x008D16F9, 0x008D1730, 0x008D173A, 0x008D17C3,
+	LNG_RUSSIAN, IDD_HELP_ABOUT_RUSSIAN_3_0_WOW, "Герои Меча и Магии IV: Вихри Войны", // Heroes IV - 3.0WoW
 #pragma endregion 
 
 	// === ENG ======================================================================================================================================
 #pragma region ENG
-	0x00844A4D, 0x00844B35, 0x00000000, 0x00000000, 0x0084497C, 0x006D59BB, 0x00843736, 0x00843F0E, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_1_0, // Heroes IV - 1.0
-	"Heroes of Might and Magic IV",
+	0x00844A4D, 0x00844B35, 0x00000000, 0x00000000, 0x0084497C, 0x006D59BB, 0x00843736, 0x00843F0E,
+	0x00000000, 0x00842B01, 0x00842B36, 0x00842BB2,
+	LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_1_0, "Heroes of Might and Magic IV", // Heroes IV - 1.0
 
-	0x0084C0FD, 0x0084C1E5, 0x00000000, 0x00000000, 0x0084C02C, 0x006DAC3B, 0x0084AD96, 0x0084B5BE, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_1_2, // Heroes IV - 1.2
-	"Heroes of Might and Magic IV",
+	0x0084C0FD, 0x0084C1E5, 0x00000000, 0x00000000, 0x0084C02C, 0x006DAC3B, 0x0084AD96, 0x0084B5BE,
+	0x00000000, 0x0084A161, 0x0084A196, 0x0084A212,
+	LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_1_2, "Heroes of Might and Magic IV", // Heroes IV - 1.2
 
-	0x008533C1, 0x008534A9, 0x00000000, 0x00000000, 0x008532F0, 0x006DF4F5, 0x0085201E, 0x00852862, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_1_3, // Heroes IV - 1.3
-	"Heroes of Might and Magic IV",
+	0x008533C1, 0x008534A9, 0x00000000, 0x00000000, 0x008532F0, 0x006DF4F5, 0x0085201E, 0x00852862,
+	0x00851389, 0x008513C0, 0x008513CA, 0x00851453,
+	LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_1_3, "Heroes of Might and Magic IV", // Heroes IV - 1.3
 
-	0x008C5F51, 0x008C6039, 0x00000000, 0x00000000, 0x008C5E80, 0x007362D9, 0x008C4A2E, 0x008C53F2, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_2_0, // Heroes IV - 2.0
-	"Heroes of Might and Magic IV",
+	0x008C5F51, 0x008C6039, 0x00000000, 0x00000000, 0x008C5E80, 0x007362D9, 0x008C4A2E, 0x008C53F2,
+	0x008C3D99, 0x008C3DD0, 0x008C3DDA, 0x008C3E63,
+	LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_2_0, "Heroes of Might and Magic IV", // Heroes IV - 2.0
 
-	0x008C63F1, 0x008C64D9, 0x00000000, 0x00000000, 0x008C6320, 0x007369F9, 0x008C4ECE, 0x008C5892, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_2_2, // Heroes IV - 2.2
-	"Heroes of Might and Magic IV",
+	0x008C63F1, 0x008C64D9, 0x00000000, 0x00000000, 0x008C6320, 0x007369F9, 0x008C4ECE, 0x008C5892,
+	0x008C4239, 0x008C4270, 0x008C427A, 0x008C4303,
+	LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_2_2, "Heroes of Might and Magic IV", // Heroes IV - 2.2
 
-	0x008D3881, 0x008D3969, 0x00000000, 0x00000000, 0x008D37B0, 0x0073D9B0, 0x008D235E, 0x008D2D22, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_3_0, // Heroes IV - 3.0
-	"Heroes of Might and Magic IV",
-
-	// ---------------------------------------------------------------------------------------------------------------------
-
-	0x008C5F51, 0x008C6039, 0x00401448, 0x00961278, 0x008C5E80, 0x007362D9, 0x008C4A2E, 0x008C53F2, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_2_0_GS, // Heroes IV - 2.0GS
-	"Heroes of Might and Magic IV: The Gathering Storm",
-
-	0x008C63F1, 0x008C64D9, 0x00401448, 0x00961278, 0x008C6320, 0x007369F9, 0x008C4ECE, 0x008C5892, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_2_2_GS, // Heroes IV - 2.2GS
-	"Heroes of Might and Magic IV: The Gathering Storm",
-
-	0x008D3881, 0x008D3969, 0x00401448, 0x00970278, 0x008D37B0, 0x0073D9B0, 0x008D235E, 0x008D2D22, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_3_0_GS, // Heroes IV - 3.0GS
-	"Heroes of Might and Magic IV: The Gathering Storm",
+	0x008D3881, 0x008D3969, 0x00000000, 0x00000000, 0x008D37B0, 0x0073D9B0, 0x008D235E, 0x008D2D22,
+	0x008D16C9, 0x008D1700, 0x008D170A, 0x008D1793,
+	LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_3_0, "Heroes of Might and Magic IV", // Heroes IV - 3.0
 
 	// ---------------------------------------------------------------------------------------------------------------------
 
-	0x008D3881, 0x008D3969, 0x00401448, 0x00970200, 0x008D37B0, 0x0073D9B0, 0x008D235E, 0x008D2D22, LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_3_0_WOW, // Heroes IV - 3.0WoW
-	"Heroes of Might and Magic IV: Winds of War"
+	0x008C5F51, 0x008C6039, 0x00401448, 0x00961278, 0x008C5E80, 0x007362D9, 0x008C4A2E, 0x008C53F2,
+	0x008C3D99, 0x008C3DD0, 0x008C3DDA, 0x008C3E63,
+	LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_2_0_GS, "Heroes of Might and Magic IV: The Gathering Storm", // Heroes IV - 2.0GS
+
+	0x008C63F1, 0x008C64D9, 0x00401448, 0x00961278, 0x008C6320, 0x007369F9, 0x008C4ECE, 0x008C5892,
+	0x008C4239, 0x008C4270, 0x008C427A, 0x008C4303,
+	LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_2_2_GS, "Heroes of Might and Magic IV: The Gathering Storm", // Heroes IV - 2.2GS
+
+	0x008D3881, 0x008D3969, 0x00401448, 0x00970278, 0x008D37B0, 0x0073D9B0, 0x008D235E, 0x008D2D22,
+	0x008D16C9, 0x008D1700, 0x008D170A, 0x008D1793,
+	LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_3_0_GS, "Heroes of Might and Magic IV: The Gathering Storm", // Heroes IV - 3.0GS
+
+	// ---------------------------------------------------------------------------------------------------------------------
+
+	0x008D3881, 0x008D3969, 0x00401448, 0x00970200, 0x008D37B0, 0x0073D9B0, 0x008D235E, 0x008D2D22,
+	0x008D16C9, 0x008D1700, 0x008D170A, 0x008D1793,
+	LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_3_0_WOW, "Heroes of Might and Magic IV: Winds of War" // Heroes IV - 3.0WoW
 #pragma endregion 
 };
 
@@ -339,7 +352,6 @@ namespace Hooks
 		if (hMenu)
 		{
 			HMENU hSub;
-			CHAR buffer[20];
 			for (DWORD i = 0; hSub = GetSubMenu(hMenu, i); ++i)
 			{
 				if (GetMenuItemID(hSub, 0) == IDM_FILE_NEW_GAME && DeleteMenu(hMenu, i, MF_BYPOSITION))
@@ -347,9 +359,37 @@ namespace Hooks
 					HMENU hNew = LoadMenu(hDllModule, MAKEINTRESOURCE(config.language == LNG_ENGLISH ? IDM_ENGLISH : IDM_RUSSIAN));
 					if (hNew)
 					{
+						CHAR buffer[256];
+
+						MENUITEMINFO info;
+						MemoryZero(&info, sizeof(MENUITEMINFO));
+						info.cbSize = sizeof(MENUITEMINFO);
+						info.fMask = MIIM_TYPE;
+						info.fType = MFT_STRING;
+						info.cch = sizeof(buffer);
+						info.dwTypeData = buffer;
+
+						if (config.keys.windowedMode && GetMenuItemInfo(hNew, IDM_RES_FULL_SCREEN, FALSE, &info))
+						{
+							StrPrint(buffer, "%s (F%d)", buffer, config.keys.windowedMode);
+							SetMenuItemInfo(hNew, IDM_RES_FULL_SCREEN, FALSE, &info);
+						}
+
+						if (config.keys.aspectRatio && GetMenuItemInfo(hNew, IDM_ASPECT_RATIO, FALSE, &info))
+						{
+							StrPrint(buffer, "%s (F%d)", buffer, config.keys.aspectRatio);
+							SetMenuItemInfo(hNew, IDM_ASPECT_RATIO, FALSE, &info);
+						}
+
+						if (config.keys.vSync && GetMenuItemInfo(hNew, IDM_VSYNC, FALSE, &info))
+						{
+							StrPrint(buffer, "%s (F%d)", buffer, config.keys.vSync);
+							SetMenuItemInfo(hNew, IDM_VSYNC, FALSE, &info);
+						}
+
 						for (DWORD j = 0; hSub = GetSubMenu(hNew, j); ++j)
 						{
-							GetMenuString(hNew, j, buffer, 20, MF_BYPOSITION);
+							GetMenuString(hNew, j, buffer, sizeof(buffer), MF_BYPOSITION);
 							InsertMenu(hMenu, i + j, MF_BYPOSITION | MF_POPUP, (UINT_PTR)hSub, buffer);
 						}
 
@@ -392,6 +432,8 @@ namespace Hooks
 
 		return SetWindowLong(hWnd, nIndex, dwNewLong);
 	}
+
+	HWND __stdcall SetActiveWindowHook(HWND hWnd) { return hWnd; }
 
 	INT __stdcall MessageBoxHook(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
 	{
@@ -627,6 +669,8 @@ namespace Hooks
 					PatchFunction(hModule, "GetWindowRect", GetWindowRectHook);
 					PatchFunction(hModule, "GetClientRect", GetClientRectHook);
 					PatchFunction(hModule, "GetCursorPos", GetCursorPosHook);
+
+					PatchFunction(hModule, "SetActiveWindow", SetActiveWindowHook);
 				}
 			}
 
@@ -636,8 +680,29 @@ namespace Hooks
 				PatchNop(hookSpace->fullscr_nop1, 20);
 				PatchNop(hookSpace->fullscr_nop2, 4);
 
-				PatchNop(hookSpace->clientrect_nop1, 2);
-				PatchNop(hookSpace->clientrect_nop2, 2);
+				DWORD* lpNop = hookSpace->clientrect_nop;
+				DWORD count = sizeof(hookSpace->clientrect_nop) / sizeof(DWORD);
+				do
+					PatchNop(*lpNop++, 2);
+				while (--count);
+
+				count = sizeof(hookSpace->updateWindow_nop) / sizeof(DWORD);
+				lpNop = hookSpace->updateWindow_nop;
+				if (*lpNop)
+				{
+					do
+						PatchNop(*lpNop++, 5);
+					while (--count);
+				}
+				else
+				{
+					BYTE addEsp[5] = { 0x83, 0xC4, 0x08, 0x90, 0x90, };
+
+					--count;
+					do
+						PatchBlock(*lpNop++, addEsp, sizeof(addEsp));
+					while (--count);
+				}
 			}
 
 			return TRUE;

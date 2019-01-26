@@ -1,7 +1,7 @@
 /*
 	MIT License
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+	Copyright (c) 2019 Oleksiy Ryabchun
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,8 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "ddraw.h"
+
+#define WC_DRAW "drawclass"
 
 typedef HRESULT(__stdcall *DIRECTDRAWCREATEEX)(GUID* lpGuid, LPVOID* lplpDD, REFIID iid, IUnknown* pUnkOuter);
 

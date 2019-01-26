@@ -1,7 +1,7 @@
 /*
 	MIT License
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+	Copyright (c) 2019 Oleksiy Ryabchun
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -96,6 +96,21 @@ namespace Config
 			config.image.xBRz.value = 2;
 			config.image.xBRz.type = 0;
 			Config::Set(CONFIG_WRAPPER, "ImageXBRZ", *(INT*)&config.image.xBRz);
+
+			config.keys.fpsCounter = 0;
+			Config::Set(CONFIG_KEYS, "FpsCounter", "");
+
+			config.keys.imageFilter = 0;
+			Config::Set(CONFIG_KEYS, "ImageFilter", "");
+
+			config.keys.windowedMode = 4;
+			Config::Set(CONFIG_KEYS, "WindowedMode", config.keys.windowedMode);
+
+			config.keys.aspectRatio = 0;
+			Config::Set(CONFIG_KEYS, "AspectRatio", "");
+
+			config.keys.vSync = 0;
+			Config::Set(CONFIG_KEYS, "VSync", "");
 		}
 		else
 			config.coldCPU = (BOOL)Config::Get(CONFIG_WRAPPER, "ColdCPU", FALSE);
@@ -140,13 +155,54 @@ namespace Config
 				if (config.image.scaleHQ.type & 0xFE)
 					config.image.scaleHQ.type = 0;
 
-
 				value = Config::Get(CONFIG_WRAPPER, "ImageXBRZ", 2);
 				config.image.xBRz = *(FilterType*)&value;
 				if (config.image.xBRz.value < 2 || config.image.xBRz.value > 6)
 					config.image.xBRz.value = 6;
 				if (config.image.xBRz.type & 0xFE)
 					config.image.xBRz.type = 0;
+
+
+				CHAR buffer[20];
+				if (Config::Get(CONFIG_KEYS, "FpsCounter", "", buffer, sizeof(buffer)))
+				{
+					value = Config::Get(CONFIG_KEYS, "FpsCounter", 0);
+					config.keys.fpsCounter = LOBYTE(value);
+					if (config.keys.fpsCounter > 24)
+						config.keys.fpsCounter = 0;
+				}
+
+				if (Config::Get(CONFIG_KEYS, "ImageFilter", "", buffer, sizeof(buffer)))
+				{
+					value = Config::Get(CONFIG_KEYS, "ImageFilter", 0);
+					config.keys.imageFilter = LOBYTE(value);
+					if (config.keys.imageFilter > 24)
+						config.keys.imageFilter = 0;
+				}
+
+				if (Config::Get(CONFIG_KEYS, "WindowedMode", "", buffer, sizeof(buffer)))
+				{
+					value = Config::Get(CONFIG_KEYS, "WindowedMode", 0);
+					config.keys.windowedMode = LOBYTE(value);
+					if (config.keys.windowedMode > 24)
+						config.keys.windowedMode = 0;
+				}
+
+				if (Config::Get(CONFIG_KEYS, "AspectRatio", "", buffer, sizeof(buffer)))
+				{
+					value = Config::Get(CONFIG_KEYS, "AspectRatio", 0);
+					config.keys.aspectRatio = LOBYTE(value);
+					if (config.keys.aspectRatio > 24)
+						config.keys.aspectRatio = 0;
+				}
+
+				if (Config::Get(CONFIG_KEYS, "VSync", "", buffer, sizeof(buffer)))
+				{
+					value = Config::Get(CONFIG_KEYS, "VSync", 0);
+					config.keys.vSync = LOBYTE(value);
+					if (config.keys.vSync > 24)
+						config.keys.vSync = 0;
+				}
 			}
 		}
 		else
@@ -169,6 +225,12 @@ namespace Config
 
 			config.image.xBRz.value = 2;
 			config.image.xBRz.type = 0;
+
+			config.keys.fpsCounter = 0;
+			config.keys.imageFilter = 0;
+			config.keys.windowedMode = 4;
+			config.keys.aspectRatio = 0;
+			config.keys.vSync = 0;
 		}
 	}
 

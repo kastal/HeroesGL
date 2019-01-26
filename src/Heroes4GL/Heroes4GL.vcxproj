@@ -26,6 +26,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -50,6 +51,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>D:\Install\DirectX SDK\DirectX_7.1_SDK\include;$(IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
+    <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
@@ -68,8 +70,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\Thrash.Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -80,8 +81,6 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <CallingConvention>StdCall</CallingConvention>
-      <CompileAs>Default</CompileAs>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -93,17 +92,17 @@
       <GenerateMapFile>false</GenerateMapFile>
       <MapExports>true</MapExports>
       <BaseAddress>0x60000000</BaseAddress>
-      <TargetMachine>MachineX86</TargetMachine>
       <SectionAlignment>
       </SectionAlignment>
       <AssemblyDebug>true</AssemblyDebug>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;advapi32.lib;shell32.lib;msvcrt.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;advapi32.lib;shell32.lib;vcruntimed.lib;ucrtd.lib;msvcrtd.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <FixedBaseAddress>true</FixedBaseAddress>
       <OutputFile>D:\Games\Heroes 4\ddraw$(TargetExt)</OutputFile>
       <StackReserveSize>
       </StackReserveSize>
+      <EntryPointSymbol>DllMain</EntryPointSymbol>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -148,12 +147,9 @@
       <AssemblyDebug>false</AssemblyDebug>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <BaseAddress>0x60000000</BaseAddress>
-      <TargetMachine>MachineX86</TargetMachine>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <MergeSections>.text=.rdata</MergeSections>
       <SectionAlignment>4096</SectionAlignment>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapExports>false</MapExports>
       <ModuleDefinitionFile>$(ProjectDir)\module.def</ModuleDefinitionFile>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <OutputFile>D:\Games\Heroes 4\ddraw$(TargetExt)</OutputFile>
@@ -165,6 +161,7 @@
       <CLRSupportLastError>Disabled</CLRSupportLastError>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalOptions>/DEBUG:NONE /EMITPOGOPHASEINFO %(AdditionalOptions)</AdditionalOptions>
+      <SetChecksum>true</SetChecksum>
     </Link>
     <Bscmake />
   </ItemDefinitionGroup>

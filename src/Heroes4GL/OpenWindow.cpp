@@ -1,7 +1,7 @@
 /*
 	MIT License
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+	Copyright (c) 2019 Oleksiy Ryabchun
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -74,7 +74,7 @@ namespace OpenWindow
 		}
 	}
 
-	VOID __fastcall SelectScaleNxMode(HWND hWnd, DWORD value, DWORD isMode)
+	VOID __fastcall SelectScaleNxMode(HWND hWnd, WORD value, DWORD isMode)
 	{
 		if (isMode)
 			config.image.scaleNx.value = value;
@@ -87,7 +87,7 @@ namespace OpenWindow
 		FilterChanged(hWnd);
 	}
 
-	VOID __fastcall SelectXSalMode(HWND hWnd, DWORD value, DWORD isMode)
+	VOID __fastcall SelectXSalMode(HWND hWnd, WORD value, DWORD isMode)
 	{
 		if (isMode)
 			config.image.xSal.value = value;
@@ -100,7 +100,7 @@ namespace OpenWindow
 		FilterChanged(hWnd);
 	}
 
-	VOID __fastcall SelectEagleMode(HWND hWnd, DWORD value, DWORD isMode)
+	VOID __fastcall SelectEagleMode(HWND hWnd, WORD value, DWORD isMode)
 	{
 		if (isMode)
 			config.image.eagle.value = value;
@@ -113,7 +113,7 @@ namespace OpenWindow
 		FilterChanged(hWnd);
 	}
 
-	VOID __fastcall SelectScaleHQMode(HWND hWnd, DWORD value, DWORD isMode)
+	VOID __fastcall SelectScaleHQMode(HWND hWnd, WORD value, DWORD isMode)
 	{
 		if (isMode)
 			config.image.scaleHQ.value = value;
@@ -126,7 +126,7 @@ namespace OpenWindow
 		FilterChanged(hWnd);
 	}
 
-	VOID __fastcall SelectXBRZMode(HWND hWnd, DWORD value, DWORD isMode)
+	VOID __fastcall SelectXBRZMode(HWND hWnd, WORD value, DWORD isMode)
 	{
 		if (isMode)
 			config.image.xBRz.value = value;
@@ -143,14 +143,6 @@ namespace OpenWindow
 	{
 		switch (uMsg)
 		{
-		case WM_PAINT:
-		{
-			OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
-			if (ddraw && ddraw->windowState == WinStateWindowed)
-				return DefWindowProc(hWnd, uMsg, wParam, lParam);
-			return CallWindowProc(Window::OldWindowProc, hWnd, uMsg, wParam, lParam);
-		}
-
 		case WM_ERASEBKGND:
 		{
 			OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
@@ -233,12 +225,28 @@ namespace OpenWindow
 			return CallWindowProc(Window::OldWindowProc, hWnd, uMsg, wParam, lParam);
 		}
 
+		case WM_ACTIVATEAPP:
+		{
+			OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
+			if (ddraw && ddraw->windowState != WinStateWindowed)
+			{
+				if ((BOOL)wParam)
+					ddraw->RenderStart();
+				else
+					ddraw->RenderStop();
+			}
+
+			CallWindowProc(Window::OldWindowProc, hWnd, WM_ACTIVATE, wParam, lParam);
+			return CallWindowProc(Window::OldWindowProc, hWnd, uMsg, wParam, lParam);
+		}
+
+		case WM_ACTIVATE:
+			return DefWindowProc(hWnd, uMsg, wParam, lParam);
+
 		case WM_SYSKEYDOWN:
 		case WM_KEYDOWN:
 		{
-			switch (wParam)
-			{
-			case VK_F2: // FPS counter on/off
+			if (config.keys.fpsCounter && config.keys.fpsCounter + VK_F1 - 1 == wParam)
 			{
 				switch (fpsState)
 				{
@@ -259,41 +267,20 @@ namespace OpenWindow
 					SetEvent(ddraw->hDrawEvent);
 				return NULL;
 			}
-
-			case VK_F3: // Filtering on/off
+			else if (config.keys.imageFilter && config.keys.imageFilter + VK_F1 - 1 == wParam)
 			{
 				switch (config.image.filter)
 				{
+				case FilterNearest:
+					config.image.filter = FilterLinear;
+					break;
+
 				case FilterLinear:
 					config.image.filter = glVersion >= GL_VER_3_0 ? FilterCubic : FilterNearest;
 					break;
 
-				case FilterCubic:
-					config.image.filter = glVersion >= GL_VER_3_0 ? FilterScaleNx : FilterNearest;
-					break;
-
-				case FilterScaleNx:
-					config.image.filter = glVersion >= GL_VER_3_0 ? FilterEagle : FilterNearest;
-					break;
-
-				case FilterEagle:
-					config.image.filter = glVersion >= GL_VER_3_0 ? FilterXSal : FilterNearest;
-					break;
-
-				case FilterXSal:
-					config.image.filter = glVersion >= GL_VER_3_0 ? FilterScaleHQ : FilterNearest;
-					break;
-
-				case FilterScaleHQ:
-					config.image.filter = glVersion >= GL_VER_3_0 ? FilterXRBZ : FilterNearest;
-					break;
-
-				case FilterXRBZ:
-					config.image.filter = FilterNearest;
-					break;
-
 				default:
-					config.image.filter = FilterLinear;
+					config.image.filter = FilterNearest;
 					break;
 				}
 
@@ -301,8 +288,7 @@ namespace OpenWindow
 
 				return NULL;
 			}
-
-			case VK_F9:
+			else if (config.keys.aspectRatio && config.keys.aspectRatio + VK_F1 - 1 == wParam)
 			{
 				config.image.aspect = !config.image.aspect;
 				Config::Set(CONFIG_WRAPPER, "ImageAspect", config.image.aspect);
@@ -317,46 +303,38 @@ namespace OpenWindow
 
 				return NULL;
 			}
-
-			default:
-				return CallWindowProc(Window::OldWindowProc, hWnd, uMsg, wParam, lParam);
-			}
-		}
-
-		case WM_ACTIVATE:
-		{
-			OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
-			if (ddraw && ddraw->windowState != WinStateWindowed)
-				return DefWindowProc(hWnd, uMsg, wParam, lParam);
-			else
-				return CallWindowProc(Window::OldWindowProc, hWnd, uMsg, wParam, lParam);
-		}
-
-		case WM_ACTIVATEAPP:
-		{
-			OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
-			if (ddraw && ddraw->windowState != WinStateWindowed)
+			else if (config.keys.vSync && config.keys.vSync + VK_F1 - 1 == wParam)
 			{
-				if ((BOOL)wParam)
-					ddraw->RenderStart();
-				else
-					ddraw->RenderStop();
+				config.image.vSync = !config.image.vSync;
+				Config::Set(CONFIG_WRAPPER, "ImageVSync", config.image.vSync);
+				Window::CheckMenu(hWnd);
 
-				return DefWindowProc(hWnd, uMsg, wParam, lParam);
+				OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
+				if (ddraw)
+					SetEvent(ddraw->hDrawEvent);
+
+				return NULL;
 			}
+			else if (config.keys.windowedMode && config.keys.windowedMode + VK_F1 - 1 == wParam)
+				return CallWindowProc(Window::OldWindowProc, hWnd, uMsg, VK_F4, lParam);
+			else if (wParam == VK_F4)
+				return NULL;
 			else
 				return CallWindowProc(Window::OldWindowProc, hWnd, uMsg, wParam, lParam);
 		}
 
 		case WM_LBUTTONDOWN:
-		case WM_RBUTTONDOWN:
 		case WM_LBUTTONUP:
-		case WM_RBUTTONUP:
 		case WM_LBUTTONDBLCLK:
+
+		case WM_RBUTTONDOWN:
+		case WM_RBUTTONUP:
+		case WM_RBUTTONDBLCLK:
+		
 		case WM_MBUTTONDOWN:
 		case WM_MBUTTONUP:
 		case WM_MBUTTONDBLCLK:
-		case WM_RBUTTONDBLCLK:
+		
 		case WM_MOUSEMOVE:
 		{
 			OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
@@ -384,10 +362,7 @@ namespace OpenWindow
 			}
 
 			case IDM_RES_FULL_SCREEN:
-			{
-				SendMessage(hWnd, WM_KEYDOWN, VK_F4, NULL);
-				return NULL;
-			}
+				return CallWindowProc(Window::OldWindowProc, hWnd, WM_KEYDOWN, VK_F4, lParam);
 
 			case IDM_HELP_WRAPPER:
 			{
@@ -611,27 +586,23 @@ namespace OpenWindow
 	{
 		switch (uMsg)
 		{
-		case WM_PAINT:
-		{
-			OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
-			if (ddraw && ddraw->windowState == WinStateWindowed)
-				return CallWindowProc(Window::OldWindowProc, hWnd, uMsg, wParam, lParam);
-			return CallWindowProc(OldPanelProc, hWnd, uMsg, wParam, lParam);
-		}
-
+		case WM_MOUSEMOVE:
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		case WM_LBUTTONDBLCLK:
+		case WM_RBUTTONDOWN:
+		case WM_RBUTTONUP:
+		case WM_RBUTTONDBLCLK:
+		case WM_MBUTTONDOWN:
+		case WM_MBUTTONUP:
+		case WM_MBUTTONDBLCLK:
 		case WM_SYSCOMMAND:
 		case WM_SYSKEYDOWN:
 		case WM_SYSKEYUP:
 		case WM_KEYDOWN:
 		case WM_KEYUP:
 		case WM_CHAR:
-		{
-			DWORD stye = GetWindowLong(hWnd, GWL_STYLE);
-			if (stye & WS_POPUP)
-				return WindowProc(GetParent(hWnd), uMsg, wParam, lParam);
-
-			return CallWindowProc(OldPanelProc, hWnd, uMsg, wParam, lParam);
-		}
+			return WindowProc(GetParent(hWnd), uMsg, wParam, lParam);
 
 		default:
 			return CallWindowProc(OldPanelProc, hWnd, uMsg, wParam, lParam);

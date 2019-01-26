@@ -1,7 +1,7 @@
 /*
 	MIT License
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+	Copyright (c) 2019 Oleksiy Ryabchun
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
 */
 
 #pragma once
-
+#include "Allocation.h"
 #include "ExtraTypes.h"
 
 #define FPS_X 0
@@ -32,8 +32,37 @@
 #define FPS_HEIGHT 24
 #define FPS_STEP 4
 #define FPS_COUNT 120
+#define FPS_ACCURACY 2000
 
 extern FpsState fpsState;
 extern BOOL isFpsChanged;
 
 extern const bool counters[10][FPS_HEIGHT][FPS_WIDTH];
+
+
+struct FrameItem
+{
+	DWORD tick;
+	DWORD span;
+};
+
+class FpsCounter : public Allocation
+{
+private:
+	DWORD accuracy;
+	DWORD count;
+	DWORD checkIndex;
+	DWORD currentIndex;
+	DWORD summary;
+	DWORD lastTick;
+	FrameItem* tickQueue;
+	FLOAT value;
+
+public:
+	FpsCounter(DWORD accuracy);
+	~FpsCounter();
+
+	VOID Reset();
+	VOID Calculate();
+	DWORD GetValue();
+};

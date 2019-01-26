@@ -1,7 +1,7 @@
 /*
 	MIT License
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+	Copyright (c) 2019 Oleksiy Ryabchun
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@
 
 #define CONFIG_APP "Application"
 #define CONFIG_WRAPPER "Wrapper"
+#define CONFIG_KEYS "FunktionKeys"
 #define RESOURCE_ICON 107
 
 extern ConfigItems config;

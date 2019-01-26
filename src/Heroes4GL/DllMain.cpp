@@ -1,7 +1,7 @@
 /*
 	MIT License
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+	Copyright (c) 2019 Oleksiy Ryabchun
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -59,7 +59,23 @@ BOOL __stdcall DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved)
 			LoadKernel32();
 			
 			if (!config.isNoGL)
+			{
 				OpenWindow::OldWindowKeyHook = SetWindowsHookEx(WH_KEYBOARD_LL, OpenWindow::WindowKeyHook, NULL, 0);
+
+				{
+					WNDCLASS wc = {
+						CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS,
+						DefWindowProc,
+						0, 0,
+						hDllModule,
+						NULL, (HCURSOR)LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(132), IMAGE_CURSOR, 32, 32, LR_CREATEDIBSECTION),
+						(HBRUSH)GetStockObject(BLACK_BRUSH), NULL,
+						WC_DRAW
+					};
+
+					RegisterClass(&wc);
+				}
+			}
 
 			if (CreateActCtxC)
 			{
@@ -88,6 +104,7 @@ BOOL __stdcall DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved)
 
 			if (!config.isNoGL)
 			{
+				UnregisterClass(WC_DRAW, hDllModule);
 				GL::Free();
 				ClipCursor(NULL);
 				UnhookWindowsHookEx(OpenWindow::OldWindowKeyHook);
