@@ -1,7 +1,7 @@
 /*
 	MIT License
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+	Copyright (c) 2019 Oleksiy Ryabchun
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
 */
 
 #include "stdafx.h"
+#include "Shellapi.h"
 #include "mmsystem.h"
 #include "Hooks.h"
 #include "Main.h"
@@ -464,6 +465,35 @@ namespace Hooks
 		return res;
 	}
 
+	BOOL __stdcall WinHelpHook(HWND hWndMain, LPCSTR lpszHelp, UINT uCommand, ULONG_PTR dwData)
+	{
+		CHAR filePath[MAX_PATH];
+		GetModuleFileName(hModule, filePath, MAX_PATH - 1);
+		CHAR* p = StrLastChar(filePath, '\\');
+		*p = NULL;
+		StrCopy(p, "\\winhlp32.exe");
+
+		FILE* file = FileOpen(filePath, "rb");
+		if (file)
+		{
+			FileClose(file);
+
+			SHELLEXECUTEINFO shExecInfo;
+			MemoryZero(&shExecInfo, sizeof(SHELLEXECUTEINFO));
+			shExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+			shExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+			shExecInfo.lpFile = filePath;
+			shExecInfo.lpParameters = lpszHelp;
+			shExecInfo.nShow = SW_SHOW;
+
+			ShellExecuteEx(&shExecInfo);
+
+			return TRUE;
+		}
+		else
+			return WinHelp(hWndMain, lpszHelp, uCommand, dwData);
+	}
+
 	HMENU __stdcall LoadMenuHook(HINSTANCE hInstance, LPCTSTR lpMenuName)
 	{
 		HMENU hMenu = LoadMenu(hInstance, lpMenuName);
@@ -487,12 +517,39 @@ namespace Hooks
 						++i;
 				}
 
-				CHAR buffer[20];
+				CHAR buffer[256];
+
+				MENUITEMINFO info;
+				MemoryZero(&info, sizeof(MENUITEMINFO));
+				info.cbSize = sizeof(MENUITEMINFO);
+				info.fMask = MIIM_TYPE;
+				info.fType = MFT_STRING;
+				info.cch = sizeof(buffer);
+				info.dwTypeData = buffer;
+
+				if (config.keys.windowedMode && GetMenuItemInfo(hNew, IDM_RES_FULL_SCREEN, FALSE, &info))
+				{
+					StrPrint(buffer, "%s (F%d)", buffer, config.keys.windowedMode);
+					SetMenuItemInfo(hNew, IDM_RES_FULL_SCREEN, FALSE, &info);
+				}
+
+				if (config.keys.aspectRatio && GetMenuItemInfo(hNew, IDM_ASPECT_RATIO, FALSE, &info))
+				{
+					StrPrint(buffer, "%s (F%d)", buffer, config.keys.aspectRatio);
+					SetMenuItemInfo(hNew, IDM_ASPECT_RATIO, FALSE, &info);
+				}
+
+				if (config.keys.vSync && GetMenuItemInfo(hNew, IDM_VSYNC, FALSE, &info))
+				{
+					StrPrint(buffer, "%s (F%d)", buffer, config.keys.vSync);
+					SetMenuItemInfo(hNew, IDM_VSYNC, FALSE, &info);
+				}
+
 				for (i = GetMenuItemCount(hNew); i; --i)
 				{
 					hSub = GetSubMenu(hNew, i - 1);
 
-					GetMenuString(hNew, i - 1, buffer, 20, MF_BYPOSITION);
+					GetMenuString(hNew, i - 1, buffer, sizeof(buffer), MF_BYPOSITION);
 					InsertMenu(hMenu, index, MF_BYPOSITION | MF_POPUP, (UINT_PTR)hSub, buffer);
 				}
 			}
@@ -1406,6 +1463,7 @@ namespace Hooks
 					PatchFunction(hModule, "SetWindowLongA", SetWindowLongHook);
 
 					PatchFunction(hModule, "MessageBoxA", MessageBoxHook);
+					PatchFunction(hModule, "WinHelpA", WinHelpHook);
 
 					PatchFunction(hModule, "LoadMenuA", LoadMenuHook);
 					PatchFunction(hModule, "SetMenu", SetMenuHook);
