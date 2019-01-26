@@ -1,7 +1,7 @@
 /*
 	MIT License
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+	Copyright (c) 2019 Oleksiy Ryabchun
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,6 @@ VOID __fastcall UseShaderProgram(ShaderProgram* program)
 		GLuint vShader = GL::CompileShaderSource(program->vertexName, GL_VERTEX_SHADER);
 		GLuint fShader = GL::CompileShaderSource(program->fragmentName, GL_FRAGMENT_SHADER);
 		{
-
 			GLAttachShader(program->id, vShader);
 			GLAttachShader(program->id, fShader);
 			{
@@ -73,7 +72,8 @@ DWORD __stdcall RenderThread(LPVOID lpParameter)
 			{
 				PIXELFORMATDESCRIPTOR pfd;
 				GL::PreparePixelFormatDescription(&pfd);
-				if (!glPixelFormat && !GL::PreparePixelFormat(&pfd))
+				INT glPixelFormat = GL::PreparePixelFormat(&pfd);
+				if (!glPixelFormat)
 				{
 					glPixelFormat = ChoosePixelFormat(ddraw->hDc, &pfd);
 					if (!glPixelFormat)
@@ -224,759 +224,730 @@ VOID OpenDraw::RenderOld()
 
 		VOID* frameBuffer = MemoryAlloc(maxTexSize * maxTexSize * (this->mode.bpp == 16 && glVersion > GL_VER_1_1 ? sizeof(WORD) : sizeof(DWORD)));
 		{
-			DWORD fpsQueue[FPS_COUNT];
-			DWORD tickQueue[FPS_COUNT];
-
-			DWORD fpsIdx = -1;
-			DWORD fpsTotal = 0;
-			DWORD fpsCount = 0;
-			INT fpsSum = 0;
-			MemoryZero(fpsQueue, sizeof(fpsQueue));
-			MemoryZero(tickQueue, sizeof(tickQueue));
-
-			BOOL isVSync = FALSE;
-			if (WGLSwapInterval)
-				WGLSwapInterval(0);
-
-			DWORD clear = TRUE;
-			do
+			FpsCounter* fpsCounter = new FpsCounter(FPS_ACCURACY);
 			{
-				OpenDrawSurface* surface = this->attachedSurface;
-				if (this->attachedSurface)
+				BOOL isVSync = FALSE;
+				if (WGLSwapInterval)
+					WGLSwapInterval(0);
+
+				DWORD clear = TRUE;
+				do
 				{
-					if (WGLSwapInterval)
+					OpenDrawSurface* surface = this->attachedSurface;
+					if (this->attachedSurface)
 					{
-						if (!isVSync)
+						if (WGLSwapInterval)
 						{
-							if (config.image.vSync)
+							if (!isVSync)
 							{
-								isVSync = TRUE;
-								WGLSwapInterval(1);
-							}
-						}
-						else
-						{
-							if (!config.image.vSync)
-							{
-								isVSync = FALSE;
-								WGLSwapInterval(0);
-							}
-						}
-					}
-
-					if (fpsState)
-					{
-						DWORD tick = GetTickCount();
-
-						if (isFpsChanged)
-						{
-							isFpsChanged = FALSE;
-
-							fpsIdx = -1;
-							fpsTotal = 0;
-							fpsCount = 0;
-							fpsSum = 0;
-							MemoryZero(fpsQueue, sizeof(fpsQueue));
-							MemoryZero(tickQueue, sizeof(tickQueue));
-						}
-
-						++fpsTotal;
-						if (fpsCount < FPS_COUNT)
-							++fpsCount;
-
-						++fpsIdx;
-						if (fpsIdx == FPS_COUNT)
-							fpsIdx = 0;
-
-						DWORD diff = tick - tickQueue[fpsTotal != fpsCount ? fpsIdx : 0];
-						tickQueue[fpsIdx] = tick;
-
-						DWORD fps = diff ? (DWORD)MathRound(1000.0f / diff * fpsCount) : 9999;
-
-						DWORD* queue = &fpsQueue[fpsIdx];
-						fpsSum -= *queue - fps;
-						*queue = fps;
-					}
-					else if (isFpsChanged)
-					{
-						isFpsChanged = FALSE;
-						clear = TRUE;
-					}
-
-					if (this->CheckView())
-					{
-						clear = TRUE;
-						GLViewport(this->viewport.rectangle.x, this->viewport.rectangle.y, this->viewport.rectangle.width, this->viewport.rectangle.height);
-					}
-
-					FLOAT currScale = surface->scale;
-					BOOL isSizeChanged = surface->isSizeChanged;
-					if (surface->isSizeChanged)
-					{
-						surface->isSizeChanged = FALSE;
-						clear = TRUE;
-					}
-
-					glFilter = 0;
-					if (this->isStateChanged)
-					{
-						this->isStateChanged = FALSE;
-						clear = TRUE;
-						glFilter = config.image.filter == FilterNearest ? GL_NEAREST : GL_LINEAR;
-					}
-
-					UpdateRect* updateClip = surface->poinetrClip;
-					UpdateRect* finClip = surface->currentClip;
-					surface->poinetrClip = finClip;
-
-					if (clear)
-					{
-						if (clear < 3)
-						{
-							if (clear & 1)
-							{
-								updateClip = (finClip == surface->clipsList ? surface->endClip : finClip) - 1;
-								updateClip->rect.left = 0;
-								updateClip->rect.top = 0;
-								updateClip->rect.right = this->mode.width;
-								updateClip->rect.bottom = this->mode.height;
-								updateClip->isActive = TRUE;
-							}
-
-							++clear;
-						}
-						else
-							clear = FALSE;
-
-						GLClear(GL_COLOR_BUFFER_BIT);
-					}
-
-					BOOL isDouble = currScale != 1.0f;
-					DWORD frameWidth = isDouble ? DWORD(currScale * this->mode.width) : this->mode.width;
-					DWORD count = frameCount;
-					frame = frames;
-					while (count--)
-					{
-						if (frameCount == 1)
-						{
-							if (glFilter)
-							{
-								GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glFilter);
-								GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glFilter);
-							}
-
-							while (updateClip != finClip)
-							{
-								if (updateClip->isActive)
+								if (config.image.vSync)
 								{
-									RECT update = updateClip->rect;
-									DWORD texWidth = update.right - update.left;
-									DWORD texHeight = update.bottom - update.top;
-									if (isDouble)
-									{
-										update.left = DWORD(currScale * update.left);
-										update.top = DWORD(currScale * update.top);
-										update.right = DWORD(currScale * update.right);
-										update.bottom = DWORD(currScale * update.bottom);
-
-										texWidth = DWORD(currScale * texWidth);
-										texHeight = DWORD(currScale * texHeight);
-									}
-
-									if (texWidth == frameWidth)
-									{
-										if (this->mode.bpp == 32)
-										{
-											if (glCapsBGRA)
-												GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, update.top, texWidth, texHeight, GL_BGRA_EXT, GL_UNSIGNED_BYTE, (DWORD*)surface->indexBuffer + update.top * texWidth);
-											else
-											{
-												DWORD* source = (DWORD*)surface->indexBuffer + update.top * texWidth;
-												DWORD* dest = (DWORD*)frameBuffer;
-												DWORD copyWidth = texWidth;
-												DWORD copyHeight = texHeight;
-												do
-												{
-													DWORD* src = source;
-													source += frameWidth;
-
-													DWORD count = copyWidth;
-													do
-														*dest++ = _byteswap_ulong(_rotl(*src++, 8));
-													while (--count);
-												} while (--copyHeight);
-
-												GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
-											}
-										}
-										else
-										{
-											if (glVersion > GL_VER_1_1)
-												GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, update.top, texWidth, texHeight, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, (WORD*)surface->indexBuffer + update.top * texWidth);
-											else
-											{
-												WORD* source = (WORD*)surface->indexBuffer + update.top * texWidth;
-												DWORD* dest = (DWORD*)frameBuffer;
-												DWORD copyWidth = texWidth;
-												DWORD copyHeight = texHeight;
-												do
-												{
-													WORD* src = source;
-													source += frameWidth;
-
-													DWORD count = copyWidth;
-													do
-													{
-														WORD px = *src++;
-														*dest++ = ((px & 0xF800) >> 8) | ((px & 0x07E0) << 5) | ((px & 0x001F) << 19);
-													} while (--count);
-												} while (--copyHeight);
-
-												GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
-											}
-										}
-									}
-									else
-									{
-										if (this->mode.bpp == 32)
-										{
-											if (glCapsBGRA)
-											{
-												DWORD* source = (DWORD*)surface->indexBuffer + update.top * frameWidth + update.left;
-												DWORD* dest = (DWORD*)frameBuffer;
-												DWORD copyHeight = texHeight;
-												do
-												{
-													MemoryCopy(dest, source, texWidth << 2);
-													source += frameWidth;
-													dest += texWidth;
-												} while (--copyHeight);
-
-												GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_BGRA_EXT, GL_UNSIGNED_BYTE, frameBuffer);
-											}
-											else
-											{
-												DWORD* source = (DWORD*)surface->indexBuffer + update.top * frameWidth + update.left;
-												DWORD* dest = (DWORD*)frameBuffer;
-												DWORD copyWidth = texWidth;
-												DWORD copyHeight = texHeight;
-												do
-												{
-													DWORD* src = source;
-													source += frameWidth;
-
-													DWORD count = copyWidth;
-													do
-														*dest++ = _byteswap_ulong(_rotl(*src++, 8));
-													while (--count);
-												} while (--copyHeight);
-
-												GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
-											}
-										}
-										else
-										{
-											if (texWidth & 1)
-											{
-												++texWidth;
-												if (update.left)
-													--update.left;
-												else
-													++update.right;
-											}
-
-											if (glVersion > GL_VER_1_1)
-											{
-												WORD* source = (WORD*)surface->indexBuffer + update.top * frameWidth + update.left;
-												WORD* dest = (WORD*)frameBuffer;
-												DWORD copyHeight = texHeight;
-												do
-												{
-													MemoryCopy(dest, source, texWidth << 1);
-													source += frameWidth;
-													dest += texWidth;
-												} while (--copyHeight);
-
-												GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, frameBuffer);
-											}
-											else
-											{
-												WORD* source = (WORD*)surface->indexBuffer + update.top * frameWidth + update.left;
-												DWORD* dest = (DWORD*)frameBuffer;
-												DWORD copyWidth = texWidth;
-												DWORD copyHeight = texHeight;
-												do
-												{
-													WORD* src = source;
-													source += frameWidth;
-
-													DWORD count = copyWidth;
-													do
-													{
-														WORD px = *src++;
-														*dest++ = ((px & 0xF800) >> 8) | ((px & 0x07E0) << 5) | ((px & 0x001F) << 19);
-													} while (--count);
-												} while (--copyHeight);
-
-												GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
-											}
-										}
-									}
-								}
-
-								if (++updateClip == surface->endClip)
-									updateClip = surface->clipsList;
-							}
-						}
-						else
-						{
-							GLBindTexture(GL_TEXTURE_2D, frame->id);
-
-							if (glFilter)
-							{
-								GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glFilter);
-								GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glFilter);
-							}
-
-							INT rect_right = frame->rect.x + frame->rect.width;
-							INT rect_bottom = frame->rect.y + frame->rect.height;
-
-							UpdateRect* update = updateClip;
-							while (update != finClip)
-							{
-								if (update->isActive)
-								{
-									RECT clip = {
-										frame->rect.x > update->rect.left ? frame->rect.x : update->rect.left,
-										frame->rect.y > update->rect.top ? frame->rect.y : update->rect.top,
-										rect_right < update->rect.right ? rect_right : update->rect.right,
-										rect_bottom < update->rect.bottom ? rect_bottom : update->rect.bottom
-									};
-
-									INT clipWidth = clip.right - clip.left;
-									INT clipHeight = clip.bottom - clip.top;
-									if (clipWidth > 0 && clipHeight > 0)
-									{
-										if (this->mode.bpp == 32)
-										{
-											if (glCapsBGRA)
-											{
-												DWORD* source = (DWORD*)surface->indexBuffer + clip.top * frameWidth + clip.left;
-												DWORD* dest = (DWORD*)frameBuffer;
-												DWORD copyHeight = clipHeight;
-												do
-												{
-													MemoryCopy(dest, source, clipWidth << 2);
-													source += frameWidth;
-													dest += clipWidth;
-												} while (--copyHeight);
-
-												GLTexSubImage2D(GL_TEXTURE_2D, 0, clip.left - frame->rect.x, clip.top - frame->rect.y, clipWidth, clipHeight, GL_BGRA_EXT, GL_UNSIGNED_BYTE, frameBuffer);
-											}
-											else
-											{
-												DWORD* source = (DWORD*)surface->indexBuffer + clip.top * frameWidth + clip.left;
-												DWORD* dest = (DWORD*)frameBuffer;
-												DWORD copyWidth = clipWidth;
-												DWORD copyHeight = clipHeight;
-												do
-												{
-													DWORD* src = source;
-													source += frameWidth;
-
-													DWORD count = copyWidth;
-													do
-														*dest++ = _byteswap_ulong(_rotl(*src++, 8));
-													while (--count);
-												} while (--copyHeight);
-
-												GLTexSubImage2D(GL_TEXTURE_2D, 0, clip.left - frame->rect.x, clip.top - frame->rect.y, clipWidth, clipHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
-											}
-										}
-										else
-										{
-											if (clipWidth & 1)
-											{
-												++clipWidth;
-												if (clip.left != frame->rect.x)
-													--clip.left;
-												else
-													++clip.right;
-											}
-
-											if (glVersion > GL_VER_1_1)
-											{
-												WORD* source = (WORD*)surface->indexBuffer + clip.top * frameWidth + clip.left;
-												WORD* dest = (WORD*)frameBuffer;
-												DWORD copyHeight = clipHeight;
-												do
-												{
-													MemoryCopy(dest, source, clipWidth << 1);
-													source += frameWidth;
-													dest += clipWidth;
-												} while (--copyHeight);
-
-												GLTexSubImage2D(GL_TEXTURE_2D, 0, clip.left - frame->rect.x, clip.top - frame->rect.y, clipWidth, clipHeight, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, frameBuffer);
-											}
-											else
-											{
-												WORD* source = (WORD*)surface->indexBuffer + clip.top * frameWidth + clip.left;
-												DWORD* dest = (DWORD*)frameBuffer;
-												DWORD copyWidth = clipWidth;
-												DWORD copyHeight = clipHeight;
-												do
-												{
-													WORD* src = source;
-													source += frameWidth;
-
-													DWORD count = copyWidth;
-													do
-													{
-														WORD px = *src++;
-														*dest++ = ((px & 0xF800) >> 8) | ((px & 0x07E0) << 5) | ((px & 0x001F) << 19);
-													} while (--count);
-												} while (--copyHeight);
-
-												GLTexSubImage2D(GL_TEXTURE_2D, 0, clip.left - frame->rect.x, clip.top - frame->rect.y, clipWidth, clipHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
-											}
-										}
-									}
-								}
-
-								if (++update == surface->endClip)
-									update = surface->clipsList;
-							}
-						}
-
-						if (fpsState && frame == frames)
-						{
-							DWORD fps = (DWORD)MathRound((FLOAT)fpsSum / fpsCount);
-							DWORD digCount = 0;
-							DWORD current = fps;
-							do
-							{
-								++digCount;
-								current = current / 10;
-							} while (current);
-
-							if (this->mode.bpp == 32)
-							{
-								if (glCapsBGRA)
-								{
-									DWORD fpsColor = fpsState == FpsBenchmark ? 0xFFFFFF00 : 0xFFFFFFFF;
-									DWORD dcount = digCount;
-									do
-									{
-										bool* lpDig = (bool*)counters + FPS_WIDTH * FPS_HEIGHT * (fps % 10);
-
-										for (DWORD y = 0; y < FPS_HEIGHT; ++y)
-										{
-											DWORD* idx = (DWORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
-												FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
-
-											DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-												(FPS_STEP + FPS_WIDTH) * (dcount - 1);
-
-											DWORD width = FPS_STEP;
-											do
-												*pix++ = *idx++;
-											while (--width);
-
-											width = FPS_WIDTH;
-											do
-											{
-												*pix++ = *lpDig++ ? fpsColor : *idx;
-												++idx;
-											} while (--width);
-										}
-
-										fps = fps / 10;
-									} while (--dcount);
-
-									dcount = 4;
-									while (dcount != digCount)
-									{
-										for (DWORD y = 0; y < FPS_HEIGHT; ++y)
-										{
-											DWORD* idx = (DWORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
-												FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
-
-											DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-												(FPS_STEP + FPS_WIDTH) * (dcount - 1);
-
-											DWORD width = FPS_STEP + FPS_WIDTH;
-											do
-												*pix++ = *idx++;
-											while (--width);
-										}
-
-										--dcount;
-									}
-
-									GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_STEP + FPS_WIDTH) * 4, FPS_HEIGHT, GL_BGRA_EXT, GL_UNSIGNED_BYTE, frameBuffer);
-								}
-								else
-								{
-									DWORD fpsColor = fpsState == FpsBenchmark ? 0xFF00FFFF : 0xFFFFFFFF;
-									DWORD dcount = digCount;
-									do
-									{
-										bool* lpDig = (bool*)counters + FPS_WIDTH * FPS_HEIGHT * (fps % 10);
-
-										for (DWORD y = 0; y < FPS_HEIGHT; ++y)
-										{
-											DWORD* idx = (DWORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
-												FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
-
-											DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-												(FPS_STEP + FPS_WIDTH) * (dcount - 1);
-
-											DWORD width = FPS_STEP;
-											do
-												*pix++ = _byteswap_ulong(_rotl(*idx++, 8));
-											while (--width);
-
-											width = FPS_WIDTH;
-											do
-											{
-												if (*lpDig++)
-												{
-													++idx;
-													*pix++ = fpsColor;
-												}
-												else
-													*pix++ = _byteswap_ulong(_rotl(*idx++, 8));
-											} while (--width);
-										}
-
-										fps = fps / 10;
-									} while (--dcount);
-
-									dcount = 4;
-									while (dcount != digCount)
-									{
-										for (DWORD y = 0; y < FPS_HEIGHT; ++y)
-										{
-											DWORD* idx = (DWORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
-												FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
-
-											DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-												(FPS_STEP + FPS_WIDTH) * (dcount - 1);
-
-											DWORD width = FPS_STEP + FPS_WIDTH;
-											do
-												*pix++ = _byteswap_ulong(_rotl(*idx++, 8));
-											while (--width);
-										}
-
-										--dcount;
-									}
-
-									GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_STEP + FPS_WIDTH) * 4, FPS_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
+									isVSync = TRUE;
+									WGLSwapInterval(1);
 								}
 							}
 							else
 							{
-								if (glVersion > GL_VER_1_1)
+								if (!config.image.vSync)
 								{
-									WORD fpsColor = fpsState == FpsBenchmark ? 0xFFE0 : 0xFFFF;
-									DWORD dcount = digCount;
-									do
+									isVSync = FALSE;
+									WGLSwapInterval(0);
+								}
+							}
+						}
+
+						if (fpsState)
+						{
+							if (isFpsChanged)
+							{
+								isFpsChanged = FALSE;
+								fpsCounter->Reset();
+							}
+
+							fpsCounter->Calculate();
+						}
+						else if (isFpsChanged)
+						{
+							isFpsChanged = FALSE;
+							clear = TRUE;
+						}
+
+						if (this->CheckView())
+						{
+							clear = TRUE;
+							GLViewport(this->viewport.rectangle.x, this->viewport.rectangle.y, this->viewport.rectangle.width, this->viewport.rectangle.height);
+						}
+
+						FLOAT currScale = surface->scale;
+						BOOL isSizeChanged = surface->isSizeChanged;
+						if (surface->isSizeChanged)
+						{
+							surface->isSizeChanged = FALSE;
+							clear = TRUE;
+						}
+
+						glFilter = 0;
+						if (this->isStateChanged)
+						{
+							this->isStateChanged = FALSE;
+							clear = TRUE;
+							glFilter = config.image.filter == FilterNearest ? GL_NEAREST : GL_LINEAR;
+						}
+
+						UpdateRect* updateClip = surface->poinetrClip;
+						UpdateRect* finClip = surface->currentClip;
+						surface->poinetrClip = finClip;
+
+						if (clear)
+						{
+							if (clear < 3)
+							{
+								if (clear & 1)
+								{
+									updateClip = (finClip == surface->clipsList ? surface->endClip : finClip) - 1;
+									updateClip->rect.left = 0;
+									updateClip->rect.top = 0;
+									updateClip->rect.right = this->mode.width;
+									updateClip->rect.bottom = this->mode.height;
+									updateClip->isActive = TRUE;
+								}
+
+								++clear;
+							}
+							else
+								clear = FALSE;
+
+							GLClear(GL_COLOR_BUFFER_BIT);
+						}
+
+						BOOL isDouble = currScale != 1.0f;
+						DWORD frameWidth = isDouble ? DWORD(currScale * this->mode.width) : this->mode.width;
+						DWORD count = frameCount;
+						frame = frames;
+						while (count--)
+						{
+							if (frameCount == 1)
+							{
+								if (glFilter)
+								{
+									GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glFilter);
+									GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glFilter);
+								}
+
+								while (updateClip != finClip)
+								{
+									if (updateClip->isActive)
 									{
-										bool* lpDig = (bool*)counters + FPS_WIDTH * FPS_HEIGHT * (fps % 10);
-
-										for (DWORD y = 0; y < FPS_HEIGHT; ++y)
+										RECT update = updateClip->rect;
+										DWORD texWidth = update.right - update.left;
+										DWORD texHeight = update.bottom - update.top;
+										if (isDouble)
 										{
-											WORD* idx = (WORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
-												FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+											update.left = DWORD(currScale * update.left);
+											update.top = DWORD(currScale * update.top);
+											update.right = DWORD(currScale * update.right);
+											update.bottom = DWORD(currScale * update.bottom);
 
-											WORD* pix = (WORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-												(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+											texWidth = DWORD(currScale * texWidth);
+											texHeight = DWORD(currScale * texHeight);
+										}
 
-											DWORD width = FPS_STEP;
-											do
-												*pix++ = *idx++;
-											while (--width);
-
-											width = FPS_WIDTH;
-											do
+										if (texWidth == frameWidth)
+										{
+											if (this->mode.bpp == 32)
 											{
-												*pix++ = *lpDig++ ? fpsColor : *idx;
-												++idx;
-											} while (--width);
+												if (glCapsBGRA)
+													GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, update.top, texWidth, texHeight, GL_BGRA_EXT, GL_UNSIGNED_BYTE, (DWORD*)surface->indexBuffer + update.top * texWidth);
+												else
+												{
+													DWORD* source = (DWORD*)surface->indexBuffer + update.top * texWidth;
+													DWORD* dest = (DWORD*)frameBuffer;
+													DWORD copyWidth = texWidth;
+													DWORD copyHeight = texHeight;
+													do
+													{
+														DWORD* src = source;
+														source += frameWidth;
+
+														DWORD count = copyWidth;
+														do
+															*dest++ = _byteswap_ulong(_rotl(*src++, 8));
+														while (--count);
+													} while (--copyHeight);
+
+													GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
+												}
+											}
+											else
+											{
+												if (glVersion > GL_VER_1_1)
+													GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, update.top, texWidth, texHeight, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, (WORD*)surface->indexBuffer + update.top * texWidth);
+												else
+												{
+													WORD* source = (WORD*)surface->indexBuffer + update.top * texWidth;
+													DWORD* dest = (DWORD*)frameBuffer;
+													DWORD copyWidth = texWidth;
+													DWORD copyHeight = texHeight;
+													do
+													{
+														WORD* src = source;
+														source += frameWidth;
+
+														DWORD count = copyWidth;
+														do
+														{
+															WORD px = *src++;
+															*dest++ = ((px & 0xF800) >> 8) | ((px & 0x07E0) << 5) | ((px & 0x001F) << 19);
+														} while (--count);
+													} while (--copyHeight);
+
+													GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
+												}
+											}
 										}
-
-										fps = fps / 10;
-									} while (--dcount);
-
-									dcount = 4;
-									while (dcount != digCount)
-									{
-										for (DWORD y = 0; y < FPS_HEIGHT; ++y)
+										else
 										{
-											WORD* idx = (WORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
-												FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+											if (this->mode.bpp == 32)
+											{
+												if (glCapsBGRA)
+												{
+													DWORD* source = (DWORD*)surface->indexBuffer + update.top * frameWidth + update.left;
+													DWORD* dest = (DWORD*)frameBuffer;
+													DWORD copyHeight = texHeight;
+													do
+													{
+														MemoryCopy(dest, source, texWidth << 2);
+														source += frameWidth;
+														dest += texWidth;
+													} while (--copyHeight);
 
-											WORD* pix = (WORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-												(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+													GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_BGRA_EXT, GL_UNSIGNED_BYTE, frameBuffer);
+												}
+												else
+												{
+													DWORD* source = (DWORD*)surface->indexBuffer + update.top * frameWidth + update.left;
+													DWORD* dest = (DWORD*)frameBuffer;
+													DWORD copyWidth = texWidth;
+													DWORD copyHeight = texHeight;
+													do
+													{
+														DWORD* src = source;
+														source += frameWidth;
 
-											DWORD width = FPS_STEP + FPS_WIDTH;
-											do
-												*pix++ = *idx++;
-											while (--width);
+														DWORD count = copyWidth;
+														do
+															*dest++ = _byteswap_ulong(_rotl(*src++, 8));
+														while (--count);
+													} while (--copyHeight);
+
+													GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
+												}
+											}
+											else
+											{
+												if (texWidth & 1)
+												{
+													++texWidth;
+													if (update.left)
+														--update.left;
+													else
+														++update.right;
+												}
+
+												if (glVersion > GL_VER_1_1)
+												{
+													WORD* source = (WORD*)surface->indexBuffer + update.top * frameWidth + update.left;
+													WORD* dest = (WORD*)frameBuffer;
+													DWORD copyHeight = texHeight;
+													do
+													{
+														MemoryCopy(dest, source, texWidth << 1);
+														source += frameWidth;
+														dest += texWidth;
+													} while (--copyHeight);
+
+													GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, frameBuffer);
+												}
+												else
+												{
+													WORD* source = (WORD*)surface->indexBuffer + update.top * frameWidth + update.left;
+													DWORD* dest = (DWORD*)frameBuffer;
+													DWORD copyWidth = texWidth;
+													DWORD copyHeight = texHeight;
+													do
+													{
+														WORD* src = source;
+														source += frameWidth;
+
+														DWORD count = copyWidth;
+														do
+														{
+															WORD px = *src++;
+															*dest++ = ((px & 0xF800) >> 8) | ((px & 0x07E0) << 5) | ((px & 0x001F) << 19);
+														} while (--count);
+													} while (--copyHeight);
+
+													GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
+												}
+											}
 										}
-
-										--dcount;
 									}
 
-									GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_STEP + FPS_WIDTH) * 4, FPS_HEIGHT, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, frameBuffer);
+									if (++updateClip == surface->endClip)
+										updateClip = surface->clipsList;
+								}
+							}
+							else
+							{
+								GLBindTexture(GL_TEXTURE_2D, frame->id);
+
+								if (glFilter)
+								{
+									GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glFilter);
+									GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glFilter);
+								}
+
+								INT rect_right = frame->rect.x + frame->rect.width;
+								INT rect_bottom = frame->rect.y + frame->rect.height;
+
+								UpdateRect* update = updateClip;
+								while (update != finClip)
+								{
+									if (update->isActive)
+									{
+										RECT clip = {
+											frame->rect.x > update->rect.left ? frame->rect.x : update->rect.left,
+											frame->rect.y > update->rect.top ? frame->rect.y : update->rect.top,
+											rect_right < update->rect.right ? rect_right : update->rect.right,
+											rect_bottom < update->rect.bottom ? rect_bottom : update->rect.bottom
+										};
+
+										INT clipWidth = clip.right - clip.left;
+										INT clipHeight = clip.bottom - clip.top;
+										if (clipWidth > 0 && clipHeight > 0)
+										{
+											if (this->mode.bpp == 32)
+											{
+												if (glCapsBGRA)
+												{
+													DWORD* source = (DWORD*)surface->indexBuffer + clip.top * frameWidth + clip.left;
+													DWORD* dest = (DWORD*)frameBuffer;
+													DWORD copyHeight = clipHeight;
+													do
+													{
+														MemoryCopy(dest, source, clipWidth << 2);
+														source += frameWidth;
+														dest += clipWidth;
+													} while (--copyHeight);
+
+													GLTexSubImage2D(GL_TEXTURE_2D, 0, clip.left - frame->rect.x, clip.top - frame->rect.y, clipWidth, clipHeight, GL_BGRA_EXT, GL_UNSIGNED_BYTE, frameBuffer);
+												}
+												else
+												{
+													DWORD* source = (DWORD*)surface->indexBuffer + clip.top * frameWidth + clip.left;
+													DWORD* dest = (DWORD*)frameBuffer;
+													DWORD copyWidth = clipWidth;
+													DWORD copyHeight = clipHeight;
+													do
+													{
+														DWORD* src = source;
+														source += frameWidth;
+
+														DWORD count = copyWidth;
+														do
+															*dest++ = _byteswap_ulong(_rotl(*src++, 8));
+														while (--count);
+													} while (--copyHeight);
+
+													GLTexSubImage2D(GL_TEXTURE_2D, 0, clip.left - frame->rect.x, clip.top - frame->rect.y, clipWidth, clipHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
+												}
+											}
+											else
+											{
+												if (clipWidth & 1)
+												{
+													++clipWidth;
+													if (clip.left != frame->rect.x)
+														--clip.left;
+													else
+														++clip.right;
+												}
+
+												if (glVersion > GL_VER_1_1)
+												{
+													WORD* source = (WORD*)surface->indexBuffer + clip.top * frameWidth + clip.left;
+													WORD* dest = (WORD*)frameBuffer;
+													DWORD copyHeight = clipHeight;
+													do
+													{
+														MemoryCopy(dest, source, clipWidth << 1);
+														source += frameWidth;
+														dest += clipWidth;
+													} while (--copyHeight);
+
+													GLTexSubImage2D(GL_TEXTURE_2D, 0, clip.left - frame->rect.x, clip.top - frame->rect.y, clipWidth, clipHeight, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, frameBuffer);
+												}
+												else
+												{
+													WORD* source = (WORD*)surface->indexBuffer + clip.top * frameWidth + clip.left;
+													DWORD* dest = (DWORD*)frameBuffer;
+													DWORD copyWidth = clipWidth;
+													DWORD copyHeight = clipHeight;
+													do
+													{
+														WORD* src = source;
+														source += frameWidth;
+
+														DWORD count = copyWidth;
+														do
+														{
+															WORD px = *src++;
+															*dest++ = ((px & 0xF800) >> 8) | ((px & 0x07E0) << 5) | ((px & 0x001F) << 19);
+														} while (--count);
+													} while (--copyHeight);
+
+													GLTexSubImage2D(GL_TEXTURE_2D, 0, clip.left - frame->rect.x, clip.top - frame->rect.y, clipWidth, clipHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
+												}
+											}
+										}
+									}
+
+									if (++update == surface->endClip)
+										update = surface->clipsList;
+								}
+							}
+
+							if (fpsState && frame == frames)
+							{
+								DWORD fps = fpsCounter->GetValue();
+								DWORD digCount = 0;
+								DWORD current = fps;
+								do
+								{
+									++digCount;
+									current = current / 10;
+								} while (current);
+
+								if (this->mode.bpp == 32)
+								{
+									if (glCapsBGRA)
+									{
+										DWORD fpsColor = fpsState == FpsBenchmark ? 0xFFFFFF00 : 0xFFFFFFFF;
+										DWORD dcount = digCount;
+										do
+										{
+											bool* lpDig = (bool*)counters + FPS_WIDTH * FPS_HEIGHT * (fps % 10);
+
+											for (DWORD y = 0; y < FPS_HEIGHT; ++y)
+											{
+												DWORD* idx = (DWORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
+													FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+												DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
+													(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+												DWORD width = FPS_STEP;
+												do
+													*pix++ = *idx++;
+												while (--width);
+
+												width = FPS_WIDTH;
+												do
+												{
+													*pix++ = *lpDig++ ? fpsColor : *idx;
+													++idx;
+												} while (--width);
+											}
+
+											fps = fps / 10;
+										} while (--dcount);
+
+										dcount = 4;
+										while (dcount != digCount)
+										{
+											for (DWORD y = 0; y < FPS_HEIGHT; ++y)
+											{
+												DWORD* idx = (DWORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
+													FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+												DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
+													(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+												DWORD width = FPS_STEP + FPS_WIDTH;
+												do
+													*pix++ = *idx++;
+												while (--width);
+											}
+
+											--dcount;
+										}
+
+										GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_STEP + FPS_WIDTH) * 4, FPS_HEIGHT, GL_BGRA_EXT, GL_UNSIGNED_BYTE, frameBuffer);
+									}
+									else
+									{
+										DWORD fpsColor = fpsState == FpsBenchmark ? 0xFF00FFFF : 0xFFFFFFFF;
+										DWORD dcount = digCount;
+										do
+										{
+											bool* lpDig = (bool*)counters + FPS_WIDTH * FPS_HEIGHT * (fps % 10);
+
+											for (DWORD y = 0; y < FPS_HEIGHT; ++y)
+											{
+												DWORD* idx = (DWORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
+													FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+												DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
+													(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+												DWORD width = FPS_STEP;
+												do
+													*pix++ = _byteswap_ulong(_rotl(*idx++, 8));
+												while (--width);
+
+												width = FPS_WIDTH;
+												do
+												{
+													if (*lpDig++)
+													{
+														++idx;
+														*pix++ = fpsColor;
+													}
+													else
+														*pix++ = _byteswap_ulong(_rotl(*idx++, 8));
+												} while (--width);
+											}
+
+											fps = fps / 10;
+										} while (--dcount);
+
+										dcount = 4;
+										while (dcount != digCount)
+										{
+											for (DWORD y = 0; y < FPS_HEIGHT; ++y)
+											{
+												DWORD* idx = (DWORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
+													FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+												DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
+													(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+												DWORD width = FPS_STEP + FPS_WIDTH;
+												do
+													*pix++ = _byteswap_ulong(_rotl(*idx++, 8));
+												while (--width);
+											}
+
+											--dcount;
+										}
+
+										GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_STEP + FPS_WIDTH) * 4, FPS_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
+									}
 								}
 								else
 								{
-									DWORD fpsColor = fpsState == FpsBenchmark ? 0xFF00FFFF : 0xFFFFFFFF;
-									DWORD dcount = digCount;
-									do
+									if (glVersion > GL_VER_1_1)
 									{
-										bool* lpDig = (bool*)counters + FPS_WIDTH * FPS_HEIGHT * (fps % 10);
-
-										for (DWORD y = 0; y < FPS_HEIGHT; ++y)
+										WORD fpsColor = fpsState == FpsBenchmark ? 0xFFE0 : 0xFFFF;
+										DWORD dcount = digCount;
+										do
 										{
-											WORD* idx = (WORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
-												FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+											bool* lpDig = (bool*)counters + FPS_WIDTH * FPS_HEIGHT * (fps % 10);
 
-											DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-												(FPS_STEP + FPS_WIDTH) * (dcount - 1);
-
-											DWORD width = FPS_STEP;
-											do
+											for (DWORD y = 0; y < FPS_HEIGHT; ++y)
 											{
-												WORD px = *idx++;
-												*pix++ = ((px & 0xF800) >> 8) | ((px & 0x07E0) << 5) | ((px & 0x001F) << 19);
-											} while (--width);
+												WORD* idx = (WORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
+													FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
 
-											width = FPS_WIDTH;
-											do
-											{
-												if (*lpDig++)
-													*pix = fpsColor;
-												else
+												WORD* pix = (WORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
+													(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+												DWORD width = FPS_STEP;
+												do
+													*pix++ = *idx++;
+												while (--width);
+
+												width = FPS_WIDTH;
+												do
 												{
-													WORD px = *idx;
-													*pix = ((px & 0xF800) >> 8) | ((px & 0x07E0) << 5) | ((px & 0x001F) << 19);
-												}
+													*pix++ = *lpDig++ ? fpsColor : *idx;
+													++idx;
+												} while (--width);
+											}
 
-												++pix;
-												++idx;
-											} while (--width);
-										}
+											fps = fps / 10;
+										} while (--dcount);
 
-										fps = fps / 10;
-									} while (--dcount);
-
-									dcount = 4;
-									while (dcount != digCount)
-									{
-										for (DWORD y = 0; y < FPS_HEIGHT; ++y)
+										dcount = 4;
+										while (dcount != digCount)
 										{
-											WORD* idx = (WORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
-												FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
-
-											DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-												(FPS_STEP + FPS_WIDTH) * (dcount - 1);
-
-											DWORD width = FPS_STEP + FPS_WIDTH;
-											do
+											for (DWORD y = 0; y < FPS_HEIGHT; ++y)
 											{
-												WORD px = *idx++;
-												*pix++ = ((px & 0xF800) >> 8) | ((px & 0x07E0) << 5) | ((px & 0x001F) << 19);
-											} while (--width);
+												WORD* idx = (WORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
+													FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+												WORD* pix = (WORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
+													(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+												DWORD width = FPS_STEP + FPS_WIDTH;
+												do
+													*pix++ = *idx++;
+												while (--width);
+											}
+
+											--dcount;
 										}
 
-										--dcount;
+										GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_STEP + FPS_WIDTH) * 4, FPS_HEIGHT, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, frameBuffer);
 									}
+									else
+									{
+										DWORD fpsColor = fpsState == FpsBenchmark ? 0xFF00FFFF : 0xFFFFFFFF;
+										DWORD dcount = digCount;
+										do
+										{
+											bool* lpDig = (bool*)counters + FPS_WIDTH * FPS_HEIGHT * (fps % 10);
 
-									GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_STEP + FPS_WIDTH) * 4, FPS_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
+											for (DWORD y = 0; y < FPS_HEIGHT; ++y)
+											{
+												WORD* idx = (WORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
+													FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+												DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
+													(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+												DWORD width = FPS_STEP;
+												do
+												{
+													WORD px = *idx++;
+													*pix++ = ((px & 0xF800) >> 8) | ((px & 0x07E0) << 5) | ((px & 0x001F) << 19);
+												} while (--width);
+
+												width = FPS_WIDTH;
+												do
+												{
+													if (*lpDig++)
+														*pix = fpsColor;
+													else
+													{
+														WORD px = *idx;
+														*pix = ((px & 0xF800) >> 8) | ((px & 0x07E0) << 5) | ((px & 0x001F) << 19);
+													}
+
+													++pix;
+													++idx;
+												} while (--width);
+											}
+
+											fps = fps / 10;
+										} while (--dcount);
+
+										dcount = 4;
+										while (dcount != digCount)
+										{
+											for (DWORD y = 0; y < FPS_HEIGHT; ++y)
+											{
+												WORD* idx = (WORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
+													FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+												DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
+													(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+												DWORD width = FPS_STEP + FPS_WIDTH;
+												do
+												{
+													WORD px = *idx++;
+													*pix++ = ((px & 0xF800) >> 8) | ((px & 0x07E0) << 5) | ((px & 0x001F) << 19);
+												} while (--width);
+											}
+
+											--dcount;
+										}
+
+										GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_STEP + FPS_WIDTH) * 4, FPS_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
+									}
 								}
 							}
-						}
 
-						GLBegin(GL_TRIANGLE_FAN);
-						{
-							FLOAT texX = frame->tSize.width * currScale;
-							FLOAT texY = frame->tSize.height * currScale;
-
-							GLTexCoord2f(0.0f, 0.0f);
-							GLVertex2s((SHORT)frame->point.x, (SHORT)frame->point.y);
-
-							GLTexCoord2f(texX, 0.0f);
-							GLVertex2s(frame->vSize.width, (SHORT)frame->point.y);
-
-							GLTexCoord2f(texX, texY);
-							GLVertex2s(frame->vSize.width, frame->vSize.height);
-
-							GLTexCoord2f(0.0f, texY);
-							GLVertex2s((SHORT)frame->point.x, frame->vSize.height);
-
-						}
-						GLEnd();
-						++frame;
-					}
-
-					if (this->isTakeSnapshot)
-					{
-						this->isTakeSnapshot = FALSE;
-
-						if (OpenClipboard(NULL))
-						{
-							EmptyClipboard();
-
-							DWORD texWidth = this->mode.width;
-							DWORD texHeight = this->mode.height;
-							if (isDouble)
+							GLBegin(GL_TRIANGLE_FAN);
 							{
-								texWidth = DWORD(currScale * texWidth);
-								texHeight = DWORD(currScale * texHeight);
+								FLOAT texX = frame->tSize.width * currScale;
+								FLOAT texY = frame->tSize.height * currScale;
+
+								GLTexCoord2f(0.0f, 0.0f);
+								GLVertex2s((SHORT)frame->point.x, (SHORT)frame->point.y);
+
+								GLTexCoord2f(texX, 0.0f);
+								GLVertex2s(frame->vSize.width, (SHORT)frame->point.y);
+
+								GLTexCoord2f(texX, texY);
+								GLVertex2s(frame->vSize.width, frame->vSize.height);
+
+								GLTexCoord2f(0.0f, texY);
+								GLVertex2s((SHORT)frame->point.x, frame->vSize.height);
+
 							}
+							GLEnd();
+							++frame;
+						}
 
-							DWORD dataSize = texWidth * texHeight * sizeof(WORD);
-							HGLOBAL hMemory = GlobalAlloc(GMEM_MOVEABLE, sizeof(BITMAPV5HEADER) + dataSize);
+						if (this->isTakeSnapshot)
+						{
+							this->isTakeSnapshot = FALSE;
+
+							if (OpenClipboard(NULL))
 							{
-								VOID* data = GlobalLock(hMemory);
+								EmptyClipboard();
+
+								DWORD texWidth = this->mode.width;
+								DWORD texHeight = this->mode.height;
+								if (isDouble)
 								{
-									BITMAPV5HEADER* bmi = (BITMAPV5HEADER*)data;
-									MemoryZero(bmi, sizeof(BITMAPINFOHEADER));
-									bmi->bV5Size = sizeof(BITMAPV5HEADER);
-									bmi->bV5Width = texWidth;
-									bmi->bV5Height = -*(LONG*)&texHeight;
-									bmi->bV5Planes = 1;
-									bmi->bV5BitCount = 16;
-									bmi->bV5Compression = BI_BITFIELDS;
-									bmi->bV5XPelsPerMeter = 1;
-									bmi->bV5YPelsPerMeter = 1;
-									bmi->bV5RedMask = 0xF800;
-									bmi->bV5GreenMask = 0x07E0;
-									bmi->bV5BlueMask = 0x001F;
-
-									MemoryCopy((BYTE*)data + sizeof(BITMAPV5HEADER), surface->indexBuffer, dataSize);
+									texWidth = DWORD(currScale * texWidth);
+									texHeight = DWORD(currScale * texHeight);
 								}
-								GlobalUnlock(hMemory);
 
-								SetClipboardData(CF_DIBV5, hMemory);
+								DWORD dataSize = texWidth * texHeight * sizeof(WORD);
+								HGLOBAL hMemory = GlobalAlloc(GMEM_MOVEABLE, sizeof(BITMAPV5HEADER) + dataSize);
+								{
+									VOID* data = GlobalLock(hMemory);
+									{
+										BITMAPV5HEADER* bmi = (BITMAPV5HEADER*)data;
+										MemoryZero(bmi, sizeof(BITMAPINFOHEADER));
+										bmi->bV5Size = sizeof(BITMAPV5HEADER);
+										bmi->bV5Width = texWidth;
+										bmi->bV5Height = -*(LONG*)&texHeight;
+										bmi->bV5Planes = 1;
+										bmi->bV5BitCount = 16;
+										bmi->bV5Compression = BI_BITFIELDS;
+										bmi->bV5XPelsPerMeter = 1;
+										bmi->bV5YPelsPerMeter = 1;
+										bmi->bV5RedMask = 0xF800;
+										bmi->bV5GreenMask = 0x07E0;
+										bmi->bV5BlueMask = 0x001F;
+
+										MemoryCopy((BYTE*)data + sizeof(BITMAPV5HEADER), surface->indexBuffer, dataSize);
+									}
+									GlobalUnlock(hMemory);
+
+									SetClipboardData(CF_DIBV5, hMemory);
+								}
+								GlobalFree(hMemory);
+
+								CloseClipboard();
+								clear = TRUE;
 							}
-							GlobalFree(hMemory);
-
-							CloseClipboard();
-							clear = TRUE;
 						}
-					}
 
-					SwapBuffers(this->hDc);
-					if (!clear && fpsState != FpsBenchmark)
-						WaitForSingleObject(this->hDrawEvent, INFINITE);
-					if (isVSync)
-						GLFinish();
-				}
-			} while (!this->isFinish);
+						SwapBuffers(this->hDc);
+						if (!clear && fpsState != FpsBenchmark)
+							WaitForSingleObject(this->hDrawEvent, INFINITE);
+						if (isVSync)
+							GLFinish();
+					}
+				} while (!this->isFinish);
+			}
+			delete fpsCounter;
 		}
 		MemoryFree(frameBuffer);
 
@@ -1014,27 +985,42 @@ VOID OpenDraw::RenderNew()
 	MemoryCopy(vertices, buffer, 16 * sizeof(FLOAT));
 
 	FLOAT mvpMatrix[4][4] = {
-		{ 2.0f / this->mode.width, 0.0f, 0.0f, 0.0f },
-		{ 0.0f, -2.0f / this->mode.height, 0.0f, 0.0f },
+		{ FLOAT(2.0f / this->mode.width), 0.0f, 0.0f, 0.0f },
+		{ 0.0f, FLOAT(-2.0f / this->mode.height), 0.0f, 0.0f },
 		{ 0.0f, 0.0f, 2.0f, 0.0f },
 		{ -1.0f, 1.0f, -1.0f, 1.0f }
 	};
 
-	ShaderProgramsList shaders = {
-		0, IDR_STENCIL_VERTEX, IDR_STENCIL_FRAGMENT, (GLfloat*)mvpMatrix,
-		0, IDR_LINEAR_VERTEX, IDR_LINEAR_FRAGMENT, (GLfloat*)mvpMatrix,
-		0, IDR_CUBIC_VERTEX, IDR_CUBIC_FRAGMENT, (GLfloat*)mvpMatrix,
-		0, IDR_XBRZ_VERTEX, IDR_XBRZ_FRAGMENT_2X, (GLfloat*)mvpMatrix,
-		0, IDR_XBRZ_VERTEX, IDR_XBRZ_FRAGMENT_3X, (GLfloat*)mvpMatrix,
-		0, IDR_XBRZ_VERTEX, IDR_XBRZ_FRAGMENT_4X, (GLfloat*)mvpMatrix,
-		0, IDR_XBRZ_VERTEX, IDR_XBRZ_FRAGMENT_5X, (GLfloat*)mvpMatrix,
-		0, IDR_XBRZ_VERTEX, IDR_XBRZ_FRAGMENT_6X, (GLfloat*)mvpMatrix,
-		0, IDR_SCALEHQ_VERTEX_2X, IDR_SCALEHQ_FRAGMENT_2X, (GLfloat*)mvpMatrix,
-		0, IDR_SCALEHQ_VERTEX_4X, IDR_SCALEHQ_FRAGMENT_4X, (GLfloat*)mvpMatrix,
-		0, IDR_XSAL_VERTEX, IDR_XSAL_FRAGMENT, (GLfloat*)mvpMatrix,
-		0, IDR_EAGLE_VERTEX, IDR_EAGLE_FRAGMENT, (GLfloat*)mvpMatrix,
-		0, IDR_SCALENX_VERTEX_2X, IDR_SCALENX_FRAGMENT_2X, (GLfloat*)mvpMatrix,
-		0, IDR_SCALENX_VERTEX_3X, IDR_SCALENX_FRAGMENT_3X, (GLfloat*)mvpMatrix
+	struct {
+		ShaderProgram stencil;
+		ShaderProgram linear;
+		ShaderProgram cubic;
+		ShaderProgram xBRz_2x;
+		ShaderProgram xBRz_3x;
+		ShaderProgram xBRz_4x;
+		ShaderProgram xBRz_5x;
+		ShaderProgram xBRz_6x;
+		ShaderProgram scaleHQ_2x;
+		ShaderProgram scaleHQ_4x;
+		ShaderProgram xSal_2x;
+		ShaderProgram eagle_2x;
+		ShaderProgram scaleNx_2x;
+		ShaderProgram scaleNx_3x;
+	} shaders = {
+		{ 0, IDR_STENCIL_VERTEX, IDR_STENCIL_FRAGMENT, (GLfloat*)mvpMatrix },
+		{ 0, IDR_LINEAR_VERTEX, IDR_LINEAR_FRAGMENT, (GLfloat*)mvpMatrix },
+		{ 0, IDR_CUBIC_VERTEX, IDR_CUBIC_FRAGMENT, (GLfloat*)mvpMatrix },
+		{ 0, IDR_XBRZ_VERTEX, IDR_XBRZ_FRAGMENT_2X, (GLfloat*)mvpMatrix },
+		{ 0, IDR_XBRZ_VERTEX, IDR_XBRZ_FRAGMENT_3X, (GLfloat*)mvpMatrix },
+		{ 0, IDR_XBRZ_VERTEX, IDR_XBRZ_FRAGMENT_4X, (GLfloat*)mvpMatrix },
+		{ 0, IDR_XBRZ_VERTEX, IDR_XBRZ_FRAGMENT_5X, (GLfloat*)mvpMatrix },
+		{ 0, IDR_XBRZ_VERTEX, IDR_XBRZ_FRAGMENT_6X, (GLfloat*)mvpMatrix },
+		{ 0, IDR_SCALEHQ_VERTEX_2X, IDR_SCALEHQ_FRAGMENT_2X, (GLfloat*)mvpMatrix },
+		{ 0, IDR_SCALEHQ_VERTEX_4X, IDR_SCALEHQ_FRAGMENT_4X, (GLfloat*)mvpMatrix },
+		{ 0, IDR_XSAL_VERTEX, IDR_XSAL_FRAGMENT, (GLfloat*)mvpMatrix },
+		{ 0, IDR_EAGLE_VERTEX, IDR_EAGLE_FRAGMENT, (GLfloat*)mvpMatrix },
+		{ 0, IDR_SCALENX_VERTEX_2X, IDR_SCALENX_FRAGMENT_2X, (GLfloat*)mvpMatrix },
+		{ 0, IDR_SCALENX_VERTEX_3X, IDR_SCALENX_FRAGMENT_3X, (GLfloat*)mvpMatrix }
 	};
 
 	ShaderProgram* filterProgram = &shaders.linear;
@@ -1055,13 +1041,13 @@ VOID OpenDraw::RenderNew()
 						GLBufferData(GL_ARRAY_BUFFER, sizeof(buffer), buffer, GL_STATIC_DRAW);
 
 						UseShaderProgram(filterProgram);
-						GLint attrCoordsLoc = GLGetAttribLocation(filterProgram->id, "vCoord");
-						GLEnableVertexAttribArray(attrCoordsLoc);
-						GLVertexAttribPointer(attrCoordsLoc, 2, GL_FLOAT, GL_FALSE, 16, (GLvoid*)0);
+						GLint attrLoc = GLGetAttribLocation(filterProgram->id, "vCoord");
+						GLEnableVertexAttribArray(attrLoc);
+						GLVertexAttribPointer(attrLoc, 2, GL_FLOAT, GL_FALSE, 16, (GLvoid*)0);
 
-						GLint attrTexCoordsLoc = GLGetAttribLocation(filterProgram->id, "vTexCoord");
-						GLEnableVertexAttribArray(attrTexCoordsLoc);
-						GLVertexAttribPointer(attrTexCoordsLoc, 2, GL_FLOAT, GL_FALSE, 16, (GLvoid*)8);
+						attrLoc = GLGetAttribLocation(filterProgram->id, "vTexCoord");
+						GLEnableVertexAttribArray(attrLoc);
+						GLVertexAttribPointer(attrLoc, 2, GL_FLOAT, GL_FALSE, 16, (GLvoid*)8);
 
 						GLuint textureId;
 						GLGenTextures(1, &textureId);
@@ -1092,304 +1078,187 @@ VOID OpenDraw::RenderNew()
 
 									VOID* frameBuffer = MemoryAlloc(this->mode.width * this->mode.height * (this->mode.bpp == 16 ? sizeof(WORD) : sizeof(DWORD)));
 									{
-										this->isStateChanged = TRUE;
-
-										DWORD fpsQueue[FPS_COUNT];
-										DWORD tickQueue[FPS_COUNT];
-
-										DWORD fpsIdx = -1;
-										DWORD fpsTotal = 0;
-										DWORD fpsCount = 0;
-										INT fpsSum = 0;
-										MemoryZero(fpsQueue, sizeof(fpsQueue));
-										MemoryZero(tickQueue, sizeof(tickQueue));
-
-										BOOL isVSync = FALSE;
-										if (WGLSwapInterval)
-											WGLSwapInterval(0);
-
-										FLOAT oldScale = 1.0f;
-										DWORD clear = TRUE;
-										do
+										FpsCounter* fpsCounter = new FpsCounter(FPS_ACCURACY);
 										{
-											OpenDrawSurface* surface = this->attachedSurface;
-											if (surface)
+											this->isStateChanged = TRUE;
+
+											BOOL isVSync = FALSE;
+											if (WGLSwapInterval)
+												WGLSwapInterval(0);
+
+											FLOAT oldScale = 1.0f;
+											DWORD clear = TRUE;
+											do
 											{
-												if (WGLSwapInterval)
+												OpenDrawSurface* surface = this->attachedSurface;
+												if (surface)
 												{
-													if (!isVSync)
+													if (WGLSwapInterval)
 													{
-														if (config.image.vSync)
+														if (!isVSync)
 														{
-															isVSync = TRUE;
-															WGLSwapInterval(1);
+															if (config.image.vSync)
+															{
+																isVSync = TRUE;
+																WGLSwapInterval(1);
+															}
+														}
+														else
+														{
+															if (!config.image.vSync)
+															{
+																isVSync = FALSE;
+																WGLSwapInterval(0);
+															}
 														}
 													}
-													else
-													{
-														if (!config.image.vSync)
-														{
-															isVSync = FALSE;
-															WGLSwapInterval(0);
-														}
-													}
-												}
-
-												if (this->isStateChanged)
-												{
-													this->viewport.refresh = TRUE;
-													surface->isSizeChanged = TRUE;
-													isFpsChanged = TRUE;
-												}
-
-												if (fpsState)
-												{
-													DWORD tick = GetTickCount();
-
-													if (isFpsChanged)
-													{
-														fpsIdx = -1;
-														fpsTotal = 0;
-														fpsCount = 0;
-														fpsSum = 0;
-														MemoryZero(fpsQueue, sizeof(fpsQueue));
-														MemoryZero(tickQueue, sizeof(tickQueue));
-													}
-
-													++fpsTotal;
-													if (fpsCount < FPS_COUNT)
-														++fpsCount;
-
-													++fpsIdx;
-													if (fpsIdx == FPS_COUNT)
-														fpsIdx = 0;
-
-													DWORD diff = tick - tickQueue[fpsTotal != fpsCount ? fpsIdx : 0];
-													tickQueue[fpsIdx] = tick;
-
-													DWORD fps = diff ? (DWORD)MathRound(1000.0f / diff * fpsCount) : 9999;
-
-													DWORD* queue = &fpsQueue[fpsIdx];
-													fpsSum -= *queue - fps;
-													*queue = fps;
-												}
-
-												BOOL isTakeSnapshot = this->isTakeSnapshot;
-												if (isTakeSnapshot)
-													this->isTakeSnapshot = FALSE;
-
-												FLOAT currScale = surface->scale;
-												BOOL isDouble = currScale != 1.0f;
-												UpdateRect* updateClip = surface->poinetrClip;
-												UpdateRect* finClip = surface->currentClip;
-												surface->poinetrClip = finClip;
-
-												ImageFilter frameFilter = config.image.filter;
-												if (frameFilter == FilterXRBZ || frameFilter == FilterScaleHQ ||
-													frameFilter == FilterXSal || frameFilter == FilterEagle || frameFilter == FilterScaleNx)
-												{
-													GLBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboId);
 
 													if (this->isStateChanged)
 													{
-														this->isStateChanged = FALSE;
+														this->viewport.refresh = TRUE;
+														surface->isSizeChanged = TRUE;
+														isFpsChanged = TRUE;
+													}
 
-														DWORD scaleValue;
-														switch (frameFilter)
+													if (fpsState)
+													{
+														if (isFpsChanged)
 														{
-														case FilterScaleNx:
-															scaleValue = config.image.scaleNx.value;
-															switch (scaleValue)
-															{
-															case 4:
-																filterProgram = &shaders.scaleNx_3x;
-																break;
-															default:
-																filterProgram = &shaders.scaleNx_2x;
-																break;
-															}
-															filterProgram2 = config.image.scaleNx.type ? &shaders.cubic : &shaders.linear;
-															break;
-
-														case FilterScaleHQ:
-															scaleValue = config.image.scaleHQ.value;
-															switch (scaleValue)
-															{
-															case 4:
-																filterProgram = &shaders.scaleHQ_4x;
-																break;
-															default:
-																filterProgram = &shaders.scaleHQ_2x;
-																break;
-															}
-															filterProgram2 = config.image.scaleHQ.type ? &shaders.cubic : &shaders.linear;
-															break;
-
-														case FilterXRBZ:
-															scaleValue = config.image.xBRz.value;
-															switch (scaleValue)
-															{
-															case 6:
-																filterProgram = &shaders.xBRz_6x;
-																break;
-															case 5:
-																filterProgram = &shaders.xBRz_5x;
-																break;
-															case 4:
-																filterProgram = &shaders.xBRz_4x;
-																break;
-															case 3:
-																filterProgram = &shaders.xBRz_3x;
-																break;
-															default:
-																filterProgram = &shaders.xBRz_2x;
-																break;
-															}
-															filterProgram2 = config.image.xBRz.type ? &shaders.cubic : &shaders.linear;
-															break;
-
-														case FilterXSal:
-															scaleValue = config.image.xSal.value;
-															filterProgram = &shaders.xSal_2x;
-															filterProgram2 = config.image.xSal.type ? &shaders.cubic : &shaders.linear;
-															break;
-
-														default:
-															scaleValue = config.image.eagle.value;
-															filterProgram = &shaders.eagle_2x;
-															filterProgram2 = config.image.eagle.type ? &shaders.cubic : &shaders.linear;
-															break;
-
+															isFpsChanged = FALSE;
+															fpsCounter->Reset();
 														}
 
-														UseShaderProgram(filterProgram);
+														fpsCounter->Calculate();
+													}
 
-														DWORD newSize = (this->mode.width * scaleValue) | ((this->mode.height * scaleValue) << 16);
-														if (newSize != viewSize)
+													BOOL isTakeSnapshot = this->isTakeSnapshot;
+													if (isTakeSnapshot)
+														this->isTakeSnapshot = FALSE;
+
+													FLOAT currScale = surface->scale;
+													BOOL isDouble = currScale != 1.0f;
+													UpdateRect* updateClip = surface->poinetrClip;
+													UpdateRect* finClip = surface->currentClip;
+													surface->poinetrClip = finClip;
+
+													ImageFilter frameFilter = config.image.filter;
+													if (frameFilter == FilterXRBZ || frameFilter == FilterScaleHQ ||
+														frameFilter == FilterXSal || frameFilter == FilterEagle || frameFilter == FilterScaleNx)
+													{
+														GLBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboId);
+
+														if (this->isStateChanged)
 														{
-															if (!viewSize)
+															this->isStateChanged = FALSE;
+
+															DWORD scaleValue;
+															switch (frameFilter)
 															{
-																GLGenTextures(1, &tboId);
-																GLGenRenderbuffers(1, &rboId);
-															}
-
-															viewSize = newSize;
-
-															// Gen texture
-															GLBindTexture(GL_TEXTURE_2D, tboId);
-															GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glCapsClampToEdge);
-															GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glCapsClampToEdge);
-															GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-															GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-															GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-															GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-															GLTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, LOWORD(viewSize), HIWORD(viewSize), GL_NONE, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-															// Get storage
-															GLBindRenderbuffer(GL_RENDERBUFFER, rboId);
-															GLRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, LOWORD(viewSize), HIWORD(viewSize));
-															GLBindRenderbuffer(GL_RENDERBUFFER, NULL);
-
-															GLFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tboId, 0);
-															GLFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboId);
-
-															if (!stencil)
-															{
-																stencil = (POINTFLOAT*)MemoryAlloc((STENCIL_COUNT + 1) * sizeof(POINTFLOAT) * 6); // +1 for FPS counter
-																GLGenVertexArrays(1, &stArrayName);
-																GLGenBuffers(1, &stBufferName);
-																GLBindVertexArray(stArrayName);
-																GLBindBuffer(GL_ARRAY_BUFFER, stBufferName);
+															case FilterScaleNx:
+																scaleValue = config.image.scaleNx.value;
+																switch (scaleValue)
 																{
-																	GLBufferData(GL_ARRAY_BUFFER, STENCIL_COUNT * 4 * 2 * sizeof(FLOAT), NULL, GL_STREAM_DRAW);
-																	GLEnableVertexAttribArray(attrCoordsLoc);
-																	GLVertexAttribPointer(attrCoordsLoc, 2, GL_FLOAT, GL_FALSE, 8, (GLvoid*)0);
+																case 4:
+																	filterProgram = &shaders.scaleNx_3x;
+																	break;
+																default:
+																	filterProgram = &shaders.scaleNx_2x;
+																	break;
 																}
-																GLBindVertexArray(arrayName);
-																GLBindBuffer(GL_ARRAY_BUFFER, bufferName);
-															}
-														}
-													}
+																filterProgram2 = config.image.scaleNx.type ? &shaders.cubic : &shaders.linear;
+																break;
 
-													if (isFpsChanged)
-													{
-														isFpsChanged = FALSE;
-														clear = TRUE;
-													}
-
-													GLViewport(0, 0, LOWORD(viewSize), HIWORD(viewSize));
-													if (this->CheckView())
-														clear = TRUE;
-
-													if (surface->isSizeChanged)
-													{
-														surface->isSizeChanged = FALSE;
-														clear = TRUE;
-													}
-
-													// Clear and stencil
-													if (clear == TRUE)
-													{
-														++clear;
-
-														updateClip = (finClip == surface->clipsList ? surface->endClip : finClip) - 1;
-														updateClip->rect.left = 0;
-														updateClip->rect.top = 0;
-														updateClip->rect.right = this->mode.width;
-														updateClip->rect.bottom = this->mode.height;
-														updateClip->isActive = TRUE;
-
-														GLClear(GL_COLOR_BUFFER_BIT);
-													}
-													else
-													{
-														if (clear)
-														{
-															if (clear < 3)
-																++clear;
-															else
-																clear = FALSE;
-														}
-
-														GLEnable(GL_STENCIL_TEST);
-														GLClear(GL_STENCIL_BUFFER_BIT);
-
-														UseShaderProgram(&shaders.stencil);
-														{
-															GLColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-															GLStencilFunc(GL_ALWAYS, 0x01, 0x01);
-															GLStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
-															{
-																GLBindVertexArray(stArrayName);
-																GLBindBuffer(GL_ARRAY_BUFFER, stBufferName);
+															case FilterScaleHQ:
+																scaleValue = config.image.scaleHQ.value;
+																switch (scaleValue)
 																{
-																	POINTFLOAT* point = stencil;
-																	UpdateRect* clip = updateClip;
-																	while (clip != finClip)
+																case 4:
+																	filterProgram = &shaders.scaleHQ_4x;
+																	break;
+																default:
+																	filterProgram = &shaders.scaleHQ_2x;
+																	break;
+																}
+																filterProgram2 = config.image.scaleHQ.type ? &shaders.cubic : &shaders.linear;
+																break;
+
+															case FilterXRBZ:
+																scaleValue = config.image.xBRz.value;
+																switch (scaleValue)
+																{
+																case 6:
+																	filterProgram = &shaders.xBRz_6x;
+																	break;
+																case 5:
+																	filterProgram = &shaders.xBRz_5x;
+																	break;
+																case 4:
+																	filterProgram = &shaders.xBRz_4x;
+																	break;
+																case 3:
+																	filterProgram = &shaders.xBRz_3x;
+																	break;
+																default:
+																	filterProgram = &shaders.xBRz_2x;
+																	break;
+																}
+																filterProgram2 = config.image.xBRz.type ? &shaders.cubic : &shaders.linear;
+																break;
+
+															case FilterXSal:
+																scaleValue = config.image.xSal.value;
+																filterProgram = &shaders.xSal_2x;
+																filterProgram2 = config.image.xSal.type ? &shaders.cubic : &shaders.linear;
+																break;
+
+															default:
+																scaleValue = config.image.eagle.value;
+																filterProgram = &shaders.eagle_2x;
+																filterProgram2 = config.image.eagle.type ? &shaders.cubic : &shaders.linear;
+																break;
+
+															}
+
+															UseShaderProgram(filterProgram);
+
+															DWORD newSize = (this->mode.width * scaleValue) | ((this->mode.height * scaleValue) << 16);
+															if (newSize != viewSize)
+															{
+																if (!viewSize)
+																{
+																	GLGenTextures(1, &tboId);
+																	GLGenRenderbuffers(1, &rboId);
+																}
+
+																viewSize = newSize;
+
+																// Gen texture
+																GLBindTexture(GL_TEXTURE_2D, tboId);
+																GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glCapsClampToEdge);
+																GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glCapsClampToEdge);
+																GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+																GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+																GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+																GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+																GLTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, LOWORD(viewSize), HIWORD(viewSize), GL_NONE, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+																// Get storage
+																GLBindRenderbuffer(GL_RENDERBUFFER, rboId);
+																GLRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, LOWORD(viewSize), HIWORD(viewSize));
+																GLBindRenderbuffer(GL_RENDERBUFFER, NULL);
+
+																GLFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tboId, 0);
+																GLFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboId);
+
+																if (!stencil)
+																{
+																	DWORD size = (STENCIL_COUNT + 1) * sizeof(POINTFLOAT) * STENCIL_POINTS;
+																	stencil = (POINTFLOAT*)MemoryAlloc(size); // +1 for FPS counter
+
+																	// FPS points
 																	{
-																		if (clip->isActive)
-																		{
-																			point->x = (FLOAT)clip->rect.left;  point->y = (FLOAT)clip->rect.top;
-																			++point;
-																			point->x = (FLOAT)clip->rect.right;  point->y = (FLOAT)clip->rect.top;
-																			++point;
-																			point->x = (FLOAT)clip->rect.right;  point->y = (FLOAT)clip->rect.bottom;
-																			++point;
+																		POINTFLOAT* point = stencil;
 
-																			point->x = (FLOAT)clip->rect.left;  point->y = (FLOAT)clip->rect.top;
-																			++point;
-																			point->x = (FLOAT)clip->rect.right;  point->y = (FLOAT)clip->rect.bottom;
-																			++point;
-																			point->x = (FLOAT)clip->rect.left;  point->y = (FLOAT)clip->rect.bottom;
-																			++point;
-																		}
-
-																		if (++clip == surface->endClip)
-																			clip = surface->clipsList;
-																	}
-
-																	if (fpsState)
-																	{
 																		point->x = (FLOAT)(FPS_X);  point->y = (FLOAT)(FPS_Y);
 																		++point;
 																		point->x = (FLOAT)(FPS_X + (FPS_STEP + FPS_WIDTH) * 4);  point->y = (FLOAT)(FPS_Y);
@@ -1402,364 +1271,515 @@ VOID OpenDraw::RenderNew()
 																		point->x = (FLOAT)(FPS_X + (FPS_STEP + FPS_WIDTH) * 4);  point->y = (FLOAT)(FPS_Y + FPS_HEIGHT);
 																		++point;
 																		point->x = (FLOAT)(FPS_X);  point->y = (FLOAT)(FPS_Y + FPS_HEIGHT);
-																		++point;
 																	}
 
-																	DWORD count = point - stencil;
-																	if (count)
+																	UseShaderProgram(&shaders.stencil);
 																	{
-																		GLBufferSubData(GL_ARRAY_BUFFER, 0, count * sizeof(POINTFLOAT), stencil);
-																		GLDrawArrays(GL_TRIANGLES, 0, count);
+																		GLGenVertexArrays(1, &stArrayName);
+																		GLBindVertexArray(stArrayName);
+																		GLGenBuffers(1, &stBufferName);
+																		GLBindBuffer(GL_ARRAY_BUFFER, stBufferName);
+																		{
+																			GLBufferData(GL_ARRAY_BUFFER, size, stencil, GL_STREAM_DRAW);
+
+																			attrLoc = GLGetAttribLocation(shaders.stencil.id, "vCoord");
+																			GLEnableVertexAttribArray(attrLoc);
+																			GLVertexAttribPointer(attrLoc, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+																		}
+
+																		GLBindVertexArray(arrayName);
+																		GLBindBuffer(GL_ARRAY_BUFFER, bufferName);
 																	}
+																	UseShaderProgram(filterProgram);
 																}
-																GLBindVertexArray(arrayName);
-																GLBindBuffer(GL_ARRAY_BUFFER, bufferName);
 															}
-															GLColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-															GLStencilFunc(GL_EQUAL, 0x01, 0x01);
-															GLStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 														}
-														UseShaderProgram(filterProgram);
-													}
 
-													GLBindTexture(GL_TEXTURE_2D, textureId);
-													GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-													GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-												}
-												else
-												{
-													if (isFpsChanged)
-													{
-														isFpsChanged = FALSE;
-														clear = TRUE;
-													}
-
-													if (this->CheckView())
-													{
-														clear = TRUE;
-														GLViewport(this->viewport.rectangle.x, this->viewport.rectangle.y, this->viewport.rectangle.width, this->viewport.rectangle.height);
-													}
-
-													if (surface->isSizeChanged)
-													{
-														surface->isSizeChanged = FALSE;
-														clear = TRUE;
-													}
-
-													if (this->isStateChanged)
-													{
-														this->isStateChanged = FALSE;
-
-														filterProgram = frameFilter == FilterCubic ? &shaders.cubic : &shaders.linear;
-														UseShaderProgram(filterProgram);
-
-														if (viewSize)
+														if (isFpsChanged)
 														{
-															GLDeleteTextures(1, &tboId);
-															GLDeleteRenderbuffers(1, &rboId);
-															viewSize = 0;
+															isFpsChanged = FALSE;
+															clear = TRUE;
+														}
+
+														GLViewport(0, 0, LOWORD(viewSize), HIWORD(viewSize));
+														if (this->CheckView())
+															clear = TRUE;
+
+														if (surface->isSizeChanged)
+														{
+															surface->isSizeChanged = FALSE;
+															clear = TRUE;
+														}
+
+														// Clear and stencil
+														if (clear == TRUE)
+														{
+															++clear;
+
+															updateClip = (finClip == surface->clipsList ? surface->endClip : finClip) - 1;
+															updateClip->rect.left = 0;
+															updateClip->rect.top = 0;
+															updateClip->rect.right = this->mode.width;
+															updateClip->rect.bottom = this->mode.height;
+															updateClip->isActive = TRUE;
+
+															GLClear(GL_COLOR_BUFFER_BIT);
+														}
+														else
+														{
+															if (clear)
+															{
+																if (clear < 3)
+																	++clear;
+																else
+																	clear = FALSE;
+															}
+
+															GLEnable(GL_STENCIL_TEST);
+															GLClear(GL_STENCIL_BUFFER_BIT);
+
+															UseShaderProgram(&shaders.stencil);
+															{
+																GLColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+																GLStencilFunc(GL_ALWAYS, 0x01, 0x01);
+																GLStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+																{
+																	GLBindVertexArray(stArrayName);
+																	GLBindBuffer(GL_ARRAY_BUFFER, stBufferName);
+																	{
+																		POINTFLOAT* start = stencil + STENCIL_POINTS;
+																		POINTFLOAT* point = start;
+																		UpdateRect* clip = updateClip;
+																		while (clip != finClip)
+																		{
+																			if (clip->isActive)
+																			{
+																				point->x = (FLOAT)clip->rect.left;  point->y = (FLOAT)clip->rect.top;
+																				++point;
+																				point->x = (FLOAT)clip->rect.right;  point->y = (FLOAT)clip->rect.top;
+																				++point;
+																				point->x = (FLOAT)clip->rect.right;  point->y = (FLOAT)clip->rect.bottom;
+																				++point;
+
+																				point->x = (FLOAT)clip->rect.left;  point->y = (FLOAT)clip->rect.top;
+																				++point;
+																				point->x = (FLOAT)clip->rect.right;  point->y = (FLOAT)clip->rect.bottom;
+																				++point;
+																				point->x = (FLOAT)clip->rect.left;  point->y = (FLOAT)clip->rect.bottom;
+																				++point;
+																			}
+
+																			if (++clip == surface->endClip)
+																				clip = surface->clipsList;
+																		}
+
+																		DWORD count = point - start;
+																		if (count)
+																			GLBufferSubData(GL_ARRAY_BUFFER, STENCIL_POINTS * sizeof(POINTFLOAT), count * sizeof(POINTFLOAT), start);
+
+																		if (fpsState == FpsDisabled)
+																			GLDrawArrays(GL_TRIANGLES, STENCIL_POINTS, count);
+																		else
+																			GLDrawArrays(GL_TRIANGLES, 0, STENCIL_POINTS + count);
+																	}
+																	GLBindVertexArray(arrayName);
+																	GLBindBuffer(GL_ARRAY_BUFFER, bufferName);
+																}
+																GLColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+																GLStencilFunc(GL_EQUAL, 0x01, 0x01);
+																GLStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+															}
+															UseShaderProgram(filterProgram);
 														}
 
 														GLBindTexture(GL_TEXTURE_2D, textureId);
-														filter = frameFilter == FilterLinear ? GL_LINEAR : GL_NEAREST;
-														GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-														GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+														GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+														GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 													}
-
-													if (clear)
+													else
 													{
-														if (clear < 3)
+														if (isFpsChanged)
 														{
-															if (clear & 1)
-															{
-																updateClip = (finClip == surface->clipsList ? surface->endClip : finClip) - 1;
-																updateClip->rect.left = 0;
-																updateClip->rect.top = 0;
-																updateClip->rect.right = this->mode.width;
-																updateClip->rect.bottom = this->mode.height;
-																updateClip->isActive = TRUE;
-															}
-
-															++clear;
+															isFpsChanged = FALSE;
+															clear = TRUE;
 														}
-														else
-															clear = FALSE;
 
-														GLClear(GL_COLOR_BUFFER_BIT);
-													}
-												}
-
-												// NEXT UNCHANGED
-												{
-													// Update texture
-													DWORD frameWidth = isDouble ? DWORD(currScale * this->mode.width) : this->mode.width;
-													while (updateClip != finClip)
-													{
-														if (updateClip->isActive)
+														if (this->CheckView())
 														{
-															RECT update = updateClip->rect;
-															DWORD texWidth = update.right - update.left;
-															DWORD texHeight = update.bottom - update.top;
-															if (isDouble)
-															{
-																update.left = DWORD(currScale * update.left);
-																update.top = DWORD(currScale * update.top);
-																update.right = DWORD(currScale * update.right);
-																update.bottom = DWORD(currScale * update.bottom);
+															clear = TRUE;
+															GLViewport(this->viewport.rectangle.x, this->viewport.rectangle.y, this->viewport.rectangle.width, this->viewport.rectangle.height);
+														}
 
-																texWidth = DWORD(currScale * texWidth);
-																texHeight = DWORD(currScale * texHeight);
+														if (surface->isSizeChanged)
+														{
+															surface->isSizeChanged = FALSE;
+															clear = TRUE;
+														}
+
+														if (this->isStateChanged)
+														{
+															this->isStateChanged = FALSE;
+
+															filterProgram = frameFilter == FilterCubic ? &shaders.cubic : &shaders.linear;
+															UseShaderProgram(filterProgram);
+
+															if (viewSize)
+															{
+																GLDeleteTextures(1, &tboId);
+																GLDeleteRenderbuffers(1, &rboId);
+																viewSize = 0;
 															}
 
-															if (texWidth == frameWidth)
+															GLBindTexture(GL_TEXTURE_2D, textureId);
+															filter = frameFilter == FilterLinear ? GL_LINEAR : GL_NEAREST;
+															GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+															GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+														}
+
+														if (clear)
+														{
+															if (clear < 3)
 															{
-																if (this->mode.bpp == 32)
-																	GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, update.top, texWidth, texHeight, GL_BGRA_EXT, GL_UNSIGNED_BYTE, (DWORD*)surface->indexBuffer + update.top * texWidth);
+																if (clear & 1)
+																{
+																	updateClip = (finClip == surface->clipsList ? surface->endClip : finClip) - 1;
+																	updateClip->rect.left = 0;
+																	updateClip->rect.top = 0;
+																	updateClip->rect.right = this->mode.width;
+																	updateClip->rect.bottom = this->mode.height;
+																	updateClip->isActive = TRUE;
+																}
+
+																++clear;
+															}
+															else
+																clear = FALSE;
+
+															GLClear(GL_COLOR_BUFFER_BIT);
+														}
+													}
+
+													// NEXT UNCHANGED
+													{
+														// Update texture
+														DWORD frameWidth = isDouble ? DWORD(currScale * this->mode.width) : this->mode.width;
+														while (updateClip != finClip)
+														{
+															if (updateClip->isActive)
+															{
+																RECT update = updateClip->rect;
+																DWORD texWidth = update.right - update.left;
+																DWORD texHeight = update.bottom - update.top;
+																if (isDouble)
+																{
+																	update.left = DWORD(currScale * update.left);
+																	update.top = DWORD(currScale * update.top);
+																	update.right = DWORD(currScale * update.right);
+																	update.bottom = DWORD(currScale * update.bottom);
+
+																	texWidth = DWORD(currScale * texWidth);
+																	texHeight = DWORD(currScale * texHeight);
+																}
+
+																if (texWidth == frameWidth)
+																{
+																	if (this->mode.bpp == 32)
+																		GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, update.top, texWidth, texHeight, GL_BGRA_EXT, GL_UNSIGNED_BYTE, (DWORD*)surface->indexBuffer + update.top * texWidth);
+																	else
+																		GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, update.top, texWidth, texHeight, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, (WORD*)surface->indexBuffer + update.top * texWidth);
+																}
 																else
-																	GLTexSubImage2D(GL_TEXTURE_2D, 0, 0, update.top, texWidth, texHeight, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, (WORD*)surface->indexBuffer + update.top * texWidth);
+																{
+																	if (this->mode.bpp == 32)
+																	{
+																		DWORD* source = (DWORD*)surface->indexBuffer + update.top * frameWidth + update.left;
+																		DWORD* dest = (DWORD*)frameBuffer;
+																		DWORD copyHeight = texHeight;
+																		do
+																		{
+																			MemoryCopy(dest, source, texWidth << 2);
+																			source += frameWidth;
+																			dest += texWidth;
+																		} while (--copyHeight);
+
+																		GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_BGRA_EXT, GL_UNSIGNED_BYTE, frameBuffer);
+																	}
+																	else
+																	{
+																		if (texWidth & 1)
+																		{
+																			++texWidth;
+																			if (update.left)
+																				--update.left;
+																			else
+																				++update.right;
+																		}
+
+																		WORD* source = (WORD*)surface->indexBuffer + update.top * frameWidth + update.left;
+																		WORD* dest = (WORD*)frameBuffer;
+																		DWORD copyHeight = texHeight;
+																		do
+																		{
+																			MemoryCopy(dest, source, texWidth << 1);
+																			source += frameWidth;
+																			dest += texWidth;
+																		} while (--copyHeight);
+
+																		GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, frameBuffer);
+																	}
+																}
+															}
+
+															if (++updateClip == surface->endClip)
+																updateClip = surface->clipsList;
+														}
+
+														// Update FPS
+														if (fpsState && !isTakeSnapshot)
+														{
+															DWORD fps = fpsCounter->GetValue();
+															DWORD digCount = 0;
+															DWORD current = fps;
+															do
+															{
+																++digCount;
+																current = current / 10;
+															} while (current);
+
+															if (this->mode.bpp == 32)
+															{
+																DWORD fpsColor = fpsState == FpsBenchmark ? 0xFFFFFF00 : 0xFFFFFFFF;
+																DWORD dcount = digCount;
+																do
+																{
+																	bool* lpDig = (bool*)counters + FPS_WIDTH * FPS_HEIGHT * (fps % 10);
+
+																	for (DWORD y = 0; y < FPS_HEIGHT; ++y)
+																	{
+																		DWORD* idx = (DWORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
+																			FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+																		DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
+																			(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+																		DWORD width = FPS_STEP;
+																		do
+																			*pix++ = *idx++;
+																		while (--width);
+
+																		width = FPS_WIDTH;
+																		do
+																		{
+																			*pix++ = *lpDig++ ? fpsColor : *idx;
+																			++idx;
+																		} while (--width);
+																	}
+
+																	fps = fps / 10;
+																} while (--dcount);
+
+																dcount = 4;
+																while (dcount != digCount)
+																{
+																	for (DWORD y = 0; y < FPS_HEIGHT; ++y)
+																	{
+																		DWORD* idx = (DWORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
+																			FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+																		DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
+																			(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+																		DWORD width = FPS_STEP + FPS_WIDTH;
+																		do
+																			*pix++ = *idx++;
+																		while (--width);
+																	}
+
+																	--dcount;
+																}
+
+																GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_STEP + FPS_WIDTH) * 4, FPS_HEIGHT, GL_BGRA_EXT, GL_UNSIGNED_BYTE, frameBuffer);
 															}
 															else
 															{
-																if (this->mode.bpp == 32)
+																WORD fpsColor = fpsState == FpsBenchmark ? 0xFFE0 : 0xFFFF;
+																DWORD dcount = digCount;
+																do
 																{
-																	DWORD* source = (DWORD*)surface->indexBuffer + update.top * frameWidth + update.left;
-																	DWORD* dest = (DWORD*)frameBuffer;
-																	DWORD copyHeight = texHeight;
-																	do
-																	{
-																		MemoryCopy(dest, source, texWidth << 2);
-																		source += frameWidth;
-																		dest += texWidth;
-																	} while (--copyHeight);
+																	bool* lpDig = (bool*)counters + FPS_WIDTH * FPS_HEIGHT * (fps % 10);
 
-																	GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_BGRA_EXT, GL_UNSIGNED_BYTE, frameBuffer);
-																}
-																else
-																{
-																	if (texWidth & 1)
+																	for (DWORD y = 0; y < FPS_HEIGHT; ++y)
 																	{
-																		++texWidth;
-																		if (update.left)
-																			--update.left;
-																		else
-																			++update.right;
+																		WORD* idx = (WORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
+																			FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+																		WORD* pix = (WORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
+																			(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+																		DWORD width = FPS_STEP;
+																		do
+																			*pix++ = *idx++;
+																		while (--width);
+
+																		width = FPS_WIDTH;
+																		do
+																		{
+																			*pix++ = *lpDig++ ? fpsColor : *idx;
+																			++idx;
+																		} while (--width);
 																	}
 
-																	WORD* source = (WORD*)surface->indexBuffer + update.top * frameWidth + update.left;
-																	WORD* dest = (WORD*)frameBuffer;
-																	DWORD copyHeight = texHeight;
-																	do
-																	{
-																		MemoryCopy(dest, source, texWidth << 1);
-																		source += frameWidth;
-																		dest += texWidth;
-																	} while (--copyHeight);
+																	fps = fps / 10;
+																} while (--dcount);
 
-																	GLTexSubImage2D(GL_TEXTURE_2D, 0, update.left, update.top, texWidth, texHeight, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, frameBuffer);
+																dcount = 4;
+																while (dcount != digCount)
+																{
+																	for (DWORD y = 0; y < FPS_HEIGHT; ++y)
+																	{
+																		WORD* idx = (WORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
+																			FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+																		WORD* pix = (WORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
+																			(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+
+																		DWORD width = FPS_STEP + FPS_WIDTH;
+																		do
+																			*pix++ = *idx++;
+																		while (--width);
+																	}
+
+																	--dcount;
 																}
+
+																GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_STEP + FPS_WIDTH) * 4, FPS_HEIGHT, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, frameBuffer);
 															}
 														}
 
-														if (++updateClip == surface->endClip)
-															updateClip = surface->clipsList;
-													}
-
-													// Update FPS
-													if (fpsState && !isTakeSnapshot)
-													{
-														DWORD fps = (DWORD)MathRound((FLOAT)fpsSum / fpsCount);
-														DWORD digCount = 0;
-														DWORD current = fps;
-														do
+														if (oldScale != currScale)
 														{
-															++digCount;
-															current = current / 10;
-														} while (current);
+															oldScale = currScale;
 
-														if (this->mode.bpp == 32)
-														{
-															DWORD fpsColor = fpsState == FpsBenchmark ? 0xFFFFFF00 : 0xFFFFFFFF;
-															DWORD dcount = digCount;
-															do
+															if (currScale == 1.0f)
+																MemoryCopy(vertices, buffer, 16 * sizeof(FLOAT));
+															else
 															{
-																bool* lpDig = (bool*)counters + FPS_WIDTH * FPS_HEIGHT * (fps % 10);
+																vertices[1][2] = buffer[1][2] * currScale;
 
-																for (DWORD y = 0; y < FPS_HEIGHT; ++y)
-																{
-																	DWORD* idx = (DWORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
-																		FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+																vertices[2][2] = buffer[2][2] * currScale;
+																vertices[2][3] = buffer[2][3] * currScale;
 
-																	DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-																		(FPS_STEP + FPS_WIDTH) * (dcount - 1);
-
-																	DWORD width = FPS_STEP;
-																	do
-																		*pix++ = *idx++;
-																	while (--width);
-
-																	width = FPS_WIDTH;
-																	do
-																	{
-																		*pix++ = *lpDig++ ? fpsColor : *idx;
-																		++idx;
-																	} while (--width);
-																}
-
-																fps = fps / 10;
-															} while (--dcount);
-
-															dcount = 4;
-															while (dcount != digCount)
-															{
-																for (DWORD y = 0; y < FPS_HEIGHT; ++y)
-																{
-																	DWORD* idx = (DWORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
-																		FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
-
-																	DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-																		(FPS_STEP + FPS_WIDTH) * (dcount - 1);
-
-																	DWORD width = FPS_STEP + FPS_WIDTH;
-																	do
-																		*pix++ = *idx++;
-																	while (--width);
-																}
-
-																--dcount;
+																vertices[3][3] = buffer[3][3] * currScale;
 															}
 
-															GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_STEP + FPS_WIDTH) * 4, FPS_HEIGHT, GL_BGRA_EXT, GL_UNSIGNED_BYTE, frameBuffer);
+															GLBufferSubData(GL_ARRAY_BUFFER, 0, 16 * sizeof(FLOAT), vertices);
 														}
-														else
+
+														// Draw into FBO texture
+														GLDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+													}
+
+													// Draw from FBO
+													if (frameFilter == FilterXRBZ || frameFilter == FilterScaleHQ ||
+														frameFilter == FilterXSal || frameFilter == FilterEagle || frameFilter == FilterScaleNx)
+													{
+														GLDisable(GL_STENCIL_TEST);
+														//GLFinish();
+														GLBindFramebuffer(GL_DRAW_FRAMEBUFFER, NULL);
+
+														UseShaderProgram(filterProgram2);
 														{
-															WORD fpsColor = fpsState == FpsBenchmark ? 0xFFE0 : 0xFFFF;
-															DWORD dcount = digCount;
-															do
+															GLViewport(this->viewport.rectangle.x, this->viewport.rectangle.y, this->viewport.rectangle.width, this->viewport.rectangle.height);
+
+															GLClear(GL_COLOR_BUFFER_BIT);
+															GLBindTexture(GL_TEXTURE_2D, tboId);
+
+															filter = filterProgram2 == &shaders.linear ? GL_LINEAR : GL_NEAREST;
+															GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+															GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+
+															GLDrawArrays(GL_TRIANGLE_FAN, 4, 4);
+
+															if (isTakeSnapshot)
 															{
-																bool* lpDig = (bool*)counters + FPS_WIDTH * FPS_HEIGHT * (fps % 10);
+																GLFinish();
 
-																for (DWORD y = 0; y < FPS_HEIGHT; ++y)
+																if (OpenClipboard(NULL))
 																{
-																	WORD* idx = (WORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
-																		FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+																	EmptyClipboard();
 
-																	WORD* pix = (WORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-																		(FPS_STEP + FPS_WIDTH) * (dcount - 1);
-
-																	DWORD width = FPS_STEP;
-																	do
-																		*pix++ = *idx++;
-																	while (--width);
-
-																	width = FPS_WIDTH;
-																	do
+																	DWORD dataSize = LOWORD(viewSize) * HIWORD(viewSize) * 3;
+																	HGLOBAL hMemory = GlobalAlloc(GMEM_MOVEABLE, sizeof(BITMAPINFOHEADER) + dataSize);
 																	{
-																		*pix++ = *lpDig++ ? fpsColor : *idx;
-																		++idx;
-																	} while (--width);
+																		VOID* data = GlobalLock(hMemory);
+																		{
+																			BITMAPINFOHEADER* bmiHeader = (BITMAPINFOHEADER*)data;
+																			MemoryZero(bmiHeader, sizeof(BITMAPINFOHEADER));
+																			bmiHeader->biSize = sizeof(BITMAPINFOHEADER);
+																			bmiHeader->biWidth = LOWORD(viewSize);
+																			bmiHeader->biHeight = HIWORD(viewSize);
+																			bmiHeader->biPlanes = 1;
+																			bmiHeader->biBitCount = 24;
+																			bmiHeader->biCompression = BI_RGB;
+																			bmiHeader->biXPelsPerMeter = 1;
+																			bmiHeader->biYPelsPerMeter = 1;
+
+																			VOID* pixels = (BITMAPINFOHEADER*)((BYTE*)data + sizeof(BITMAPINFOHEADER));
+																			GLGetTexImage(GL_TEXTURE_2D, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+																		}
+																		GlobalUnlock(hMemory);
+
+																		SetClipboardData(CF_DIB, hMemory);
+																	}
+																	GlobalFree(hMemory);
+
+																	CloseClipboard();
+																	clear = TRUE;
 																}
-
-																fps = fps / 10;
-															} while (--dcount);
-
-															dcount = 4;
-															while (dcount != digCount)
-															{
-																for (DWORD y = 0; y < FPS_HEIGHT; ++y)
-																{
-																	WORD* idx = (WORD*)surface->indexBuffer + (FPS_Y + y) * frameWidth +
-																		FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
-
-																	WORD* pix = (WORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-																		(FPS_STEP + FPS_WIDTH) * (dcount - 1);
-
-																	DWORD width = FPS_STEP + FPS_WIDTH;
-																	do
-																		*pix++ = *idx++;
-																	while (--width);
-																}
-
-																--dcount;
 															}
-
-															GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_STEP + FPS_WIDTH) * 4, FPS_HEIGHT, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, frameBuffer);
 														}
+														UseShaderProgram(filterProgram);
 													}
-
-													if (oldScale != currScale)
+													else
 													{
-														oldScale = currScale;
-
-														if (currScale == 1.0f)
-															MemoryCopy(vertices, buffer, 16 * sizeof(FLOAT));
-														else
-														{
-															vertices[1][2] = buffer[1][2] * currScale;
-
-															vertices[2][2] = buffer[2][2] * currScale;
-															vertices[2][3] = buffer[2][3] * currScale;
-
-															vertices[3][3] = buffer[3][3] * currScale;
-														}
-
-														GLBufferSubData(GL_ARRAY_BUFFER, 0, 16 * sizeof(FLOAT), vertices);
-													}
-
-													// Draw into FBO texture
-													GLDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-												}
-
-												// Draw from FBO
-												if (frameFilter == FilterXRBZ || frameFilter == FilterScaleHQ ||
-													frameFilter == FilterXSal || frameFilter == FilterEagle || frameFilter == FilterScaleNx)
-												{
-													GLDisable(GL_STENCIL_TEST);
-													//GLFinish();
-													GLBindFramebuffer(GL_DRAW_FRAMEBUFFER, NULL);
-
-													UseShaderProgram(filterProgram2);
-													{
-														GLViewport(this->viewport.rectangle.x, this->viewport.rectangle.y, this->viewport.rectangle.width, this->viewport.rectangle.height);
-
-														GLClear(GL_COLOR_BUFFER_BIT);
-														GLBindTexture(GL_TEXTURE_2D, tboId);
-
-														filter = filterProgram2 == &shaders.linear ? GL_LINEAR : GL_NEAREST;
-														GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-														GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-
-														GLDrawArrays(GL_TRIANGLE_FAN, 4, 4);
-
 														if (isTakeSnapshot)
 														{
-															GLFinish();
-
 															if (OpenClipboard(NULL))
 															{
 																EmptyClipboard();
 
-																DWORD dataSize = LOWORD(viewSize) * HIWORD(viewSize) * 3;
-																HGLOBAL hMemory = GlobalAlloc(GMEM_MOVEABLE, sizeof(BITMAPINFOHEADER) + dataSize);
+																DWORD texWidth = this->mode.width;
+																DWORD texHeight = this->mode.height;
+																if (isDouble)
+																{
+																	texWidth = DWORD(currScale * texWidth);
+																	texHeight = DWORD(currScale * texHeight);
+																}
+
+																DWORD dataSize = texWidth * texHeight * sizeof(WORD);
+																HGLOBAL hMemory = GlobalAlloc(GMEM_MOVEABLE, sizeof(BITMAPV5HEADER) + dataSize);
 																{
 																	VOID* data = GlobalLock(hMemory);
 																	{
-																		BITMAPINFOHEADER* bmiHeader = (BITMAPINFOHEADER*)data;
-																		MemoryZero(bmiHeader, sizeof(BITMAPINFOHEADER));
-																		bmiHeader->biSize = sizeof(BITMAPINFOHEADER);
-																		bmiHeader->biWidth = LOWORD(viewSize);
-																		bmiHeader->biHeight = HIWORD(viewSize);
-																		bmiHeader->biPlanes = 1;
-																		bmiHeader->biBitCount = 24;
-																		bmiHeader->biCompression = BI_RGB;
-																		bmiHeader->biXPelsPerMeter = 1;
-																		bmiHeader->biYPelsPerMeter = 1;
+																		BITMAPV5HEADER* bmi = (BITMAPV5HEADER*)data;
+																		MemoryZero(bmi, sizeof(BITMAPINFOHEADER));
+																		bmi->bV5Size = sizeof(BITMAPV5HEADER);
+																		bmi->bV5Width = texWidth;
+																		bmi->bV5Height = -*(LONG*)&texHeight;
+																		bmi->bV5Planes = 1;
+																		bmi->bV5BitCount = 16;
+																		bmi->bV5Compression = BI_BITFIELDS;
+																		bmi->bV5XPelsPerMeter = 1;
+																		bmi->bV5YPelsPerMeter = 1;
+																		bmi->bV5RedMask = 0xF800;
+																		bmi->bV5GreenMask = 0x07E0;
+																		bmi->bV5BlueMask = 0x001F;
 
-																		VOID* pixels = (BITMAPINFOHEADER*)((BYTE*)data + sizeof(BITMAPINFOHEADER));
-																		GLGetTexImage(GL_TEXTURE_2D, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixels);
+																		MemoryCopy((BYTE*)data + sizeof(BITMAPV5HEADER), surface->indexBuffer, dataSize);
 																	}
 																	GlobalUnlock(hMemory);
 
-																	SetClipboardData(CF_DIB, hMemory);
+																	SetClipboardData(CF_DIBV5, hMemory);
 																}
 																GlobalFree(hMemory);
 
@@ -1768,65 +1788,17 @@ VOID OpenDraw::RenderNew()
 															}
 														}
 													}
-													UseShaderProgram(filterProgram);
+
+													// Swap
+													SwapBuffers(this->hDc);
+													if (!clear && fpsState != FpsBenchmark)
+														WaitForSingleObject(this->hDrawEvent, INFINITE);
+													if (isVSync)
+														GLFinish();
 												}
-												else
-												{
-													if (isTakeSnapshot)
-													{
-														if (OpenClipboard(NULL))
-														{
-															EmptyClipboard();
-
-															DWORD texWidth = this->mode.width;
-															DWORD texHeight = this->mode.height;
-															if (isDouble)
-															{
-																texWidth = DWORD(currScale * texWidth);
-																texHeight = DWORD(currScale * texHeight);
-															}
-
-															DWORD dataSize = texWidth * texHeight * sizeof(WORD);
-															HGLOBAL hMemory = GlobalAlloc(GMEM_MOVEABLE, sizeof(BITMAPV5HEADER) + dataSize);
-															{
-																VOID* data = GlobalLock(hMemory);
-																{
-																	BITMAPV5HEADER* bmi = (BITMAPV5HEADER*)data;
-																	MemoryZero(bmi, sizeof(BITMAPINFOHEADER));
-																	bmi->bV5Size = sizeof(BITMAPV5HEADER);
-																	bmi->bV5Width = texWidth;
-																	bmi->bV5Height = -*(LONG*)&texHeight;
-																	bmi->bV5Planes = 1;
-																	bmi->bV5BitCount = 16;
-																	bmi->bV5Compression = BI_BITFIELDS;
-																	bmi->bV5XPelsPerMeter = 1;
-																	bmi->bV5YPelsPerMeter = 1;
-																	bmi->bV5RedMask = 0xF800;
-																	bmi->bV5GreenMask = 0x07E0;
-																	bmi->bV5BlueMask = 0x001F;
-
-																	MemoryCopy((BYTE*)data + sizeof(BITMAPV5HEADER), surface->indexBuffer, dataSize);
-																}
-																GlobalUnlock(hMemory);
-
-																SetClipboardData(CF_DIBV5, hMemory);
-															}
-															GlobalFree(hMemory);
-
-															CloseClipboard();
-															clear = TRUE;
-														}
-													}
-												}
-
-												// Swap
-												SwapBuffers(this->hDc);
-												if (!clear && fpsState != FpsBenchmark)
-													WaitForSingleObject(this->hDrawEvent, INFINITE);
-												if (isVSync)
-													GLFinish();
-											}
-										} while (!this->isFinish);
+											} while (!this->isFinish);
+										}
+										delete fpsCounter;
 									}
 									MemoryFree(frameBuffer);
 								}
@@ -1859,7 +1831,7 @@ VOID OpenDraw::RenderNew()
 	GLUseProgram(NULL);
 
 	ShaderProgram* shaderProgram = (ShaderProgram*)&shaders;
-	DWORD count = sizeof(ShaderProgramsList) / sizeof(ShaderProgram);
+	DWORD count = sizeof(shaders) / sizeof(ShaderProgram);
 	do
 	{
 		if (shaderProgram->id)
@@ -1883,7 +1855,7 @@ VOID OpenDraw::RenderStart()
 	{
 		this->hDraw = CreateWindowEx(
 			WS_EX_CONTROLPARENT | WS_EX_TOPMOST,
-			WC_STATIC,
+			WC_DRAW,
 			NULL,
 			WS_VISIBLE | WS_POPUP,
 			rect.left, rect.top,
@@ -1897,7 +1869,7 @@ VOID OpenDraw::RenderStart()
 	{
 		this->hDraw = CreateWindowEx(
 			WS_EX_CONTROLPARENT,
-			WC_STATIC,
+			WC_DRAW,
 			NULL,
 			WS_VISIBLE | WS_CHILD,
 			rect.left, rect.top,
@@ -1923,7 +1895,7 @@ VOID OpenDraw::RenderStart()
 	SECURITY_ATTRIBUTES sAttribs;
 	MemoryZero(&sAttribs, sizeof(SECURITY_ATTRIBUTES));
 	sAttribs.nLength = sizeof(SECURITY_ATTRIBUTES);
-	this->hDrawThread = CreateThread(&sAttribs, NULL, RenderThread, this, NORMAL_PRIORITY_CLASS, &threadId);
+	this->hDrawThread = CreateThread(&sAttribs, NULL, RenderThread, this, HIGH_PRIORITY_CLASS, &threadId);
 }
 
 VOID OpenDraw::RenderStop()
@@ -2004,8 +1976,8 @@ BOOL OpenDraw::CheckView()
 
 VOID OpenDraw::ScaleMouse(LPPOINT p)
 {
-	p->x = (LONG)MathRound((FLOAT)(p->x + 1 - this->viewport.rectangle.x) * (FLOAT)this->mode.width / (FLOAT)this->viewport.rectangle.width) - 1;
-	p->y = (LONG)MathRound((FLOAT)(p->y + 1 - this->viewport.rectangle.y) * (FLOAT)this->mode.height / (FLOAT)this->viewport.rectangle.height) - 1;
+	p->x = (LONG)((FLOAT)((p->x - this->viewport.rectangle.x) * this->mode.width) / this->viewport.rectangle.width);
+	p->y = (LONG)((FLOAT)((p->y - this->viewport.rectangle.y) * this->mode.height) / this->viewport.rectangle.height);
 }
 
 OpenDraw::OpenDraw(IDraw** last)

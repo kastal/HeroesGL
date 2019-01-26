@@ -1,7 +1,7 @@
 /*
 	MIT License
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+	Copyright (c) 2019 Oleksiy Ryabchun
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -281,3 +281,92 @@ const bool counters[10][FPS_HEIGHT][FPS_WIDTH] = {
 		{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
 	}
 };
+
+FpsCounter::FpsCounter(DWORD accuracy)
+{
+	this->accuracy = accuracy;
+	this->count = accuracy * 10;
+	this->tickQueue = (FrameItem*)MemoryAlloc(this->count * sizeof(FrameItem));
+	this->Reset();
+}
+
+FpsCounter::~FpsCounter()
+{
+	MemoryFree(this->tickQueue);
+}
+
+VOID FpsCounter::Reset()
+{
+	this->checkIndex = 0;
+	this->currentIndex = 0;
+	this->summary = 0;
+	this->lastTick = 0;
+	MemoryZero(this->tickQueue, this->count * sizeof(FrameItem));
+}
+
+VOID FpsCounter::Calculate()
+{
+	FrameItem* tickItem = &tickQueue[this->currentIndex];
+	tickItem->tick = GetTickCount();
+
+	if (this->lastTick)
+	{
+		tickItem->span = tickItem->tick - this->lastTick;
+		this->summary += tickItem->span;
+	}
+	this->lastTick = tickItem->tick;
+
+	DWORD check = tickItem->tick - accuracy;
+
+	DWORD total = 0;
+	if (this->checkIndex > this->currentIndex)
+	{
+		FrameItem* checkPtr = &this->tickQueue[this->checkIndex];
+		while (this->checkIndex < this->count)
+		{
+			if (checkPtr->tick > check)
+			{
+				total = this->count - this->checkIndex + this->currentIndex + 1;
+				break;
+			}
+
+			this->summary -= checkPtr->span;
+
+			++checkPtr;
+			++this->checkIndex;
+		}
+
+		if (this->checkIndex == this->count)
+			this->checkIndex = 0;
+	}
+
+	if (!total)
+	{
+		FrameItem* checkPtr = &this->tickQueue[this->checkIndex];
+		while (this->checkIndex <= this->currentIndex)
+		{
+			if (checkPtr->tick > check)
+			{
+				total = this->currentIndex - this->checkIndex + 1;
+				break;
+			}
+
+			this->summary -= checkPtr->span;
+
+			++checkPtr;
+			++this->checkIndex;
+		}
+	}
+
+	if (this->currentIndex != this->count - 1)
+		++this->currentIndex;
+	else
+		this->currentIndex = 0;
+
+	this->value = 1000.0f * total / this->summary;
+}
+
+DWORD FpsCounter::GetValue()
+{
+	return (DWORD)MathRound(this->value);
+}

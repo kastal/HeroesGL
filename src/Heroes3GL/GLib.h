@@ -1,7 +1,7 @@
 /*
 	MIT License
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+	Copyright (c) 2019 Oleksiy Ryabchun
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -39,9 +39,9 @@ typedef ptrdiff_t GLintptr;
 typedef ptrdiff_t GLsizeiptr;
 typedef char GLchar;
 
-#define GL_VER_1_1 0x00010001
-#define GL_VER_1_2 0x00010002
-#define GL_VER_3_0 0x00030000
+#define GL_VER_1_1 0x01010000
+#define GL_VER_1_2 0x01020000
+#define GL_VER_3_0 0x03000000
 
 #define WGL_DRAW_TO_WINDOW_ARB         0x2001
 #define WGL_SUPPORT_OPENGL_ARB         0x2010
@@ -275,7 +275,6 @@ extern GLRENDERBUFFERSTORAGE GLRenderbufferStorage;
 extern GLFRAMEBUFFERRENDERBUFFER GLFramebufferRenderbuffer;
 
 extern DWORD glVersion;
-extern DWORD glPixelFormat;
 extern DWORD glCapsClampToEdge;
 extern BOOL glCapsBGRA;
 
@@ -285,7 +284,7 @@ namespace GL
 	VOID __fastcall Free();
 	VOID __fastcall CreateContextAttribs(HDC hDc, HGLRC* hRc);
 	VOID __fastcall PreparePixelFormatDescription(PIXELFORMATDESCRIPTOR* pfd);
-	BOOL __fastcall PreparePixelFormat(PIXELFORMATDESCRIPTOR* pfd);
+	INT __fastcall PreparePixelFormat(PIXELFORMATDESCRIPTOR* pfd);
 	GLuint __fastcall CompileShaderSource(DWORD name, GLenum type);
 	VOID __fastcall ResetContext();
 }

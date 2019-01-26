@@ -1,7 +1,7 @@
 /*
 	MIT License
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+	Copyright (c) 2019 Oleksiy Ryabchun
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -59,7 +59,7 @@ namespace Window
 				NMLINK* pNMLink = (NMLINK*)lParam;
 				LITEM iItem = pNMLink->item;
 
-				CHAR url[256];
+				CHAR url[MAX_PATH];
 				StrToAnsi(url, pNMLink->item.szUrl, sizeof(url) - 1);
 
 				SHELLEXECUTEINFO shExecInfo;
