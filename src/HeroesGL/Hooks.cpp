@@ -34,7 +34,6 @@
 #include "AdrDevice.h"
 #include "AdrSource.h"
 
-#define BASE_ADDRESS 0x00400000
 #define STYLE_FULL_OLD (WS_VISIBLE | WS_CLIPSIBLINGS)
 #define STYLE_FULL_NEW (WS_VISIBLE | WS_CLIPSIBLINGS | WS_SYSMENU)
 
@@ -293,13 +292,12 @@ namespace Hooks
 		return ReadBlock(addr, value, sizeof(*value));
 	}
 
-	DWORD __fastcall PatchFunction(HMODULE hModule, const CHAR* function, VOID* addr)
+	DWORD __fastcall PatchFunction(MappedFile* file, const CHAR* function, VOID* addr)
 	{
 		DWORD res = NULL;
-		HANDLE hFile = NULL;
-		DWORD baseEx;
-		DWORD base = (DWORD)hModule;
-		PIMAGE_NT_HEADERS headNT = (PIMAGE_NT_HEADERS)(base + ((PIMAGE_DOS_HEADER)hModule)->e_lfanew);
+
+		DWORD base = (DWORD)file->hModule;
+		PIMAGE_NT_HEADERS headNT = (PIMAGE_NT_HEADERS)((BYTE*)base + ((PIMAGE_DOS_HEADER)file->hModule)->e_lfanew);
 
 		PIMAGE_DATA_DIRECTORY dataDir = &headNT->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
 		if (dataDir->Size)
@@ -315,16 +313,47 @@ namespace Hooks
 					nameThunk = (PIMAGE_THUNK_DATA)(base + imports->OriginalFirstThunk);
 				else
 				{
-					if (!hFile)
+					if (!file->hFile)
 					{
 						CHAR filePath[MAX_PATH];
-						GetModuleFileName(hModule, filePath, sizeof(filePath) - 1);
-						hFile = CreateFile(filePath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-						HANDLE hMap = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, 0, NULL);
-						baseEx = (DWORD)MapViewOfFile(hMap, FILE_MAP_READ, 0, 0, 0);
+						GetModuleFileName(file->hModule, filePath, MAX_PATH);
+						file->hFile = CreateFile(filePath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+						if (!file->hFile)
+							return res;
 					}
 
-					nameThunk = (PIMAGE_THUNK_DATA)(baseEx + imports->FirstThunk);
+					if (!file->hMap)
+					{
+						file->hMap = CreateFileMapping(file->hFile, NULL, PAGE_READONLY, 0, 0, NULL);
+						if (!file->hMap)
+							return res;
+					}
+
+					if (!file->address)
+					{
+						file->address = MapViewOfFile(file->hMap, FILE_MAP_READ, 0, 0, 0);;
+						if (!file->address)
+							return res;
+					}
+
+					headNT = (PIMAGE_NT_HEADERS)((BYTE*)file->address + ((PIMAGE_DOS_HEADER)file->address)->e_lfanew);
+					PIMAGE_SECTION_HEADER sh = (PIMAGE_SECTION_HEADER)((DWORD)&headNT->OptionalHeader + headNT->FileHeader.SizeOfOptionalHeader);
+
+					nameThunk = NULL;
+					DWORD sCount = headNT->FileHeader.NumberOfSections;
+					while (sCount--)
+					{
+						if (imports->FirstThunk >= sh->VirtualAddress && imports->FirstThunk < sh->VirtualAddress + sh->Misc.VirtualSize)
+						{
+							nameThunk = PIMAGE_THUNK_DATA((DWORD)file->address + sh->PointerToRawData + imports->FirstThunk - sh->VirtualAddress);
+							break;
+						}
+
+						++sh;
+					}
+
+					if (!nameThunk)
+						return res;
 				}
 
 				for (; nameThunk->u1.AddressOfData; ++nameThunk, ++addressThunk)
@@ -337,14 +366,11 @@ namespace Hooks
 						if (ReadDWord((INT)&addressThunk->u1.AddressOfData - baseOffset, &res))
 							PatchDWord((INT)&addressThunk->u1.AddressOfData - baseOffset, (DWORD)addr);
 
-						goto Exit;
+						return res;
 					}
 				}
 			}
 		}
-
-		if (hFile)
-			Exit: CloseHandle(hFile);
 
 		return res;
 	}
@@ -641,6 +667,19 @@ namespace Hooks
 		if (hLibModule == hDllModule)
 			return TRUE;
 		return FreeLibrary(hLibModule);
+	}
+
+	FARPROC __stdcall GetProcAddressHook(HMODULE hModule, LPCSTR lpProcName)
+	{
+		if (hModule == hDllModule)
+		{
+			if (!StrCompareInsensitive(lpProcName, "DirectDrawCreate"))
+				return (FARPROC)Main::DirectDrawCreate;
+			else
+				return NULL;
+		}
+		else
+			return GetProcAddress(hModule, lpProcName);
 	}
 
 #pragma region Mouse Pointers
@@ -1444,7 +1483,8 @@ namespace Hooks
 	{
 		hookSpace = addressArray;
 		hModule = GetModuleHandle(NULL);
-		baseOffset = (INT)hModule - BASE_ADDRESS;
+		PIMAGE_NT_HEADERS headNT = (PIMAGE_NT_HEADERS)((BYTE*)hModule + ((PIMAGE_DOS_HEADER)hModule)->e_lfanew);
+		baseOffset = (INT)hModule - (INT)headNT->OptionalHeader.ImageBase;
 
 		DWORD hookCount = sizeof(addressArray) / sizeof(AddressSpace);
 		do
@@ -1455,41 +1495,60 @@ namespace Hooks
 				Config::Load(hModule, hookSpace);
 
 				{
-					PatchFunction(hModule, "LoadLibraryA", LoadLibraryHook);
-					PatchFunction(hModule, "FreeLibrary", FreeLibraryHook);
-
-					PatchFunction(hModule, "AdjustWindowRect", AdjustWindowRectHook);
-					PatchFunction(hModule, "CreateWindowExA", CreateWindowExHook);
-					PatchFunction(hModule, "SetWindowLongA", SetWindowLongHook);
-
-					PatchFunction(hModule, "MessageBoxA", MessageBoxHook);
-					PatchFunction(hModule, "WinHelpA", WinHelpHook);
-
-					PatchFunction(hModule, "LoadMenuA", LoadMenuHook);
-					PatchFunction(hModule, "SetMenu", SetMenuHook);
-					PatchFunction(hModule, "EnableMenuItem", EnableMenuItemHook);
-
-					PatchFunction(hModule, "Sleep", SleepHook);
-					PatchFunction(hModule, "DialogBoxParamA", DialogBoxParamHook);
-
-					PatchFunction(hModule, "PeekMessageA", PeekMessageHook);
-					PatchFunction(hModule, "RegisterClassA", RegisterClassHook);
-
-					PatchFunction(hModule, "RegCreateKeyA", RegCreateKeyHook);
-					PatchFunction(hModule, "RegOpenKeyExA", RegOpenKeyExHook);
-					PatchFunction(hModule, "RegCloseKey", RegCloseKeyHook);
-					PatchFunction(hModule, "RegQueryValueExA", RegQueryValueExHook);
-					PatchFunction(hModule, "RegSetValueExA", RegSetValueExHook);
-
-					AudiereOpenDevice = (ADROPENDEVICE)PatchFunction(hModule, "_AdrOpenDevice@8", AdrOpenDeviceHook);
-					AudiereOpenSampleSource = (ADROPENSAMPLESOURCE)PatchFunction(hModule, "_AdrOpenSampleSource@4", AdrOpenSampleSourceHook);
-
-					if (!config.isNoGL)
+					MappedFile file = { hModule, NULL, NULL, NULL };
 					{
-						PatchFunction(hModule, "ScreenToClient", ScreenToClientHook);
-						PatchFunction(hModule, "InvalidateRect", InvalidateRectHook);
-						PatchFunction(hModule, "BeginPaint", BeginPaintHook);
+						PatchFunction(&file, "AdjustWindowRect", AdjustWindowRectHook);
+						PatchFunction(&file, "CreateWindowExA", CreateWindowExHook);
+						PatchFunction(&file, "SetWindowLongA", SetWindowLongHook);
+
+						PatchFunction(&file, "MessageBoxA", MessageBoxHook);
+						PatchFunction(&file, "WinHelpA", WinHelpHook);
+
+						PatchFunction(&file, "LoadMenuA", LoadMenuHook);
+						PatchFunction(&file, "SetMenu", SetMenuHook);
+						PatchFunction(&file, "EnableMenuItem", EnableMenuItemHook);
+
+						PatchFunction(&file, "Sleep", SleepHook);
+						PatchFunction(&file, "DialogBoxParamA", DialogBoxParamHook);
+
+						PatchFunction(&file, "PeekMessageA", PeekMessageHook);
+						PatchFunction(&file, "RegisterClassA", RegisterClassHook);
+
+						PatchFunction(&file, "RegCreateKeyA", RegCreateKeyHook);
+						PatchFunction(&file, "RegOpenKeyExA", RegOpenKeyExHook);
+						PatchFunction(&file, "RegCloseKey", RegCloseKeyHook);
+						PatchFunction(&file, "RegQueryValueExA", RegQueryValueExHook);
+						PatchFunction(&file, "RegSetValueExA", RegSetValueExHook);
+
+						AudiereOpenDevice = (ADROPENDEVICE)PatchFunction(&file, "_AdrOpenDevice@8", AdrOpenDeviceHook);
+						AudiereOpenSampleSource = (ADROPENSAMPLESOURCE)PatchFunction(&file, "_AdrOpenSampleSource@4", AdrOpenSampleSourceHook);
+
+						if (!config.isNoGL)
+						{
+							PatchFunction(&file, "LoadLibraryA", LoadLibraryHook);
+							PatchFunction(&file, "FreeLibrary", FreeLibraryHook);
+							PatchFunction(&file, "GetProcAddress", GetProcAddressHook);
+
+							PatchFunction(&file, "ScreenToClient", ScreenToClientHook);
+							PatchFunction(&file, "InvalidateRect", InvalidateRectHook);
+							PatchFunction(&file, "BeginPaint", BeginPaintHook);
+						}
+
+						if (hookSpace->icons_list)
+						{
+							PatchFunction(&file, "CreateBitmapIndirect", CreateBitmapIndirectHook);
+							PatchFunction(&file, "CreateIconIndirect", CreateIconIndirectHook);
+						}
 					}
+
+					if (file.address)
+						UnmapViewOfFile(file.address);
+
+					if (file.hMap)
+						CloseHandle(file.hMap);
+
+					if (file.hFile)
+						CloseHandle(file.hFile);
 				}
 
 				if (hookSpace->fadein_tick && hookSpace->fadein_update_1 && hookSpace->fadein_update_2)
@@ -1519,17 +1578,11 @@ namespace Hooks
 					hookSpace->checkChangeCursor += baseOffset;
 				}
 
-				if (hookSpace->icons_list)
+				if (hookSpace->icons_list && hookSpace->color_pointer)
 				{
-					if (hookSpace->color_pointer)
-					{
-						PatchDWord(hookSpace->color_pointer, TRUE);
-						if (hookSpace->color_pointer_nop)
-							PatchNop(hookSpace->color_pointer_nop, 10);
-					}
-
-					PatchFunction(hModule, "CreateBitmapIndirect", CreateBitmapIndirectHook);
-					PatchFunction(hModule, "CreateIconIndirect", CreateIconIndirectHook);
+					PatchDWord(hookSpace->color_pointer, TRUE);
+					if (hookSpace->color_pointer_nop)
+						PatchNop(hookSpace->color_pointer_nop, 10);
 				}
 
 				PatchWinMM();

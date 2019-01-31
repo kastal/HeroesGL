@@ -30,7 +30,6 @@
 #include "Resource.h"
 #include "Window.h"
 
-#define BASE_ADDRESS 0x00400000
 #define STYLE_FULL_OLD (WS_VISIBLE | WS_POPUP)
 #define STYLE_FULL_NEW (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CLIPSIBLINGS)
 
@@ -321,13 +320,12 @@ namespace Hooks
 		return ReadBlock(addr, value, sizeof(*value));
 	}
 
-	DWORD __fastcall PatchFunction(HMODULE hModule, const CHAR* function, VOID* addr)
+	DWORD __fastcall PatchFunction(MappedFile* file, const CHAR* function, VOID* addr)
 	{
 		DWORD res = NULL;
-		HANDLE hFile = NULL;
-		DWORD baseEx;
-		DWORD base = (DWORD)hModule;
-		PIMAGE_NT_HEADERS headNT = (PIMAGE_NT_HEADERS)(base + ((PIMAGE_DOS_HEADER)hModule)->e_lfanew);
+
+		DWORD base = (DWORD)file->hModule;
+		PIMAGE_NT_HEADERS headNT = (PIMAGE_NT_HEADERS)((BYTE*)base + ((PIMAGE_DOS_HEADER)file->hModule)->e_lfanew);
 
 		PIMAGE_DATA_DIRECTORY dataDir = &headNT->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
 		if (dataDir->Size)
@@ -343,16 +341,47 @@ namespace Hooks
 					nameThunk = (PIMAGE_THUNK_DATA)(base + imports->OriginalFirstThunk);
 				else
 				{
-					if (!hFile)
+					if (!file->hFile)
 					{
 						CHAR filePath[MAX_PATH];
-						GetModuleFileName(hModule, filePath, sizeof(filePath) - 1);
-						hFile = CreateFile(filePath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-						HANDLE hMap = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, 0, NULL);
-						baseEx = (DWORD)MapViewOfFile(hMap, FILE_MAP_READ, 0, 0, 0);
+						GetModuleFileName(file->hModule, filePath, MAX_PATH);
+						file->hFile = CreateFile(filePath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+						if (!file->hFile)
+							return res;
 					}
 
-					nameThunk = (PIMAGE_THUNK_DATA)(baseEx + imports->FirstThunk);
+					if (!file->hMap)
+					{
+						file->hMap = CreateFileMapping(file->hFile, NULL, PAGE_READONLY, 0, 0, NULL);
+						if (!file->hMap)
+							return res;
+					}
+
+					if (!file->address)
+					{
+						file->address = MapViewOfFile(file->hMap, FILE_MAP_READ, 0, 0, 0);;
+						if (!file->address)
+							return res;
+					}
+
+					headNT = (PIMAGE_NT_HEADERS)((BYTE*)file->address + ((PIMAGE_DOS_HEADER)file->address)->e_lfanew);
+					PIMAGE_SECTION_HEADER sh = (PIMAGE_SECTION_HEADER)((DWORD)&headNT->OptionalHeader + headNT->FileHeader.SizeOfOptionalHeader);
+
+					nameThunk = NULL;
+					DWORD sCount = headNT->FileHeader.NumberOfSections;
+					while (sCount--)
+					{
+						if (imports->FirstThunk >= sh->VirtualAddress && imports->FirstThunk < sh->VirtualAddress + sh->Misc.VirtualSize)
+						{
+							nameThunk = PIMAGE_THUNK_DATA((DWORD)file->address + sh->PointerToRawData + imports->FirstThunk - sh->VirtualAddress);
+							break;
+						}
+
+						++sh;
+					}
+
+					if (!nameThunk)
+						return res;
 				}
 
 				for (; nameThunk->u1.AddressOfData; ++nameThunk, ++addressThunk)
@@ -365,14 +394,11 @@ namespace Hooks
 						if (ReadDWord((INT)&addressThunk->u1.AddressOfData - baseOffset, &res))
 							PatchDWord((INT)&addressThunk->u1.AddressOfData - baseOffset, (DWORD)addr);
 
-						goto Exit;
+						return res;
 					}
 				}
 			}
 		}
-
-		if (hFile)
-			Exit: CloseHandle(hFile);
 
 		return res;
 	}
@@ -1008,7 +1034,8 @@ namespace Hooks
 	{
 		hookSpace = addressArray;
 		hModule = GetModuleHandle(NULL);
-		baseOffset = (INT)hModule - BASE_ADDRESS;
+		PIMAGE_NT_HEADERS headNT = (PIMAGE_NT_HEADERS)((BYTE*)hModule + ((PIMAGE_DOS_HEADER)hModule)->e_lfanew);
+		baseOffset = (INT)hModule - (INT)headNT->OptionalHeader.ImageBase;
 
 		AddressSpace* defaultSpace = NULL;
 		AddressSpace* equalSpace = NULL;
@@ -1038,43 +1065,55 @@ namespace Hooks
 			Config::Load(hModule, hookSpace);
 
 			{
-				PatchFunction(hModule, "MessageBoxA", MessageBoxHook);
-				PatchFunction(hModule, "WinHelpA", WinHelpHook);
-
-				PatchFunction(hModule, "LoadMenuA", LoadMenuHook);
-				PatchFunction(hModule, "SetMenu", SetMenuHook);
-				PatchFunction(hModule, "EnableMenuItem", EnableMenuItemHook);
-
-				PatchFunction(hModule, "Sleep", SleepHook);
-				PatchFunction(hModule, "DialogBoxParamA", DialogBoxParamHook);
-				PatchFunction(hModule, "PeekMessageA", PeekMessageHook);
-
-				PatchFunction(hModule, "CreateFileA", CreateFileHook);
-
-				PatchFunction(hModule, "RegCreateKeyA", RegCreateKeyHook);
-				PatchFunction(hModule, "RegOpenKeyExA", RegOpenKeyExHook);
-				PatchFunction(hModule, "RegCloseKey", RegCloseKeyHook);
-				PatchFunction(hModule, "RegQueryValueExA", RegQueryValueExHook);
-				PatchFunction(hModule, "RegSetValueExA", RegSetValueExHook);
-
-				PatchFunction(hModule, "DirectDrawCreate", Main::DirectDrawCreate);
-
-				AIL_waveOutOpen = (AIL_WAVEOUTOPEN)PatchFunction(hModule, "_AIL_waveOutOpen@16", AIL_waveOutOpenHook);
-				AIL_stream_position = (AIL_STREAM_POSITION)PatchFunction(hModule, "_AIL_stream_position@4", AIL_stream_positionHook);
-				AIL_open_stream = (AIL_OPEN_STREAM)PatchFunction(hModule, "_AIL_open_stream@12", AIL_open_streamHook);
-				AIL_set_stream_position = (AIL_SET_STREAM_POSITION)PatchFunction(hModule, "_AIL_set_stream_position@8", AIL_set_stream_positionHook);
-
-				if (!config.isNoGL)
+				MappedFile file = { hModule, NULL, NULL, NULL };
 				{
-					PatchFunction(hModule, "AdjustWindowRect", AdjustWindowRectHook);
-					PatchFunction(hModule, "AdjustWindowRectEx", AdjustWindowRectExHook);
-					PatchFunction(hModule, "CreateWindowExA", CreateWindowExHook);
-					PatchFunction(hModule, "SetWindowLongA", SetWindowLongHook);
+					PatchFunction(&file, "MessageBoxA", MessageBoxHook);
+					PatchFunction(&file, "WinHelpA", WinHelpHook);
 
-					PatchFunction(hModule, "GetDeviceCaps", GetDeviceCapsHook);
-					PatchFunction(hModule, "GetCursorPos", GetCursorPosHook);
-					PatchFunction(hModule, "ScreenToClient", ScreenToClientHook);
+					PatchFunction(&file, "LoadMenuA", LoadMenuHook);
+					PatchFunction(&file, "SetMenu", SetMenuHook);
+					PatchFunction(&file, "EnableMenuItem", EnableMenuItemHook);
+
+					PatchFunction(&file, "Sleep", SleepHook);
+					PatchFunction(&file, "DialogBoxParamA", DialogBoxParamHook);
+					PatchFunction(&file, "PeekMessageA", PeekMessageHook);
+
+					PatchFunction(&file, "CreateFileA", CreateFileHook);
+
+					PatchFunction(&file, "RegCreateKeyA", RegCreateKeyHook);
+					PatchFunction(&file, "RegOpenKeyExA", RegOpenKeyExHook);
+					PatchFunction(&file, "RegCloseKey", RegCloseKeyHook);
+					PatchFunction(&file, "RegQueryValueExA", RegQueryValueExHook);
+					PatchFunction(&file, "RegSetValueExA", RegSetValueExHook);
+
+					PatchFunction(&file, "DirectDrawCreate", Main::DirectDrawCreate);
+
+					AIL_waveOutOpen = (AIL_WAVEOUTOPEN)PatchFunction(&file, "_AIL_waveOutOpen@16", AIL_waveOutOpenHook);
+					AIL_stream_position = (AIL_STREAM_POSITION)PatchFunction(&file, "_AIL_stream_position@4", AIL_stream_positionHook);
+					AIL_open_stream = (AIL_OPEN_STREAM)PatchFunction(&file, "_AIL_open_stream@12", AIL_open_streamHook);
+					AIL_set_stream_position = (AIL_SET_STREAM_POSITION)PatchFunction(&file, "_AIL_set_stream_position@8", AIL_set_stream_positionHook);
+
+					if (!config.isNoGL)
+					{
+						PatchFunction(&file, "AdjustWindowRect", AdjustWindowRectHook);
+						PatchFunction(&file, "AdjustWindowRectEx", AdjustWindowRectExHook);
+						PatchFunction(&file, "CreateWindowExA", CreateWindowExHook);
+						PatchFunction(&file, "SetWindowLongA", SetWindowLongHook);
+
+						PatchFunction(&file, "GetDeviceCaps", GetDeviceCapsHook);
+						PatchFunction(&file, "GetCursorPos", GetCursorPosHook);
+						PatchFunction(&file, "ScreenToClient", ScreenToClientHook);
+					}
 				}
+
+				if (file.address)
+					UnmapViewOfFile(file.address);
+
+				if (file.hMap)
+					CloseHandle(file.hMap);
+
+				if (file.hFile)
+					CloseHandle(file.hFile);
 			}
 
 			if (!config.isNoGL)

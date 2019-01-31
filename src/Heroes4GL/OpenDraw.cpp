@@ -97,7 +97,7 @@ DWORD __stdcall RenderThread(LPVOID lpParameter)
 				HGLRC hRc = WGLCreateContext(ddraw->hDc);
 				if (hRc)
 				{
-					WGLMakeCurrent(ddraw->hDc, hRc);
+					if (WGLMakeCurrent(ddraw->hDc, hRc))
 					{
 						GL::CreateContextAttribs(ddraw->hDc, &hRc);
 						if (glVersion >= GL_VER_3_0)
@@ -119,8 +119,10 @@ DWORD __stdcall RenderThread(LPVOID lpParameter)
 							ddraw->RenderNew();
 						else
 							ddraw->RenderOld();
+
+						WGLMakeCurrent(ddraw->hDc, NULL);
 					}
-					WGLMakeCurrent(ddraw->hDc, NULL);
+					
 					WGLDeleteContext(hRc);
 				}
 			}

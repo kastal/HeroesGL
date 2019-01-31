@@ -97,16 +97,16 @@ namespace Config
 			config.image.xBRz.type = 0;
 			Config::Set(CONFIG_WRAPPER, "ImageXBRZ", *(INT*)&config.image.xBRz);
 
-			config.keys.fpsCounter = 0;
+			config.keys.fpsCounter = 2;
 			Config::Set(CONFIG_KEYS, "FpsCounter", "");
 
-			config.keys.imageFilter = 0;
+			config.keys.imageFilter = 3;
 			Config::Set(CONFIG_KEYS, "ImageFilter", "");
 
 			config.keys.windowedMode = 4;
 			Config::Set(CONFIG_KEYS, "WindowedMode", config.keys.windowedMode);
 
-			config.keys.aspectRatio = 0;
+			config.keys.aspectRatio = 5;
 			Config::Set(CONFIG_KEYS, "AspectRatio", "");
 
 			config.keys.vSync = 0;
@@ -226,10 +226,10 @@ namespace Config
 			config.image.xBRz.value = 2;
 			config.image.xBRz.type = 0;
 
-			config.keys.fpsCounter = 0;
-			config.keys.imageFilter = 0;
+			config.keys.fpsCounter = 2;
+			config.keys.imageFilter = 3;
 			config.keys.windowedMode = 4;
-			config.keys.aspectRatio = 0;
+			config.keys.aspectRatio = 5;
 			config.keys.vSync = 0;
 		}
 	}

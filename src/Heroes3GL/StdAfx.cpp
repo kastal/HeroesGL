@@ -72,8 +72,8 @@ DWORD
 	pDirectDrawEnumerateExA,
 	pDirectDrawEnumerateExW,
 	pDirectDrawEnumerateW,
-	//pDllCanUnloadNow,
-	//pDllGetClassObject,
+	pDllCanUnloadNow,
+	pDllGetClassObject,
 	pGetDDSurfaceLocal,
 	pGetOLEThunkData,
 	pGetSurfaceFromDC,
@@ -81,28 +81,28 @@ DWORD
 	pReleaseDDThreadLock,
 	pSetAppCompatData;
 
-VOID _declspec(naked) __stdcall AcquireDDThreadLock() { _asm { JMP pAcquireDDThreadLock } }
-VOID _declspec(naked) __stdcall CompleteCreateSysmemSurface() { _asm { JMP pCompleteCreateSysmemSurface } }
-VOID _declspec(naked) __stdcall D3DParseUnknownCommand() { _asm { JMP pD3DParseUnknownCommand } }
-VOID _declspec(naked) __stdcall DDGetAttachedSurfaceLcl() { _asm { JMP pDDGetAttachedSurfaceLcl } }
-VOID _declspec(naked) __stdcall DDInternalLock() { _asm { JMP pDDInternalLock } }
-VOID _declspec(naked) __stdcall DDInternalUnlock() { _asm { JMP pDDInternalUnlock } }
-VOID _declspec(naked) __stdcall DSoundHelp() { _asm { JMP pDSoundHelp } }
-VOID _declspec(naked) __stdcall DirectDrawCreate() { _asm { JMP DDCreate } }
-VOID _declspec(naked) __stdcall DirectDrawCreateClipper() { _asm { JMP pDirectDrawCreateClipper } }
-VOID _declspec(naked) __stdcall DirectDrawCreateEx() { _asm { JMP pDirectDrawCreateEx } }
-VOID _declspec(naked) __stdcall DirectDrawEnumerateA() { _asm { JMP pDirectDrawEnumerateA } }
-VOID _declspec(naked) __stdcall DirectDrawEnumerateExA() { _asm { JMP pDirectDrawEnumerateExA } }
-VOID _declspec(naked) __stdcall DirectDrawEnumerateExW() { _asm { JMP pDirectDrawEnumerateExW } }
-VOID _declspec(naked) __stdcall DirectDrawEnumerateW() { _asm { JMP pDirectDrawEnumerateW } }
-//VOID _declspec(naked) __stdcall DllCanUnloadNow() { _asm { JMP pDllCanUnloadNow } }
-//VOID _declspec(naked) __stdcall DllGetClassObject() { _asm { JMP pDllGetClassObject } }
-VOID _declspec(naked) __stdcall GetDDSurfaceLocal() { _asm { JMP pGetDDSurfaceLocal } }
-VOID _declspec(naked) __stdcall GetOLEThunkData() { _asm { JMP pGetOLEThunkData } }
-VOID _declspec(naked) __stdcall GetSurfaceFromDC() { _asm { JMP pGetSurfaceFromDC } }
-VOID _declspec(naked) __stdcall RegisterSpecialCase() { _asm { JMP pRegisterSpecialCase } }
-VOID _declspec(naked) __stdcall ReleaseDDThreadLock() { _asm { JMP pReleaseDDThreadLock } }
-VOID _declspec(naked) __stdcall SetAppCompatData() { _asm { JMP pSetAppCompatData } }
+VOID _declspec(naked) __stdcall exAcquireDDThreadLock() { _asm { JMP pAcquireDDThreadLock } }
+VOID _declspec(naked) __stdcall exCompleteCreateSysmemSurface() { _asm { JMP pCompleteCreateSysmemSurface } }
+VOID _declspec(naked) __stdcall exD3DParseUnknownCommand() { _asm { JMP pD3DParseUnknownCommand } }
+VOID _declspec(naked) __stdcall exDDGetAttachedSurfaceLcl() { _asm { JMP pDDGetAttachedSurfaceLcl } }
+VOID _declspec(naked) __stdcall exDDInternalLock() { _asm { JMP pDDInternalLock } }
+VOID _declspec(naked) __stdcall exDDInternalUnlock() { _asm { JMP pDDInternalUnlock } }
+VOID _declspec(naked) __stdcall exDSoundHelp() { _asm { JMP pDSoundHelp } }
+VOID _declspec(naked) __stdcall exDirectDrawCreate() { _asm { JMP DDCreate } }
+VOID _declspec(naked) __stdcall exDirectDrawCreateClipper() { _asm { JMP pDirectDrawCreateClipper } }
+VOID _declspec(naked) __stdcall exDirectDrawCreateEx() { _asm { JMP pDirectDrawCreateEx } }
+VOID _declspec(naked) __stdcall exDirectDrawEnumerateA() { _asm { JMP pDirectDrawEnumerateA } }
+VOID _declspec(naked) __stdcall exDirectDrawEnumerateExA() { _asm { JMP pDirectDrawEnumerateExA } }
+VOID _declspec(naked) __stdcall exDirectDrawEnumerateExW() { _asm { JMP pDirectDrawEnumerateExW } }
+VOID _declspec(naked) __stdcall exDirectDrawEnumerateW() { _asm { JMP pDirectDrawEnumerateW } }
+VOID _declspec(naked) __stdcall exDllCanUnloadNow() { _asm { JMP pDllCanUnloadNow } }
+VOID _declspec(naked) __stdcall exDllGetClassObject() { _asm { JMP pDllGetClassObject } }
+VOID _declspec(naked) __stdcall exGetDDSurfaceLocal() { _asm { JMP pGetDDSurfaceLocal } }
+VOID _declspec(naked) __stdcall exGetOLEThunkData() { _asm { JMP pGetOLEThunkData } }
+VOID _declspec(naked) __stdcall exGetSurfaceFromDC() { _asm { JMP pGetSurfaceFromDC } }
+VOID _declspec(naked) __stdcall exRegisterSpecialCase() { _asm { JMP pRegisterSpecialCase } }
+VOID _declspec(naked) __stdcall exReleaseDDThreadLock() { _asm { JMP pReleaseDDThreadLock } }
+VOID _declspec(naked) __stdcall exSetAppCompatData() { _asm { JMP pSetAppCompatData } }
 
 double __cdecl round(double number)
 {
@@ -196,8 +196,8 @@ VOID LoadDDraw()
 			pDirectDrawEnumerateExA = (DWORD)GetProcAddress(hLib, "DirectDrawEnumerateExA");
 			pDirectDrawEnumerateExW = (DWORD)GetProcAddress(hLib, "DirectDrawEnumerateExW");
 			pDirectDrawEnumerateW = (DWORD)GetProcAddress(hLib, "DirectDrawEnumerateW");
-			//pDllCanUnloadNow = (DWORD)GetProcAddress(hLib, "DllCanUnloadNow");
-			//pDllGetClassObject = (DWORD)GetProcAddress(hLib, "DllGetClassObject");
+			pDllCanUnloadNow = (DWORD)GetProcAddress(hLib, "DllCanUnloadNow");
+			pDllGetClassObject = (DWORD)GetProcAddress(hLib, "DllGetClassObject");
 			pGetDDSurfaceLocal = (DWORD)GetProcAddress(hLib, "GetDDSurfaceLocal");
 			pGetOLEThunkData = (DWORD)GetProcAddress(hLib, "GetOLEThunkData");
 			pGetSurfaceFromDC = (DWORD)GetProcAddress(hLib, "GetSurfaceFromDC");

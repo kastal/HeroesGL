@@ -59,19 +59,28 @@ SRAND SeedRandom;
 EXIT Exit;
 
 DWORD
+	pWinGBitBlt,
+	pWinGCreateBitmap,
+	pWinGCreateDC,
+	pWinGCreateHalftoneBrush,
+	pWinGCreateHalftonePalette,
+	pWinGGetDIBColorTable,
+	pWinGGetDIBPointer,
 	pWinGRecommendDIBFormat,
 	pWinGSetDIBColorTable,
-	pWinGStretchBlt,
-	pWinGBitBlt,
-	pWinGCreateDC,
-	pWinGCreateBitmap;
+	pWinGStretchBlt;
 
-VOID _declspec(naked) __stdcall WinGRecommendDIBFormat() { _asm { JMP pWinGRecommendDIBFormat } }
-VOID _declspec(naked) __stdcall WinGSetDIBColorTable() { _asm { JMP pWinGSetDIBColorTable } }
-VOID _declspec(naked) __stdcall WinGStretchBlt() { _asm { JMP pWinGStretchBlt } }
-VOID _declspec(naked) __stdcall WinGBitBlt() { _asm { JMP pWinGBitBlt } }
-VOID _declspec(naked) __stdcall WinGCreateDC() { _asm { JMP pWinGCreateDC } }
-VOID _declspec(naked) __stdcall WinGCreateBitmap() { _asm { JMP pWinGCreateBitmap } }
+
+VOID _declspec(naked) __stdcall exWinGBitBlt() { _asm { JMP pWinGBitBlt } }
+VOID _declspec(naked) __stdcall exWinGCreateBitmap() { _asm { JMP pWinGCreateBitmap } }
+VOID _declspec(naked) __stdcall exWinGCreateDC() { _asm { JMP pWinGCreateDC } }
+VOID _declspec(naked) __stdcall exWinGCreateHalftoneBrush() { _asm { JMP pWinGCreateHalftoneBrush } }
+VOID _declspec(naked) __stdcall exWinGCreateHalftonePalette() { _asm { JMP pWinGCreateHalftonePalette } }
+VOID _declspec(naked) __stdcall exWinGGetDIBColorTable() { _asm { JMP pWinGGetDIBColorTable } }
+VOID _declspec(naked) __stdcall exWinGGetDIBPointer() { _asm { JMP pWinGGetDIBPointer } }
+VOID _declspec(naked) __stdcall exWinGRecommendDIBFormat() { _asm { JMP pWinGRecommendDIBFormat } }
+VOID _declspec(naked) __stdcall exWinGSetDIBColorTable() { _asm { JMP pWinGSetDIBColorTable } }
+VOID _declspec(naked) __stdcall exWinGStretchBlt() { _asm { JMP pWinGStretchBlt } }
 
 double __cdecl round(double number)
 {
@@ -152,12 +161,16 @@ VOID LoadWinG32()
 		HMODULE hLib = LoadLibrary(dir);
 		if (hLib)
 		{
+			pWinGBitBlt = (DWORD)GetProcAddress(hLib, "WinGBitBlt");
+			pWinGCreateBitmap = (DWORD)GetProcAddress(hLib, "WinGCreateBitmap");
+			pWinGCreateDC = (DWORD)GetProcAddress(hLib, "WinGCreateDC");
+			pWinGCreateHalftoneBrush = (DWORD)GetProcAddress(hLib, "WinGCreateHalftoneBrush");
+			pWinGCreateHalftonePalette = (DWORD)GetProcAddress(hLib, "WinGCreateHalftonePalette");
+			pWinGGetDIBColorTable = (DWORD)GetProcAddress(hLib, "WinGGetDIBColorTable");
+			pWinGGetDIBPointer = (DWORD)GetProcAddress(hLib, "WinGGetDIBPointer");
 			pWinGRecommendDIBFormat = (DWORD)GetProcAddress(hLib, "WinGRecommendDIBFormat");
 			pWinGSetDIBColorTable = (DWORD)GetProcAddress(hLib, "WinGSetDIBColorTable");
 			pWinGStretchBlt = (DWORD)GetProcAddress(hLib, "WinGStretchBlt");
-			pWinGBitBlt = (DWORD)GetProcAddress(hLib, "WinGBitBlt");
-			pWinGCreateDC = (DWORD)GetProcAddress(hLib, "WinGCreateDC");
-			pWinGCreateBitmap = (DWORD)GetProcAddress(hLib, "WinGCreateBitmap");
 		}
 	}
 }

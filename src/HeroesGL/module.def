@@ -1,9 +1,12 @@
 LIBRARY	"WING32"
 EXPORTS
-	WinGRecommendDIBFormat			= ?WinGRecommendDIBFormat@@YGXXZ
-	WinGSetDIBColorTable			= ?WinGSetDIBColorTable@@YGXXZ
-	WinGStretchBlt					= ?WinGStretchBlt@@YGXXZ
-	WinGBitBlt						= ?WinGBitBlt@@YGXXZ
-	WinGCreateDC					= ?WinGCreateDC@@YGXXZ
-	WinGCreateBitmap				= ?WinGCreateBitmap@@YGXXZ
-	DirectDrawCreate				= ?DirectDrawCreate@Main@@YGJPAU_GUID@@PAPAUIDirectDraw@@PAUIUnknown@@@Z
+	WinGBitBlt						= ?exWinGBitBlt@@YGXXZ						PRIVATE
+	WinGCreateBitmap				= ?exWinGCreateBitmap@@YGXXZ				PRIVATE
+	WinGCreateDC					= ?exWinGCreateDC@@YGXXZ					PRIVATE
+	WinGCreateHalftoneBrush			= ?exWinGCreateHalftoneBrush@@YGXXZ			PRIVATE
+	WinGCreateHalftonePalette		= ?exWinGCreateHalftonePalette@@YGXXZ		PRIVATE     
+	WinGGetDIBColorTable			= ?exWinGGetDIBColorTable@@YGXXZ			PRIVATE         
+	WinGGetDIBPointer				= ?exWinGGetDIBPointer@@YGXXZ				PRIVATE  
+	WinGRecommendDIBFormat			= ?exWinGRecommendDIBFormat@@YGXXZ			PRIVATE
+	WinGSetDIBColorTable			= ?exWinGSetDIBColorTable@@YGXXZ			PRIVATE
+	WinGStretchBlt					= ?exWinGStretchBlt@@YGXXZ					PRIVATE

@@ -239,81 +239,84 @@ namespace OpenWindow
 		case WM_SYSKEYDOWN:
 		case WM_KEYDOWN:
 		{
-			if (config.keys.fpsCounter && config.keys.fpsCounter + VK_F1 - 1 == wParam)
+			if (!(HIWORD(lParam) & KF_ALTDOWN))
 			{
-				switch (fpsState)
+				if (config.keys.fpsCounter && config.keys.fpsCounter + VK_F1 - 1 == wParam)
 				{
-				case FpsNormal:
-					fpsState = FpsBenchmark;
-					break;
-				case FpsBenchmark:
-					fpsState = FpsDisabled;
-					break;
-				default:
-					fpsState = FpsNormal;
-					break;
-				}
+					switch (fpsState)
+					{
+					case FpsNormal:
+						fpsState = FpsBenchmark;
+						break;
+					case FpsBenchmark:
+						fpsState = FpsDisabled;
+						break;
+					default:
+						fpsState = FpsNormal;
+						break;
+					}
 
-				isFpsChanged = TRUE;
-				OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
-				if (ddraw)
-					SetEvent(ddraw->hDrawEvent);
-				return NULL;
-			}
-			else if (config.keys.imageFilter && config.keys.imageFilter + VK_F1 - 1 == wParam)
-			{
-				switch (config.image.filter)
+					isFpsChanged = TRUE;
+					OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
+					if (ddraw)
+						SetEvent(ddraw->hDrawEvent);
+					return NULL;
+				}
+				else if (config.keys.imageFilter && config.keys.imageFilter + VK_F1 - 1 == wParam)
 				{
-				case FilterNearest:
-					config.image.filter = FilterLinear;
-					break;
+					switch (config.image.filter)
+					{
+					case FilterNearest:
+						config.image.filter = FilterLinear;
+						break;
 
-				case FilterLinear:
-					config.image.filter = glVersion >= GL_VER_3_0 ? FilterCubic : FilterNearest;
-					break;
+					case FilterLinear:
+						config.image.filter = glVersion >= GL_VER_3_0 ? FilterCubic : FilterNearest;
+						break;
 
-				default:
-					config.image.filter = FilterNearest;
-					break;
+					default:
+						config.image.filter = FilterNearest;
+						break;
+					}
+
+					FilterChanged(hWnd);
+
+					return NULL;
 				}
-
-				FilterChanged(hWnd);
-
-				return NULL;
-			}
-			else if (config.keys.aspectRatio && config.keys.aspectRatio + VK_F1 - 1 == wParam)
-			{
-				config.image.aspect = !config.image.aspect;
-				Config::Set(CONFIG_WRAPPER, "ImageAspect", config.image.aspect);
-				Window::CheckMenu(hWnd);
-
-				OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
-				if (ddraw)
+				else if (config.keys.aspectRatio && config.keys.aspectRatio + VK_F1 - 1 == wParam)
 				{
-					ddraw->viewport.refresh = TRUE;
-					SetEvent(ddraw->hDrawEvent);
+					config.image.aspect = !config.image.aspect;
+					Config::Set(CONFIG_WRAPPER, "ImageAspect", config.image.aspect);
+					Window::CheckMenu(hWnd);
+
+					OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
+					if (ddraw)
+					{
+						ddraw->viewport.refresh = TRUE;
+						SetEvent(ddraw->hDrawEvent);
+					}
+
+					return NULL;
 				}
+				else if (config.keys.vSync && config.keys.vSync + VK_F1 - 1 == wParam)
+				{
+					config.image.vSync = !config.image.vSync;
+					Config::Set(CONFIG_WRAPPER, "ImageVSync", config.image.vSync);
+					Window::CheckMenu(hWnd);
 
-				return NULL;
+					OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
+					if (ddraw)
+						SetEvent(ddraw->hDrawEvent);
+
+					return NULL;
+				}
+				else if (config.keys.windowedMode && config.keys.windowedMode + VK_F1 - 1 == wParam)
+					return CallWindowProc(Window::OldWindowProc, hWnd, WM_COMMAND, IDM_RES_FULL_SCREEN, NULL);
+				else if (wParam == VK_F4)
+					return NULL;
 			}
-			else if (config.keys.vSync && config.keys.vSync + VK_F1 - 1 == wParam)
-			{
-				config.image.vSync = !config.image.vSync;
-				Config::Set(CONFIG_WRAPPER, "ImageVSync", config.image.vSync);
-				Window::CheckMenu(hWnd);
 
-				OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
-				if (ddraw)
-					SetEvent(ddraw->hDrawEvent);
-
-				return NULL;
-			}
-			else if (config.keys.windowedMode && config.keys.windowedMode + VK_F1 - 1 == wParam)
-				return CallWindowProc(Window::OldWindowProc, hWnd, WM_COMMAND, IDM_RES_FULL_SCREEN, NULL);
-			else if (wParam == VK_F4)
-				return NULL;
-			else
-				return CallWindowProc(Window::OldWindowProc, hWnd, uMsg, wParam, lParam);
+			return CallWindowProc(Window::OldWindowProc, hWnd, uMsg, wParam, lParam);
 		}
 
 		case WM_LBUTTONDOWN:

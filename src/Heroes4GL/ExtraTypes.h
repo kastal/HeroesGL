@@ -170,3 +170,11 @@ struct ConfigItems
 	BOOL isExist;
 	CHAR file[MAX_PATH];
 };
+
+struct MappedFile
+{
+	HMODULE hModule;
+	HANDLE hFile;
+	HANDLE hMap;
+	VOID* address;
+};
