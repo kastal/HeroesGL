@@ -97,7 +97,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
 FONT 8, "System", 0, 0, 0x1
 BEGIN
     CTEXT           "Герои Меча и Магии III\nOpenGL враппер",1002,0,6,162,18
-    CTEXT           "Версия 1.23   Сборка 182",IDC_STATIC,0,30,162,8
+    CTEXT           "Версия 1.24   Сборка 184",IDC_STATIC,0,30,162,8
     CTEXT           "Copyright © 2019 Verok",1006,0,48,162,8
 	DEFPUSHBUTTON   "OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
 	CONTROL         "verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
@@ -209,7 +209,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
 FONT 8, "System", 0, 0, 0x1
 BEGIN
     CTEXT           "Heroes of Might and Magic III\nOpenGL Wrapper",1002,0,6,162,18
-    CTEXT           "Version 1.23   Build 182",IDC_STATIC,0,30,162,8
+    CTEXT           "Version 1.24   Build 184",IDC_STATIC,0,30,162,8
     CTEXT           "Copyright © 2019 Verok",1006,0,48,162,8
 	DEFPUSHBUTTON   "OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
 	CONTROL         "verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
@@ -227,7 +227,7 @@ IDR_STENCIL_FRAGMENT		RCDATA                  "..\\glsl\\stencil\\fragment.glsl"
 IDR_LINEAR_VERTEX			RCDATA                  "..\\glsl\\linear\\vertex.glsl"
 IDR_LINEAR_FRAGMENT			RCDATA                  "..\\glsl\\linear\\fragment.glsl"
 
-//IDR_CUBIC_VERTEX			RCDATA                  "..\\glsl\\cubic\\vertex.glsl"
+IDR_CUBIC_VERTEX			RCDATA                  "..\\glsl\\cubic\\vertex.glsl"
 IDR_CUBIC_FRAGMENT			RCDATA                  "..\\glsl\\cubic\\fragment.glsl"
 
 //IDR_XSAL_VERTEX			RCDATA                  "..\\glsl\\xsal\\vertex.glsl"
@@ -259,8 +259,8 @@ IDR_SCALENX_FRAGMENT_3X		RCDATA                  "..\\glsl\\scalenx\\fragment_3x
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2019,1,31,182
- PRODUCTVERSION 1,2,3,0
+ FILEVERSION 2019,2,2,184
+ PRODUCTVERSION 1,2,4,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS VS_FF_DEBUG
@@ -276,10 +276,10 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "HoMM III - OpenGL wrapper"
-            VALUE "FileVersion", "2019.01.31.182"
+            VALUE "FileVersion", "2019.02.02.184"
             VALUE "LegalCopyright", "© 2019 Verok (verokster@gmail.com)"
             VALUE "OriginalFilename", "ddraw.dll"
-            VALUE "ProductVersion", "1.2.3"
+            VALUE "ProductVersion", "1.2.4"
             VALUE "ProductName", "Heroes3GL"
         END
     END

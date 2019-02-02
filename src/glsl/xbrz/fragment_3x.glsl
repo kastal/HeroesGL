@@ -5,7 +5,7 @@
 
 	MIT License
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+	Copyright (c) 2019 Oleksiy Ryabchun
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@
 precision mediump float;
 
 uniform sampler2D tex01;
+uniform vec2 texSize;
 
 in vec4 t1;
 in vec4 t2;
@@ -233,7 +234,7 @@ void main()
 		dst[2] = mix(dst[2], blendPix, (needBlend && doLineBlend && haveSteepLine) ? 0.250 : 0.000);
 	}
 	
-	vec2 f = fract(fTexCoord * textureSize(tex01, 0));
+	vec2 f = fract(fTexCoord);
 	vec3 res = mix( mix( dst[6], mix(dst[7], dst[8], step(two_third, f.x)), step(one_third, f.x)),
 						mix( mix( dst[5], mix(dst[0], dst[1], step(two_third, f.x)), step(one_third, f.x)),
 							 mix( dst[4], mix(dst[3], dst[2], step(two_third, f.x)), step(one_third, f.x)), step(two_third, f.y)),

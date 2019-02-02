@@ -33,7 +33,7 @@
 #include "OpenWindow.h"
 #include "Hooks.h"
 
-VOID __fastcall UseShaderProgram(ShaderProgram* program)
+VOID __fastcall UseShaderProgram(ShaderProgram* program, DWORD texSize)
 {
 	if (!program->id)
 	{
@@ -56,9 +56,25 @@ VOID __fastcall UseShaderProgram(ShaderProgram* program)
 		GLUseProgram(program->id);
 		GLUniformMatrix4fv(GLGetUniformLocation(program->id, "mvp"), 1, GL_FALSE, program->mvp);
 		GLUniform1i(GLGetUniformLocation(program->id, "tex01"), 0);
+
+		program->texSize.location = GLGetUniformLocation(program->id, "texSize");
+		if (program->texSize.location >= 0)
+		{
+			program->texSize.value = texSize;
+			GLUniform2f(program->texSize.location, (FLOAT)LOWORD(texSize), (FLOAT)HIWORD(texSize));
+		}
 	}
 	else
+	{
 		GLUseProgram(program->id);
+
+		if (program->texSize.location >= 0 && program->texSize.value != texSize)
+		{
+			program->texSize.value = texSize;
+			FLOAT val = (FLOAT)texSize;
+			GLUniform2f(program->texSize.location, (FLOAT)LOWORD(texSize), (FLOAT)HIWORD(texSize));
+		}
+	}
 }
 
 DWORD __stdcall RenderThread(LPVOID lpParameter)
@@ -621,7 +637,7 @@ VOID OpenDraw::RenderOld()
 
 							if (fpsState && frame == frames)
 							{
-								DWORD fps = fpsCounter->GetValue();
+								DWORD fps = fpsCounter->value;
 								DWORD digCount = 0;
 								DWORD current = fps;
 								do
@@ -972,6 +988,8 @@ VOID OpenDraw::RenderNew()
 	FLOAT texWidth = this->mode.width == maxTexSize ? 1.0f : (FLOAT)this->mode.width / maxTexSize;
 	FLOAT texHeight = this->mode.height == maxTexSize ? 1.0f : (FLOAT)this->mode.height / maxTexSize;
 
+	DWORD texSize = (maxTexSize & 0xFFFF) | (maxTexSize << 16);
+
 	FLOAT buffer[8][4] = {
 		{ 0.0f, 0.0f, 0.0f, 0.0f },
 		{ (FLOAT)this->mode.width, 0.0f, texWidth, 0.0f },
@@ -1042,7 +1060,7 @@ VOID OpenDraw::RenderNew()
 					{
 						GLBufferData(GL_ARRAY_BUFFER, sizeof(buffer), buffer, GL_STATIC_DRAW);
 
-						UseShaderProgram(filterProgram);
+						UseShaderProgram(filterProgram, texSize);
 						GLint attrLoc = GLGetAttribLocation(filterProgram->id, "vCoord");
 						GLEnableVertexAttribArray(attrLoc);
 						GLVertexAttribPointer(attrLoc, 2, GL_FLOAT, GL_FALSE, 16, (GLvoid*)0);
@@ -1218,12 +1236,11 @@ VOID OpenDraw::RenderNew()
 																filterProgram = &shaders.eagle_2x;
 																filterProgram2 = config.image.eagle.type ? &shaders.cubic : &shaders.linear;
 																break;
-
 															}
 
-															UseShaderProgram(filterProgram);
+															UseShaderProgram(filterProgram, texSize);
 
-															DWORD newSize = (this->mode.width * scaleValue) | ((this->mode.height * scaleValue) << 16);
+															DWORD newSize = ((this->mode.width * scaleValue) & 0xFFFF) | ((this->mode.height * scaleValue) << 16);
 															if (newSize != viewSize)
 															{
 																if (!viewSize)
@@ -1275,7 +1292,7 @@ VOID OpenDraw::RenderNew()
 																		point->x = (FLOAT)(FPS_X);  point->y = (FLOAT)(FPS_Y + FPS_HEIGHT);
 																	}
 
-																	UseShaderProgram(&shaders.stencil);
+																	UseShaderProgram(&shaders.stencil, 0);
 																	{
 																		GLGenVertexArrays(1, &stArrayName);
 																		GLBindVertexArray(stArrayName);
@@ -1292,7 +1309,7 @@ VOID OpenDraw::RenderNew()
 																		GLBindVertexArray(arrayName);
 																		GLBindBuffer(GL_ARRAY_BUFFER, bufferName);
 																	}
-																	UseShaderProgram(filterProgram);
+																	UseShaderProgram(filterProgram, texSize);
 																}
 															}
 														}
@@ -1340,7 +1357,7 @@ VOID OpenDraw::RenderNew()
 															GLEnable(GL_STENCIL_TEST);
 															GLClear(GL_STENCIL_BUFFER_BIT);
 
-															UseShaderProgram(&shaders.stencil);
+															UseShaderProgram(&shaders.stencil, 0);
 															{
 																GLColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 																GLStencilFunc(GL_ALWAYS, 0x01, 0x01);
@@ -1391,7 +1408,7 @@ VOID OpenDraw::RenderNew()
 																GLStencilFunc(GL_EQUAL, 0x01, 0x01);
 																GLStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 															}
-															UseShaderProgram(filterProgram);
+															UseShaderProgram(filterProgram, texSize);
 														}
 
 														GLBindTexture(GL_TEXTURE_2D, textureId);
@@ -1423,7 +1440,7 @@ VOID OpenDraw::RenderNew()
 															this->isStateChanged = FALSE;
 
 															filterProgram = frameFilter == FilterCubic ? &shaders.cubic : &shaders.linear;
-															UseShaderProgram(filterProgram);
+															UseShaderProgram(filterProgram, texSize);
 
 															if (viewSize)
 															{
@@ -1539,7 +1556,7 @@ VOID OpenDraw::RenderNew()
 														// Update FPS
 														if (fpsState && !isTakeSnapshot)
 														{
-															DWORD fps = fpsCounter->GetValue();
+															DWORD fps = fpsCounter->value;
 															DWORD digCount = 0;
 															DWORD current = fps;
 															do
@@ -1689,7 +1706,7 @@ VOID OpenDraw::RenderNew()
 														//GLFinish();
 														GLBindFramebuffer(GL_DRAW_FRAMEBUFFER, NULL);
 
-														UseShaderProgram(filterProgram2);
+														UseShaderProgram(filterProgram2, viewSize);
 														{
 															GLViewport(this->viewport.rectangle.x, this->viewport.rectangle.y, this->viewport.rectangle.width, this->viewport.rectangle.height);
 
@@ -1740,7 +1757,7 @@ VOID OpenDraw::RenderNew()
 																}
 															}
 														}
-														UseShaderProgram(filterProgram);
+														UseShaderProgram(filterProgram, texSize);
 													}
 													else
 													{

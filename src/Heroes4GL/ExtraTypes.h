@@ -115,6 +115,10 @@ struct ShaderProgram
 	DWORD vertexName;
 	DWORD fragmentName;
 	GLfloat* mvp;
+	struct {
+		GLint location;
+		DWORD value;
+	} texSize;
 };
 
 struct AddressSpace

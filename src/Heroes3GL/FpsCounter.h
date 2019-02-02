@@ -39,7 +39,6 @@ extern BOOL isFpsChanged;
 
 extern const bool counters[10][FPS_HEIGHT][FPS_WIDTH];
 
-
 struct FrameItem
 {
 	DWORD tick;
@@ -56,13 +55,13 @@ private:
 	DWORD summary;
 	DWORD lastTick;
 	FrameItem* tickQueue;
-	FLOAT value;
 
 public:
+	DWORD value;
+
 	FpsCounter(DWORD accuracy);
 	~FpsCounter();
 
 	VOID Reset();
 	VOID Calculate();
-	DWORD GetValue();
 };

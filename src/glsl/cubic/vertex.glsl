@@ -5,7 +5,7 @@
 
 	MIT License
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+	Copyright (c) 2019 Oleksiy Ryabchun
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@
 precision mediump float;
 
 uniform mat4 mvp;
+uniform vec2 texSize;
 
 in vec2 vCoord;
 in vec2 vTexCoord;
@@ -38,5 +39,5 @@ out vec2 fTexCoord;
 
 void main() {
 	gl_Position = mvp * vec4(vCoord, 0.0, 1.0);
-	fTexCoord = vTexCoord;
+	fTexCoord = vTexCoord * texSize - 0.5;
 }

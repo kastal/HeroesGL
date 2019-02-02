@@ -16,7 +16,7 @@
 #define IDR_LINEAR_VERTEX               32
 #define IDR_LINEAR_FRAGMENT             33
 
-#define IDR_CUBIC_VERTEX				IDR_LINEAR_VERTEX
+#define IDR_CUBIC_VERTEX				34
 #define IDR_CUBIC_FRAGMENT				35
 
 #define IDR_XBRZ_VERTEX                 40

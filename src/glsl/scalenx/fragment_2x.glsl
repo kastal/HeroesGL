@@ -5,7 +5,7 @@
 
 	MIT License
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+	Copyright (c) 2019 Oleksiy Ryabchun
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@
 precision mediump float;
 
 uniform sampler2D tex01;
+uniform vec2 texSize;
 
 in vec4 t1;
 in vec4 t2;
@@ -58,6 +59,6 @@ void main()
 	vec3 E2 = eq(H,D) ? H : E;
 	vec3 E3 = eq(H,F) ? H : E;
 
-	vec2 fp = floor(2.0 * fract(fTexCoord * textureSize(tex01, 0)));
+	vec2 fp = floor(2.0 * fract(fTexCoord * texSize));
 	fragColor = vec4(neq(B,H) && neq(D,F) ? (fp.y == 0. ? (fp.x == 0. ? E0 : E1) : (fp.x == 0. ? E2 : E3)) : E, 1.0);
 }

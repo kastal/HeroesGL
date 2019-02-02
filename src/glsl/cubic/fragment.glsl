@@ -5,7 +5,7 @@
 
 	MIT License
 
-	Copyright (c) 2018 Oleksiy Ryabchun
+	Copyright (c) 2019 Oleksiy Ryabchun
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@
 precision mediump float;
 
 uniform sampler2D tex01;
+uniform vec2 texSize;
 
 in vec2 fTexCoord;
 
@@ -54,41 +55,38 @@ void weights(out vec4 x, out vec4 y, vec2 t)
 
 void main()
 {
-	vec2 inSize = textureSize(tex01, 0);
-	vec2 uv = fTexCoord * inSize - 0.5;
-	vec2 texel = floor(uv);
-	vec2 tex = (texel + 0.5) / inSize;
-	vec2 phase = uv - texel;
-
-	#define TEX(x, y) textureLodOffset(tex01, tex, 0.0, ivec2(x, y)).rgb
+	vec2 texel = floor(fTexCoord);
+	
+	#define TEX(x, y) texture(tex01, (texel + 0.5 + vec2(x, y)) / texSize).rgb
 
 	vec4 x;
 	vec4 y;
+	vec2 phase = fTexCoord - texel;
 	weights(x, y, phase);
 
 	vec4 row = x * y.x;
 	vec3 color = TEX(-1, -1) * row.x;
-	color += TEX(+0, -1) * row.y;
-	color += TEX(+1, -1) * row.z;
-	color += TEX(+2, -1) * row.w;
+	color += TEX(+0.0, -1.0) * row.y;
+	color += TEX(+1.0, -1.0) * row.z;
+	color += TEX(+2.0, -1.0) * row.w;
 
 	row = x * y.y;
-	color += TEX(-1, +0) * row.x;
-	color += TEX(+0, +0) * row.y;
-	color += TEX(+1, +0) * row.z;
-	color += TEX(+2, +0) * row.w;
+	color += TEX(-1.0, +0.0) * row.x;
+	color += TEX(+0.0, +0.0) * row.y;
+	color += TEX(+1.0, +0.0) * row.z;
+	color += TEX(+2.0, +0.0) * row.w;
 
 	row = x * y.z;
-	color += TEX(-1, +1) * row.x;
-	color += TEX(+0, +1) * row.y;
-	color += TEX(+1, +1) * row.z;
-	color += TEX(+2, +1) * row.w;
+	color += TEX(-1.0, +1.0) * row.x;
+	color += TEX(+0.0, +1.0) * row.y;
+	color += TEX(+1.0, +1.0) * row.z;
+	color += TEX(+2.0, +1.0) * row.w;
 
 	row = x * y.w;
-	color += TEX(-1, +2) * row.x;
-	color += TEX(+0, +2) * row.y;
-	color += TEX(+1, +2) * row.z;
-	color += TEX(+2, +2) * row.w;
+	color += TEX(-1.0, +2.0) * row.x;
+	color += TEX(+0.0, +2.0) * row.y;
+	color += TEX(+1.0, +2.0) * row.z;
+	color += TEX(+2.0, +2.0) * row.w;
 
 	fragColor = vec4(color, 1.0);
 } 
