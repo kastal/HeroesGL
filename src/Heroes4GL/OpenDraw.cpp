@@ -519,26 +519,23 @@ VOID OpenDraw::RenderOld()
 									DWORD dcount = digCount;
 									do
 									{
-										bool* lpDig = (bool*)counters + FPS_WIDTH * FPS_HEIGHT * (fps % 10);
+										WORD* lpDig = (WORD*)counters[fps % 10];
 
 										for (DWORD y = 0; y < FPS_HEIGHT; ++y)
 										{
 											WORD* idx = surface->indexBuffer + (FPS_Y + y) * this->mode->width +
-												FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+												FPS_X + FPS_WIDTH * (dcount - 1);
 
-											WORD* pix = (WORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-												(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+											WORD* pix = (WORD*)frameBuffer + y * FPS_WIDTH * 4 +
+												FPS_WIDTH * (dcount - 1);
 
-											DWORD width = FPS_STEP;
-											do
-												*pix++ = *idx++;
-											while (--width);
-
-											width = FPS_WIDTH;
+											WORD check = *lpDig++;
+											DWORD width = FPS_WIDTH;
 											do
 											{
-												*pix++ = *lpDig++ ? fpsColor : *idx;
+												*pix++ = (check & 1) ? fpsColor : *idx;
 												++idx;
+												check >>= 1;
 											} while (--width);
 										}
 
@@ -551,12 +548,12 @@ VOID OpenDraw::RenderOld()
 										for (DWORD y = 0; y < FPS_HEIGHT; ++y)
 										{
 											WORD* idx = surface->indexBuffer + (FPS_Y + y) * this->mode->width +
-												FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+												FPS_X + FPS_WIDTH * (dcount - 1);
 
-											WORD* pix = (WORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-												(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+											WORD* pix = (WORD*)frameBuffer + y * FPS_WIDTH * 4 +
+												FPS_WIDTH * (dcount - 1);
 
-											DWORD width = FPS_STEP + FPS_WIDTH;
+											DWORD width = FPS_WIDTH;
 											do
 												*pix++ = *idx++;
 											while (--width);
@@ -565,7 +562,7 @@ VOID OpenDraw::RenderOld()
 										--dcount;
 									}
 
-									GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_STEP + FPS_WIDTH) * 4, FPS_HEIGHT, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, frameBuffer);
+									GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, FPS_WIDTH * 4, FPS_HEIGHT, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, frameBuffer);
 								}
 								else
 								{
@@ -573,27 +570,21 @@ VOID OpenDraw::RenderOld()
 									DWORD dcount = digCount;
 									do
 									{
-										bool* lpDig = (bool*)counters + FPS_WIDTH * FPS_HEIGHT * (fps % 10);
+										WORD* lpDig = (WORD*)counters[fps % 10];
 
 										for (DWORD y = 0; y < FPS_HEIGHT; ++y)
 										{
 											WORD* idx = surface->indexBuffer + (FPS_Y + y) * this->mode->width +
-												FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+												FPS_X + FPS_WIDTH * (dcount - 1);
 
-											DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-												(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+											DWORD* pix = (DWORD*)frameBuffer + y * FPS_WIDTH * 4 +
+												FPS_WIDTH * (dcount - 1);
 
-											DWORD width = FPS_STEP;
+											WORD check = *lpDig++;
+											DWORD width = FPS_WIDTH;
 											do
 											{
-												WORD px = *idx++;
-												*pix++ = ((px & 0xF800) >> 8) | ((px & 0x07E0) << 5) | ((px & 0x001F) << 19);
-											} while (--width);
-
-											width = FPS_WIDTH;
-											do
-											{
-												if (*lpDig++)
+												if (check & 1)
 													*pix = fpsColor;
 												else
 												{
@@ -603,6 +594,7 @@ VOID OpenDraw::RenderOld()
 
 												++pix;
 												++idx;
+												check >>= 1;
 											} while (--width);
 										}
 
@@ -615,12 +607,12 @@ VOID OpenDraw::RenderOld()
 										for (DWORD y = 0; y < FPS_HEIGHT; ++y)
 										{
 											WORD* idx = surface->indexBuffer + (FPS_Y + y) * this->mode->width +
-												FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+												FPS_X + FPS_WIDTH * (dcount - 1);
 
-											DWORD* pix = (DWORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-												(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+											DWORD* pix = (DWORD*)frameBuffer + y * FPS_WIDTH * 4 +
+												FPS_WIDTH * (dcount - 1);
 
-											DWORD width = FPS_STEP + FPS_WIDTH;
+											DWORD width = FPS_WIDTH;
 											do
 											{
 												WORD px = *idx++;
@@ -631,7 +623,7 @@ VOID OpenDraw::RenderOld()
 										--dcount;
 									}
 
-									GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_STEP + FPS_WIDTH) * 4, FPS_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
+									GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, FPS_WIDTH * 4, FPS_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
 								}
 							}
 
@@ -1008,14 +1000,14 @@ VOID OpenDraw::RenderNew()
 
 																		point->x = (FLOAT)(FPS_X);  point->y = (FLOAT)(FPS_Y);
 																		++point;
-																		point->x = (FLOAT)(FPS_X + (FPS_STEP + FPS_WIDTH) * 4);  point->y = (FLOAT)(FPS_Y);
+																		point->x = (FLOAT)(FPS_X + FPS_WIDTH * 4);  point->y = (FLOAT)(FPS_Y);
 																		++point;
-																		point->x = (FLOAT)(FPS_X + (FPS_STEP + FPS_WIDTH) * 4);  point->y = (FLOAT)(FPS_Y + FPS_HEIGHT);
+																		point->x = (FLOAT)(FPS_X + FPS_WIDTH * 4);  point->y = (FLOAT)(FPS_Y + FPS_HEIGHT);
 																		++point;
 
 																		point->x = (FLOAT)(FPS_X);  point->y = (FLOAT)(FPS_Y);
 																		++point;
-																		point->x = (FLOAT)(FPS_X + (FPS_STEP + FPS_WIDTH) * 4);  point->y = (FLOAT)(FPS_Y + FPS_HEIGHT);
+																		point->x = (FLOAT)(FPS_X + FPS_WIDTH * 4);  point->y = (FLOAT)(FPS_Y + FPS_HEIGHT);
 																		++point;
 																		point->x = (FLOAT)(FPS_X);  point->y = (FLOAT)(FPS_Y + FPS_HEIGHT);
 																	}
@@ -1252,26 +1244,23 @@ VOID OpenDraw::RenderNew()
 															DWORD dcount = digCount;
 															do
 															{
-																bool* lpDig = (bool*)counters + FPS_WIDTH * FPS_HEIGHT * (fps % 10);
+																WORD* lpDig = (WORD*)counters[fps % 10];
 
 																for (DWORD y = 0; y < FPS_HEIGHT; ++y)
 																{
 																	WORD* idx = surface->indexBuffer + (FPS_Y + y) * this->mode->width +
-																		FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+																		FPS_X + FPS_WIDTH * (dcount - 1);
 
-																	WORD* pix = (WORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-																		(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+																	WORD* pix = (WORD*)frameBuffer + y * FPS_WIDTH * 4 +
+																		FPS_WIDTH * (dcount - 1);
 
-																	DWORD width = FPS_STEP;
-																	do
-																		*pix++ = *idx++;
-																	while (--width);
-
-																	width = FPS_WIDTH;
+																	WORD check = *lpDig++;
+																	DWORD width = FPS_WIDTH;
 																	do
 																	{
-																		*pix++ = *lpDig++ ? fpsColor : *idx;
+																		*pix++ = (check & 1) ? fpsColor : *idx;
 																		++idx;
+																		check >>= 1;
 																	} while (--width);
 																}
 
@@ -1284,12 +1273,12 @@ VOID OpenDraw::RenderNew()
 																for (DWORD y = 0; y < FPS_HEIGHT; ++y)
 																{
 																	WORD* idx = surface->indexBuffer + (FPS_Y + y) * this->mode->width +
-																		FPS_X + (FPS_STEP + FPS_WIDTH) * (dcount - 1);
+																		FPS_X + FPS_WIDTH * (dcount - 1);
 
-																	WORD* pix = (WORD*)frameBuffer + y * (FPS_STEP + FPS_WIDTH) * 4 +
-																		(FPS_STEP + FPS_WIDTH) * (dcount - 1);
+																	WORD* pix = (WORD*)frameBuffer + y * FPS_WIDTH * 4 +
+																		FPS_WIDTH * (dcount - 1);
 
-																	DWORD width = FPS_STEP + FPS_WIDTH;
+																	DWORD width = FPS_WIDTH;
 																	do
 																		*pix++ = *idx++;
 																	while (--width);
@@ -1298,7 +1287,7 @@ VOID OpenDraw::RenderNew()
 																--dcount;
 															}
 
-															GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, (FPS_STEP + FPS_WIDTH) * 4, FPS_HEIGHT, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, frameBuffer);
+															GLTexSubImage2D(GL_TEXTURE_2D, 0, FPS_X, FPS_Y, FPS_WIDTH * 4, FPS_HEIGHT, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, frameBuffer);
 														}
 
 														// Draw into FBO texture

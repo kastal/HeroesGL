@@ -74,7 +74,7 @@ namespace Config
 			config.image.vSync = TRUE;
 			Config::Set(CONFIG_WRAPPER, "ImageVSync", config.image.vSync);
 
-			config.image.filter = FilterNearest;
+			config.image.filter = FilterLinear;
 			Config::Set(CONFIG_WRAPPER, "ImageFilter", *(INT*)&config.image.filter);
 
 			config.image.scaleNx.value = 2;
@@ -98,16 +98,16 @@ namespace Config
 			Config::Set(CONFIG_WRAPPER, "ImageXBRZ", *(INT*)&config.image.xBRz);
 
 			config.keys.fpsCounter = 2;
-			Config::Set(CONFIG_KEYS, "FpsCounter", "");
+			Config::Set(CONFIG_KEYS, "FpsCounter", config.keys.fpsCounter);
 
 			config.keys.imageFilter = 3;
-			Config::Set(CONFIG_KEYS, "ImageFilter", "");
+			Config::Set(CONFIG_KEYS, "ImageFilter", config.keys.imageFilter);
 
 			config.keys.windowedMode = 4;
 			Config::Set(CONFIG_KEYS, "WindowedMode", config.keys.windowedMode);
 
 			config.keys.aspectRatio = 5;
-			Config::Set(CONFIG_KEYS, "AspectRatio", "");
+			Config::Set(CONFIG_KEYS, "AspectRatio", config.keys.aspectRatio);
 
 			config.keys.vSync = 0;
 			Config::Set(CONFIG_KEYS, "VSync", "");
@@ -122,10 +122,10 @@ namespace Config
 				config.image.aspect = (BOOL)Config::Get(CONFIG_WRAPPER, "ImageAspect", TRUE);
 				config.image.vSync = (BOOL)Config::Get(CONFIG_WRAPPER, "ImageVSync", TRUE);
 
-				INT value = Config::Get(CONFIG_WRAPPER, "ImageFilter", FilterNearest);
+				INT value = Config::Get(CONFIG_WRAPPER, "ImageFilter", FilterLinear);
 				config.image.filter = *(ImageFilter*)&value;
 				if (config.image.filter < FilterNearest || config.image.filter > FilterScaleNx)
-					config.image.filter = FilterNearest;
+					config.image.filter = FilterLinear;
 
 				value = Config::Get(CONFIG_WRAPPER, "ImageScaleNx", 2);
 				config.image.scaleNx = *(FilterType*)&value;
@@ -209,7 +209,7 @@ namespace Config
 		{
 			config.image.aspect = FALSE;
 			config.image.vSync = FALSE;
-			config.image.filter = FilterNearest;
+			config.image.filter = FilterLinear;
 
 			config.image.scaleNx.value = 2;
 			config.image.scaleNx.type = 0;
