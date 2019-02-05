@@ -99,7 +99,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
 FONT 8, "System", 0, 0, 0x1
 BEGIN
     CTEXT           "Герои Меча и Магии IV\nOpenGL враппер",1002,0,6,162,18
-    CTEXT           "Версия 1.19   Сборка 178",IDC_STATIC,0,30,162,8
+    CTEXT           "Версия 1.20   Сборка 180",IDC_STATIC,0,30,162,8
     CTEXT           "Copyright © 2019 Verok",1006,0,48,162,8
 	DEFPUSHBUTTON   "OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
 	CONTROL         "verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
@@ -258,7 +258,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
 FONT 8, "System", 0, 0, 0x1
 BEGIN
     CTEXT           "Heroes of Might and Magic IV\nOpenGL Wrapper",1002,0,6,162,18
-    CTEXT           "Version 1.19   Build 178",IDC_STATIC,0,30,162,8
+    CTEXT           "Version 1.20   Build 180",IDC_STATIC,0,30,162,8
     CTEXT           "Copyright © 2019 Verok",1006,0,48,162,8
 	DEFPUSHBUTTON   "OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
 	CONTROL         "verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
@@ -448,8 +448,8 @@ IDR_SCALENX_FRAGMENT_3X		RCDATA                  "..\\glsl\\scalenx\\fragment_3x
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2019,2,4,178
- PRODUCTVERSION 1,1,9,0
+ FILEVERSION 2019,2,5,180
+ PRODUCTVERSION 1,2,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS VS_FF_DEBUG
@@ -465,10 +465,10 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "HoMM IV - OpenGL wrapper"
-            VALUE "FileVersion", "2019.02.04.178"
+            VALUE "FileVersion", "2019.02.05.180"
             VALUE "LegalCopyright", "© 2019 Verok (verokster@gmail.com)"
             VALUE "OriginalFilename", "ddraw.dll"
-            VALUE "ProductVersion", "1.1.9"
+            VALUE "ProductVersion", "1.2.0"
             VALUE "ProductName", "Heroes4GL"
         END
     END

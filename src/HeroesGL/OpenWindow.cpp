@@ -83,7 +83,7 @@ namespace OpenWindow
 
 		Config::Set(CONFIG_WRAPPER, "ImageScaleNx", *(INT*)&config.image.scaleNx);
 
-		config.image.filter = glVersion >= GL_VER_3_0 ? FilterScaleNx : FilterNearest;
+		config.image.filter = glVersion >= GL_VER_3_0 ? FilterScaleNx : FilterLinear;
 		FilterChanged(hWnd);
 	}
 
@@ -96,7 +96,7 @@ namespace OpenWindow
 
 		Config::Set(CONFIG_WRAPPER, "ImageXSal", *(INT*)&config.image.xSal);
 
-		config.image.filter = glVersion >= GL_VER_3_0 ? FilterXSal : FilterNearest;
+		config.image.filter = glVersion >= GL_VER_3_0 ? FilterXSal : FilterLinear;
 		FilterChanged(hWnd);
 	}
 
@@ -109,7 +109,7 @@ namespace OpenWindow
 
 		Config::Set(CONFIG_WRAPPER, "ImageEagle", *(INT*)&config.image.eagle);
 
-		config.image.filter = glVersion >= GL_VER_3_0 ? FilterEagle : FilterNearest;
+		config.image.filter = glVersion >= GL_VER_3_0 ? FilterEagle : FilterLinear;
 		FilterChanged(hWnd);
 	}
 
@@ -122,7 +122,7 @@ namespace OpenWindow
 
 		Config::Set(CONFIG_WRAPPER, "ImageScaleHQ", *(INT*)&config.image.scaleHQ);
 
-		config.image.filter = glVersion >= GL_VER_3_0 ? FilterScaleHQ : FilterNearest;
+		config.image.filter = glVersion >= GL_VER_3_0 ? FilterScaleHQ : FilterLinear;
 		FilterChanged(hWnd);
 	}
 
@@ -135,7 +135,7 @@ namespace OpenWindow
 
 		Config::Set(CONFIG_WRAPPER, "ImageXBRZ", *(INT*)&config.image.xBRz);
 
-		config.image.filter = glVersion >= GL_VER_3_0 ? FilterXRBZ : FilterNearest;
+		config.image.filter = glVersion >= GL_VER_3_0 ? FilterXRBZ : FilterLinear;
 		FilterChanged(hWnd);
 	}
 

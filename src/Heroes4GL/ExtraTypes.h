@@ -127,8 +127,7 @@ struct AddressSpace
 	DWORD check_2;
 	DWORD equal_address;
 	DWORD equal_value;
-	DWORD fullscr_nop1;
-	DWORD fullscr_nop2;
+	DWORD fullscr_nop[2];
 	DWORD clientrect_nop[2];
 	DWORD updateWindow_nop[4];
 	WORD resLanguage;

@@ -158,6 +158,21 @@ AddressSpace addressArray[] = {
 	"Heroes Chronicles: Clash of the Dragons",
 #pragma endregion
 
+	// === FRA ======================================================================================================================================
+#pragma region FRA
+	0x004F61C3, 0x006003D9, 0x00000000, 0x00000000, 0x006000C6, 0x0050BA6F, 0x0050BADB, 0x0050BAE0, 0x0063B68C, 0x0063B678, 0x004804CE, 0x005FFDAD, 0x006809D0, 141, LNG_ENGLISH, // Heroes III Armageddon - v2.1
+	"Heroes of Might and Magic III: Armageddon’s Blade",
+
+	0x004F8163, 0x006028F9, 0x00000000, 0x00000000, 0x006025E6, 0x0050DBBF, 0x0050DC2B, 0x0050DC30, 0x0063E6EC, 0x0063E6D8, 0x0048072E, 0x006022CD, 0x00684AD0, 141, LNG_ENGLISH, // Heroes III Shadow - v3.1
+	"Heroes of Might and Magic III: The Shadow of Death",
+#pragma endregion
+
+	// === POL ======================================================================================================================================
+#pragma region POL
+	0x004F78D3, 0x00602179, 0x00000000, 0x00000000, 0x00601E66, 0x0050D50F, 0x0050D57B, 0x0050D580, 0x0063E6EC, 0x0063E6D8, 0x0047FD2E, 0x00601B4D, 0x00684A18, 141, LNG_ENGLISH, // Heroes III Shadow - v3.2
+	"Heroes of Might and Magic III: The Shadow of Death",
+#pragma endregion
+
 	// ==============================================================================================================================================
 #pragma region Others
 	0x004F8193, 0x00602149, 0x0067FEB2, 0x00352E33, 0x00601E36, 0x0050D8CF, 0x0050D93B, 0x0050D940, 0x0063D6DC, 0x0063D6C8, 0x0047FE9E, 0x00601B1D, 0x00683A10, 141, LNG_ENGLISH, // Heroes III WoG - v3.58f

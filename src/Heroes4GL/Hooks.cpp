@@ -97,6 +97,13 @@ AddressSpace addressArray[] = {
 
 	0x008D3881, 0x008D3969, 0x00401448, 0x00970200, 0x008D37B0, 0x0073D9B0, 0x008D235E, 0x008D2D22,
 	0x008D16C9, 0x008D1700, 0x008D170A, 0x008D1793,
+	LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_3_0_WOW, "Heroes of Might and Magic IV: Winds of War", // Heroes IV - 3.0WoW
+#pragma endregion 
+
+	// === POL ======================================================================================================================================
+#pragma region POL
+	0x008D8F91, 0x008D9079, 0x00000000, 0x00000000, 0x008D8EC0, 0x0074084C, 0x008D7A5E, 0x008D8422,
+	0x008D6DAE, 0x008D6DE6, 0x008D6DF0, 0x008D6E7A,
 	LNG_ENGLISH, IDD_HELP_ABOUT_ENGLISH_3_0_WOW, "Heroes of Might and Magic IV: Winds of War" // Heroes IV - 3.0WoW
 #pragma endregion 
 };
@@ -716,8 +723,8 @@ namespace Hooks
 			// windowed limitations
 			if (!config.isNoGL)
 			{
-				PatchNop(hookSpace->fullscr_nop1, 20);
-				PatchNop(hookSpace->fullscr_nop2, 4);
+				PatchNop(hookSpace->fullscr_nop[0], 20);
+				PatchNop(hookSpace->fullscr_nop[1], 4);
 
 				DWORD* lpNop = hookSpace->clientrect_nop;
 				DWORD count = sizeof(hookSpace->clientrect_nop) / sizeof(DWORD);
