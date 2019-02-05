@@ -22,7 +22,6 @@
 	SOFTWARE.
 */
 
-#version 130
 precision lowp float;
 
 uniform mat4 mvp;

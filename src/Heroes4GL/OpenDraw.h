@@ -57,6 +57,7 @@ public:
 	VOID RenderStop();
 
 	VOID RenderOld();
+	VOID RenderMid();
 	VOID RenderNew();
 
 	VOID ResetDisplayMode(DWORD, DWORD);

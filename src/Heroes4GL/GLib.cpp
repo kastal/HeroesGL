@@ -207,7 +207,7 @@ namespace GL
 
 		if (WGLCreateContextAttribs)
 		{
-			if (!GetContext(hDc, hRc, 3, 0, FALSE))
+			if (!GetContext(hDc, hRc, 3, 0, FALSE) && !GetContext(hDc, hRc, 2, 0, FALSE))
 				GetContext(hDc, hRc, 1, 4, TRUE);
 		}
 
@@ -448,7 +448,7 @@ namespace GL
 		return res;
 	}
 
-	GLuint __fastcall CompileShaderSource(DWORD name, GLenum type)
+	GLuint __fastcall CompileShaderSource(DWORD name, DWORD version, GLenum type)
 	{
 		HRSRC hResource = FindResource(hDllModule, MAKEINTRESOURCE(name), RT_RCDATA);
 		if (!hResource)
@@ -464,12 +464,18 @@ namespace GL
 
 		GLuint shader = GLCreateShader(type);
 
-		const GLchar* source[] = { (const GLchar*)pData };
-		const GLint lengths[] = { (GLint)SizeofResource(hDllModule, hResource) };
-		GLShaderSource(shader, 1, source, lengths);
+		DWORD length = SizeofResource(hDllModule, hResource) + 13;
 
 		GLint result;
-		GLCompileShader(shader);
+		CHAR* source = (CHAR*)MemoryAlloc(length);
+		{
+			StrPrint(source, "#version %d\n", version);
+			StrCat(source, (CHAR*)pData);
+			GLShaderSource(shader, 1, (const GLchar**)&source, (const GLint*)&length);
+			GLCompileShader(shader);
+		}
+		MemoryFree(source);
+
 		GLGetShaderiv(shader, GL_COMPILE_STATUS, &result);
 		if (!result)
 		{

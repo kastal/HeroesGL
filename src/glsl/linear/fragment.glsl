@@ -22,14 +22,21 @@
 	SOFTWARE.
 */
 
-#version 130
-precision mediump float;
-
 uniform sampler2D tex01;
 
-in vec2 fTexCoord;
-out vec4 fragColor;
+#if __VERSION__ >= 130
+	#define COMPAT_IN in
+	#define COMPAT_TEXTURE texture
+	precision mediump float;
+	out mediump vec4 FRAG_COLOR;
+#else
+	#define COMPAT_IN varying 
+	#define COMPAT_TEXTURE texture2D
+	#define FRAG_COLOR gl_FragColor
+#endif
+
+COMPAT_IN vec2 fTexCoord;
 
 void main() {
-	fragColor = texture(tex01, fTexCoord);
+	FRAG_COLOR = COMPAT_TEXTURE(tex01, fTexCoord);
 }

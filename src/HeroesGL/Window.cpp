@@ -134,8 +134,10 @@ namespace Window
 		EnableMenuItem(hMenu, IDM_FILT_LINEAR, MF_BYCOMMAND | (!config.isNoGL ? MF_ENABLED : (MF_DISABLED | MF_GRAYED)));
 		CheckMenuItem(hMenu, IDM_FILT_LINEAR, MF_BYCOMMAND | MF_UNCHECKED);
 
-		DWORD isFiltersEnabled = !config.isNoGL && (!glVersion || glVersion >= GL_VER_3_0) ? MF_ENABLED : (MF_DISABLED | MF_GRAYED);
-		EnableMenuItem(hMenu, IDM_FILT_CUBIC, MF_BYCOMMAND | isFiltersEnabled);
+		DWORD isFilters20 = !config.isNoGL && (!glVersion || glVersion >= GL_VER_2_0) ? MF_ENABLED : (MF_DISABLED | MF_GRAYED);
+		DWORD isFilters30 = !config.isNoGL && (!glVersion || glVersion >= GL_VER_3_0) ? MF_ENABLED : (MF_DISABLED | MF_GRAYED);
+
+		EnableMenuItem(hMenu, IDM_FILT_CUBIC, MF_BYCOMMAND | isFilters20);
 		CheckMenuItem(hMenu, IDM_FILT_CUBIC, MF_BYCOMMAND | MF_UNCHECKED);
 		
 		// ScaleNx
@@ -143,17 +145,17 @@ namespace Window
 		FindMenuByChildId(hMenu, IDM_FILT_SCALENX_LINEAR, &hMenuScaleNx, &posScaleNx);
 		if (hMenuScaleNx)
 		{
-			EnableMenuItem(hMenuScaleNx, posScaleNx, MF_BYPOSITION | isFiltersEnabled);
+			EnableMenuItem(hMenuScaleNx, posScaleNx, MF_BYPOSITION | isFilters30);
 			CheckMenuItem(hMenuScaleNx, posScaleNx, MF_BYPOSITION | MF_UNCHECKED);
 		}
 		
-		EnableMenuItem(hMenu, IDM_FILT_SCALENX_LINEAR, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_SCALENX_LINEAR, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_SCALENX_LINEAR, MF_BYCOMMAND | MF_UNCHECKED);
-		EnableMenuItem(hMenu, IDM_FILT_SCALENX_CUBIC, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_SCALENX_CUBIC, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_SCALENX_CUBIC, MF_BYCOMMAND | MF_UNCHECKED);
-		EnableMenuItem(hMenu, IDM_FILT_SCALENX_2X, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_SCALENX_2X, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_SCALENX_2X, MF_BYCOMMAND | MF_UNCHECKED);
-		EnableMenuItem(hMenu, IDM_FILT_SCALENX_3X, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_SCALENX_3X, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_SCALENX_3X, MF_BYCOMMAND | MF_UNCHECKED);
 
 		// Eagle
@@ -161,15 +163,15 @@ namespace Window
 		FindMenuByChildId(hMenu, IDM_FILT_EAGLE_LINEAR, &hMenuEagle, &posEagle);
 		if (hMenuEagle)
 		{
-			EnableMenuItem(hMenuEagle, posEagle, MF_BYPOSITION | isFiltersEnabled);
+			EnableMenuItem(hMenuEagle, posEagle, MF_BYPOSITION | isFilters30);
 			CheckMenuItem(hMenuEagle, posEagle, MF_BYPOSITION | MF_UNCHECKED);
 		}
 
-		EnableMenuItem(hMenu, IDM_FILT_EAGLE_LINEAR, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_EAGLE_LINEAR, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_EAGLE_LINEAR, MF_BYCOMMAND | MF_UNCHECKED);
-		EnableMenuItem(hMenu, IDM_FILT_EAGLE_CUBIC, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_EAGLE_CUBIC, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_EAGLE_CUBIC, MF_BYCOMMAND | MF_UNCHECKED);
-		EnableMenuItem(hMenu, IDM_FILT_EAGLE_2X, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_EAGLE_2X, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_EAGLE_2X, MF_BYCOMMAND | MF_UNCHECKED);
 
 		// XSal
@@ -177,15 +179,15 @@ namespace Window
 		FindMenuByChildId(hMenu, IDM_FILT_XSAL_LINEAR, &hMenuXSal, &posXSal);
 		if (hMenuXSal)
 		{
-			EnableMenuItem(hMenuXSal, posXSal, MF_BYPOSITION | isFiltersEnabled);
+			EnableMenuItem(hMenuXSal, posXSal, MF_BYPOSITION | isFilters30);
 			CheckMenuItem(hMenuXSal, posXSal, MF_BYPOSITION | MF_UNCHECKED);
 		}
 		
-		EnableMenuItem(hMenu, IDM_FILT_XSAL_LINEAR, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_XSAL_LINEAR, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_XSAL_LINEAR, MF_BYCOMMAND | MF_UNCHECKED);
-		EnableMenuItem(hMenu, IDM_FILT_XSAL_CUBIC, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_XSAL_CUBIC, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_XSAL_CUBIC, MF_BYCOMMAND | MF_UNCHECKED);
-		EnableMenuItem(hMenu, IDM_FILT_XSAL_2X, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_XSAL_2X, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_XSAL_2X, MF_BYCOMMAND | MF_UNCHECKED);
 
 		// ScaleHQ
@@ -193,17 +195,17 @@ namespace Window
 		FindMenuByChildId(hMenu, IDM_FILT_SCALEHQ_LINEAR, &hMenuScaleHQ, &posScaleHQ);
 		if (hMenuScaleHQ)
 		{
-			EnableMenuItem(hMenuScaleHQ, posScaleHQ, MF_BYPOSITION | isFiltersEnabled);
+			EnableMenuItem(hMenuScaleHQ, posScaleHQ, MF_BYPOSITION | isFilters30);
 			CheckMenuItem(hMenuScaleHQ, posScaleHQ, MF_BYPOSITION | MF_UNCHECKED);
 		}
 
-		EnableMenuItem(hMenu, IDM_FILT_SCALEHQ_LINEAR, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_SCALEHQ_LINEAR, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_SCALEHQ_LINEAR, MF_BYCOMMAND | MF_UNCHECKED);
-		EnableMenuItem(hMenu, IDM_FILT_SCALEHQ_CUBIC, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_SCALEHQ_CUBIC, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_SCALEHQ_CUBIC, MF_BYCOMMAND | MF_UNCHECKED);
-		EnableMenuItem(hMenu, IDM_FILT_SCALEHQ_2X, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_SCALEHQ_2X, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_SCALEHQ_2X, MF_BYCOMMAND | MF_UNCHECKED);
-		EnableMenuItem(hMenu, IDM_FILT_SCALEHQ_4X, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_SCALEHQ_4X, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_SCALEHQ_4X, MF_BYCOMMAND | MF_UNCHECKED);
 		
 		// xBRz
@@ -211,23 +213,23 @@ namespace Window
 		FindMenuByChildId(hMenu, IDM_FILT_XRBZ_LINEAR, &hMenuXBRZ, &posXBRZ);
 		if (hMenuXBRZ)
 		{
-			EnableMenuItem(hMenuXBRZ, posXBRZ, MF_BYPOSITION | isFiltersEnabled);
+			EnableMenuItem(hMenuXBRZ, posXBRZ, MF_BYPOSITION | isFilters30);
 			CheckMenuItem(hMenuXBRZ, posXBRZ, MF_BYPOSITION | MF_UNCHECKED);
 		}
 
-		EnableMenuItem(hMenu, IDM_FILT_XRBZ_LINEAR, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_XRBZ_LINEAR, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_XRBZ_LINEAR, MF_BYCOMMAND | MF_UNCHECKED);
-		EnableMenuItem(hMenu, IDM_FILT_XRBZ_CUBIC, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_XRBZ_CUBIC, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_XRBZ_CUBIC, MF_BYCOMMAND | MF_UNCHECKED);
-		EnableMenuItem(hMenu, IDM_FILT_XRBZ_2X, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_XRBZ_2X, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_XRBZ_2X, MF_BYCOMMAND | MF_UNCHECKED);
-		EnableMenuItem(hMenu, IDM_FILT_XRBZ_3X, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_XRBZ_3X, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_XRBZ_3X, MF_BYCOMMAND | MF_UNCHECKED);
-		EnableMenuItem(hMenu, IDM_FILT_XRBZ_4X, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_XRBZ_4X, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_XRBZ_4X, MF_BYCOMMAND | MF_UNCHECKED);
-		EnableMenuItem(hMenu, IDM_FILT_XRBZ_5X, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_XRBZ_5X, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_XRBZ_5X, MF_BYCOMMAND | MF_UNCHECKED);
-		EnableMenuItem(hMenu, IDM_FILT_XRBZ_6X, MF_BYCOMMAND | isFiltersEnabled);
+		EnableMenuItem(hMenu, IDM_FILT_XRBZ_6X, MF_BYCOMMAND | isFilters30);
 		CheckMenuItem(hMenu, IDM_FILT_XRBZ_6X, MF_BYCOMMAND | MF_UNCHECKED);
 		
 		switch (config.image.filter)
@@ -237,11 +239,11 @@ namespace Window
 			break;
 
 		case FilterCubic:
-			CheckMenuItem(hMenu, isFiltersEnabled == MF_ENABLED ? IDM_FILT_CUBIC : IDM_FILT_OFF, MF_BYCOMMAND | MF_CHECKED);
+			CheckMenuItem(hMenu, isFilters20 == MF_ENABLED ? IDM_FILT_CUBIC : IDM_FILT_OFF, MF_BYCOMMAND | MF_CHECKED);
 			break;
 
 		case FilterScaleNx:
-			if (isFiltersEnabled == MF_ENABLED)
+			if (isFilters30 == MF_ENABLED)
 			{
 				if (hMenuScaleNx)
 					CheckMenuItem(hMenuScaleNx, posScaleNx, MF_BYPOSITION | MF_CHECKED);
@@ -264,7 +266,7 @@ namespace Window
 			break;
 
 		case FilterEagle:
-			if (isFiltersEnabled == MF_ENABLED)
+			if (isFilters30 == MF_ENABLED)
 			{
 				if (hMenuEagle)
 					CheckMenuItem(hMenuEagle, posEagle, MF_BYPOSITION | MF_CHECKED);
@@ -278,7 +280,7 @@ namespace Window
 			break;
 
 		case FilterXSal:
-			if (isFiltersEnabled == MF_ENABLED)
+			if (isFilters30 == MF_ENABLED)
 			{
 				if (hMenuXSal)
 					CheckMenuItem(hMenuXSal, posXSal, MF_BYPOSITION | MF_CHECKED);
@@ -292,7 +294,7 @@ namespace Window
 			break;
 
 		case FilterScaleHQ:
-			if (isFiltersEnabled == MF_ENABLED)
+			if (isFilters30 == MF_ENABLED)
 			{
 				if (hMenuScaleHQ)
 					CheckMenuItem(hMenuScaleHQ, posScaleHQ, MF_BYPOSITION | MF_CHECKED);
@@ -315,7 +317,7 @@ namespace Window
 			break;
 
 		case FilterXRBZ:
-			if (isFiltersEnabled == MF_ENABLED)
+			if (isFilters30 == MF_ENABLED)
 			{
 				if (hMenuXBRZ)
 					CheckMenuItem(hMenuXBRZ, posXBRZ, MF_BYPOSITION | MF_CHECKED);

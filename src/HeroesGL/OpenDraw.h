@@ -58,6 +58,7 @@ public:
 	VOID RenderStop();
 
 	VOID RenderOld();
+	VOID RenderMid();
 	VOID RenderNew();
 
 	// Inherited via  IDraw

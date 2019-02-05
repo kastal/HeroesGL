@@ -271,7 +271,7 @@ namespace OpenWindow
 						break;
 
 					case FilterLinear:
-						config.image.filter = glVersion >= GL_VER_3_0 ? FilterCubic : FilterNearest;
+						config.image.filter = glVersion >= GL_VER_2_0 ? FilterCubic : FilterNearest;
 						break;
 
 					default:
@@ -415,7 +415,7 @@ namespace OpenWindow
 
 			case IDM_FILT_CUBIC:
 			{
-				config.image.filter = glVersion >= GL_VER_3_0 ? FilterCubic : FilterNearest;
+				config.image.filter = glVersion >= GL_VER_2_0 ? FilterCubic : FilterNearest;
 				FilterChanged(hWnd);
 				return NULL;
 			}

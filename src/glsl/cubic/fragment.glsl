@@ -26,15 +26,21 @@
 	SOFTWARE.
 */
 
-#version 130
-precision mediump float;
-
 uniform sampler2D tex01;
 uniform vec2 texSize;
 
-in vec2 fTexCoord;
+#if __VERSION__ >= 130
+	#define COMPAT_IN in
+	#define COMPAT_TEXTURE texture
+	precision mediump float;
+	out mediump vec4 FRAG_COLOR;
+#else
+	#define COMPAT_IN varying 
+	#define COMPAT_TEXTURE texture2D
+	#define FRAG_COLOR gl_FragColor
+#endif
 
-out vec4 fragColor;
+COMPAT_IN vec2 fTexCoord;
 
 void weights(out vec4 x, out vec4 y, vec2 t)
 {
@@ -57,7 +63,7 @@ void main()
 {
 	vec2 texel = floor(fTexCoord);
 	
-	#define TEX(x, y) texture(tex01, (texel + 0.5 + vec2(x, y)) / texSize).rgb
+	#define TEX(x, y) COMPAT_TEXTURE(tex01, (texel + 0.5 + vec2(x, y)) / texSize).rgb
 
 	vec4 x;
 	vec4 y;
@@ -88,5 +94,5 @@ void main()
 	color += TEX(+1.0, +2.0) * row.z;
 	color += TEX(+2.0, +2.0) * row.w;
 
-	fragColor = vec4(color, 1.0);
+	FRAG_COLOR = vec4(color, 1.0);
 } 

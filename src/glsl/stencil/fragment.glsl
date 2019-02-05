@@ -22,7 +22,6 @@
 	SOFTWARE.
 */
 
-#version 130
 precision lowp float;
 
 out vec4 fragColor;
