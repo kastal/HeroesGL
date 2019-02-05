@@ -112,7 +112,7 @@ struct UpdateRect
 struct ShaderProgram
 {
 	GLuint id;
-	DWORD version;
+	const CHAR* version;
 	DWORD vertexName;
 	DWORD fragmentName;
 	GLfloat* mvp;
