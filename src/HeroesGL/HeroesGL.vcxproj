@@ -175,7 +175,6 @@
     <ClCompile Include="DirectDraw.cpp" />
     <ClCompile Include="DirectDrawPalette.cpp" />
     <ClCompile Include="DirectDrawSurface.cpp" />
-    <ClCompile Include="DirectWindow.cpp" />
     <ClCompile Include="IDrawClipper.cpp" />
     <ClCompile Include="IDraw.cpp" />
     <ClCompile Include="IDrawPalette.cpp" />
@@ -188,7 +187,6 @@
     <ClCompile Include="FpsCounter.cpp" />
     <ClCompile Include="GLib.cpp" />
     <ClCompile Include="Hooks.cpp" />
-    <ClCompile Include="OpenWindow.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
@@ -204,7 +202,6 @@
     <ClInclude Include="DirectDraw.h" />
     <ClInclude Include="DirectDrawPalette.h" />
     <ClInclude Include="DirectDrawSurface.h" />
-    <ClInclude Include="DirectWindow.h" />
     <ClInclude Include="IDrawClipper.h" />
     <ClInclude Include="IDraw.h" />
     <ClInclude Include="IDrawPalette.h" />
@@ -218,7 +215,6 @@
     <ClInclude Include="GLib.h" />
     <ClInclude Include="Hooks.h" />
     <ClInclude Include="Main.h" />
-    <ClInclude Include="OpenWindow.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Window.h" />

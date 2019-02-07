@@ -61,12 +61,6 @@
     <ClCompile Include="DirectDrawSurface.cpp">
       <Filter>Source Files\Draw\Direct</Filter>
     </ClCompile>
-    <ClCompile Include="OpenWindow.cpp">
-      <Filter>Source Files\Draw\Open</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectWindow.cpp">
-      <Filter>Source Files\Draw\Direct</Filter>
-    </ClCompile>
     <ClCompile Include="AdrDevice.cpp">
       <Filter>Source Files\Sound</Filter>
     </ClCompile>
@@ -139,12 +133,6 @@
       <Filter>Header Files\Draw\Direct</Filter>
     </ClInclude>
     <ClInclude Include="DirectDrawSurface.h">
-      <Filter>Header Files\Draw\Direct</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenWindow.h">
-      <Filter>Header Files\Draw\Open</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectWindow.h">
       <Filter>Header Files\Draw\Direct</Filter>
     </ClInclude>
     <ClInclude Include="AdrDevice.h">

@@ -30,7 +30,6 @@
 #include "Config.h"
 #include "Resource.h"
 #include "Window.h"
-#include "DirectWindow.h"
 #include "AdrDevice.h"
 #include "AdrSource.h"
 
@@ -448,8 +447,8 @@ namespace Hooks
 
 		hWnd = CreateWindow(lpClassName, hookSpace->windowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
 
-		if (config.isNoGL && !Window::OldWindowProc)
-			Window::OldWindowProc = (WNDPROC)SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)DirectWindow::WindowProc);
+		if (hWnd)
+			Window::SetCaptureWindow(hWnd);
 
 		return hWnd;
 	}

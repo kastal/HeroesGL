@@ -37,9 +37,6 @@
     <ClCompile Include="OpenDrawSurface.cpp">
       <Filter>Source Files\Draw\Open</Filter>
     </ClCompile>
-    <ClCompile Include="OpenWindow.cpp">
-      <Filter>Source Files\Draw\Open</Filter>
-    </ClCompile>
     <ClCompile Include="IDraw.cpp">
       <Filter>Source Files\Draw\Base</Filter>
     </ClCompile>
@@ -48,9 +45,6 @@
     </ClCompile>
     <ClCompile Include="IDrawSurface.cpp">
       <Filter>Source Files\Draw\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectWindow.cpp">
-      <Filter>Source Files\Draw\Direct</Filter>
     </ClCompile>
     <ClCompile Include="DirectDraw.cpp">
       <Filter>Source Files\Draw\Direct</Filter>
@@ -96,9 +90,6 @@
     <ClInclude Include="OpenDrawSurface.h">
       <Filter>Header Files\Draw\Open</Filter>
     </ClInclude>
-    <ClInclude Include="OpenWindow.h">
-      <Filter>Header Files\Draw\Open</Filter>
-    </ClInclude>
     <ClInclude Include="IDraw.h">
       <Filter>Header Files\Draw\Base</Filter>
     </ClInclude>
@@ -109,9 +100,6 @@
       <Filter>Header Files\Draw\Base</Filter>
     </ClInclude>
     <ClInclude Include="DirectDraw.h">
-      <Filter>Header Files\Draw\Direct</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectWindow.h">
       <Filter>Header Files\Draw\Direct</Filter>
     </ClInclude>
   </ItemGroup>

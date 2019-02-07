@@ -29,10 +29,10 @@
 
 namespace Window
 {
-	extern WNDPROC OldWindowProc;
-
-	LRESULT __stdcall AboutProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
 	VOID __fastcall CheckMenu(HMENU hMenu);
 	VOID __fastcall CheckMenu(HWND hWnd);
+
+	VOID __fastcall SetCaptureKeys(BOOL state);
+	VOID __fastcall SetCaptureWindow(HWND hWnd);
+	VOID __fastcall SetCapturePanel(HWND hWnd);
 }

@@ -30,7 +30,6 @@
 #include "FpsCounter.h"
 #include "Config.h"
 #include "Window.h"
-#include "OpenWindow.h"
 #include "Hooks.h"
 
 VOID __fastcall UseShaderProgram(ShaderProgram* program, DWORD texSize)
@@ -2367,7 +2366,7 @@ VOID OpenDraw::RenderStart()
 			NULL);
 	}
 
-	OpenWindow::OldPanelProc = (WNDPROC)SetWindowLongPtr(this->hDraw, GWLP_WNDPROC, (LONG_PTR)OpenWindow::PanelProc);
+	Window::SetCapturePanel(this->hDraw);
 
 	SetClassLongPtr(this->hDraw, GCLP_HBRBACKGROUND, NULL);
 	RedrawWindow(this->hDraw, NULL, NULL, RDW_INVALIDATE);
@@ -2405,8 +2404,8 @@ VOID OpenDraw::RenderStop()
 
 	ClipCursor(NULL);
 
-	//glVersion = NULL;
-	//Window::CheckMenu(this->hWnd);
+	glVersion = NULL;
+	Window::CheckMenu(this->hWnd);
 }
 
 BOOL OpenDraw::CheckView()
@@ -2506,17 +2505,7 @@ ULONG __stdcall OpenDraw::Release()
 
 HRESULT __stdcall OpenDraw::SetCooperativeLevel(HWND hWnd, DWORD dwFlags)
 {
-	if (this->hWnd != hWnd)
-	{
-		this->hDc = NULL;
-		this->hWnd = hWnd;
-
-		if (!OpenWindow::blackBrush)
-			OpenWindow::blackBrush = (HBRUSH)GetStockObject(BLACK_BRUSH);
-
-		if (!Window::OldWindowProc)
-			Window::OldWindowProc = (WNDPROC)SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)OpenWindow::WindowProc);
-	}
+	this->hWnd = hWnd;
 
 	if (dwFlags & DDSCL_FULLSCREEN)
 		this->windowState = WinStateFullScreen;

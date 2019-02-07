@@ -442,7 +442,11 @@ namespace Hooks
 
 		HWND hWnd = CreateWindow(lpClassName, hookSpace->windowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
 		if (hWnd)
+		{
 			LoadNewMenu(GetMenu(hWnd));
+			Window::SetCaptureWindow(hWnd);
+		}
+
 		return hWnd;
 	}
 

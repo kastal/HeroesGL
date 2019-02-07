@@ -26,14 +26,14 @@
 
 #define MIN_WIDTH 240
 #define MIN_HEIGHT 180
+#define STYLE_DIALOG (DS_MODALFRAME | WS_POPUP)
 
 namespace Window
 {
-	extern WNDPROC OldWindowProc;
-
-	LRESULT __stdcall AboutProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	LRESULT __stdcall AboutAppProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
 	VOID __fastcall CheckMenu(HMENU hMenu);
 	VOID __fastcall CheckMenu(HWND hWnd);
+
+	VOID __fastcall SetCaptureKeys(BOOL state);
+	VOID __fastcall SetCaptureWindow(HWND hWnd);
+	VOID __fastcall SetCapturePanel(HWND hWnd);
 }

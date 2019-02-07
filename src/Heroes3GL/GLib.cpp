@@ -293,10 +293,9 @@ namespace GL
 		LoadFunction(buffer, PREFIX_GL, "RenderbufferStorage", (PROC*)&GLRenderbufferStorage);
 		LoadFunction(buffer, PREFIX_GL, "FramebufferRenderbuffer", (PROC*)&GLFramebufferRenderbuffer);
 
-		const GLubyte* extensions = GLGetString(GL_EXTENSIONS);
+		glVersion = NULL;
 		if (GLGetString)
 		{
-			glVersion = 0;
 			CHAR* strVer = (CHAR*)GLGetString(GL_VERSION);
 			if (strVer && *strVer >= '0' && *strVer <= '9')
 			{
@@ -332,22 +331,18 @@ namespace GL
 						charIdx = 0;
 					}
 				}
-
-				if (glVersion < GL_VER_1_1)
-					glVersion = GL_VER_1_1;
 			}
 			else
 				glVersion = GL_VER_1_1;
 
 			if (glVersion < GL_VER_1_2)
 			{
+				CHAR* extensions = (CHAR*)GLGetString(GL_EXTENSIONS);
 				if (extensions)
 				{
-					glCapsClampToEdge = (StrStr((const CHAR*)extensions, "GL_EXT_texture_edge_clamp") || StrStr((const CHAR*)extensions, "GL_SGIS_texture_edge_clamp")) ? GL_CLAMP_TO_EDGE : GL_CLAMP;
-					glCapsBGRA = StrStr((const CHAR*)extensions, "GL_EXT_bgra") || StrStr((const CHAR*)extensions, "GL_EXT_texture_format_BGRA8888") || StrStr((const CHAR*)extensions, "GL_APPLE_texture_format_BGRA8888");
+					glCapsClampToEdge = (StrStr(extensions, "GL_EXT_texture_edge_clamp") || StrStr(extensions, "GL_SGIS_texture_edge_clamp")) ? GL_CLAMP_TO_EDGE : GL_CLAMP;
+					glCapsBGRA = StrStr(extensions, "GL_EXT_bgra") || StrStr(extensions, "GL_EXT_texture_format_BGRA8888") || StrStr(extensions, "GL_APPLE_texture_format_BGRA8888");
 				}
-				else
-					glVersion = GL_VER_1_1;
 			}
 			else
 			{
@@ -355,8 +350,6 @@ namespace GL
 				glCapsBGRA = TRUE;
 			}
 		}
-		else
-			glVersion = GL_VER_1_1;
 
 		if (!glVersion)
 			glVersion = GL_VER_1_1;
@@ -472,7 +465,7 @@ namespace GL
 		GLuint shader = GLCreateShader(type);
 
 		const GLchar* source[] = { "#version ", version, "\n", (GLchar*)pData };
-		const GLint lengths[] = { 10, 4, 2, (GLint)SizeofResource(hDllModule, hResource) };
+		const GLint lengths[] = { 9, 3, 1, (GLint)SizeofResource(hDllModule, hResource) };
 		GLShaderSource(shader, 4, source, lengths);
 
 		GLint result;

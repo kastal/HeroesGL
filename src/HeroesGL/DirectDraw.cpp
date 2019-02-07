@@ -26,8 +26,6 @@
 #include "DirectDraw.h"
 #include "DirectDrawSurface.h"
 #include "DirectDrawPalette.h"
-#include "Window.h"
-#include "DirectWindow.h"
 
 DirectDraw::DirectDraw(IDraw** last, IDirectDraw* lpDD)
 {
@@ -84,7 +82,6 @@ HRESULT __stdcall DirectDraw::RestoreDisplayMode()
 
 HRESULT __stdcall DirectDraw::SetCooperativeLevel(HWND hWnd, DWORD dwFlags)
 {
-	this->hWnd = hWnd;
 	return this->lpDD->SetCooperativeLevel(hWnd, dwFlags);
 }
 

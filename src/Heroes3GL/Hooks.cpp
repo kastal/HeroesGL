@@ -468,7 +468,12 @@ namespace Hooks
 			break;
 		}
 
-		return CreateWindow(lpClassName, hookSpace->windowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+		HWND hWnd = CreateWindow(lpClassName, hookSpace->windowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+
+		if (hWnd)
+			Window::SetCaptureWindow(hWnd);
+
+		return hWnd;
 	}
 
 	LONG __stdcall SetWindowLongHook(HWND hWnd, INT nIndex, LONG dwNewLong)

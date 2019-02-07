@@ -24,8 +24,6 @@
 
 #include "stdafx.h"
 #include "DirectDraw.h"
-#include "Window.h"
-#include "DirectWindow.h"
 
 DirectDraw::DirectDraw(IDraw7** last, IDirectDraw7* lpDD)
 {
@@ -62,14 +60,6 @@ HRESULT __stdcall DirectDraw::EnumDisplayModes(DWORD dwFlags, LPDDSURFACEDESC2 l
 
 HRESULT __stdcall DirectDraw::SetCooperativeLevel(HWND hWnd, DWORD dwFlags)
 {
-	if (this->hWnd != hWnd)
-	{
-		this->hWnd = hWnd;
-
-		if (!Window::OldWindowProc)
-			Window::OldWindowProc = (WNDPROC)SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)DirectWindow::WindowProc);
-	}
-
 	return this->lpDD->SetCooperativeLevel(hWnd, dwFlags);
 }
 

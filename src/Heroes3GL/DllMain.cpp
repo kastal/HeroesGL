@@ -27,7 +27,7 @@
 #include "GLib.h"
 #include "Main.h"
 #include "Config.h"
-#include "OpenWindow.h"
+#include "Window.h"
 #include "Resource.h"
 
 BOOL __stdcall DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved)
@@ -60,7 +60,7 @@ BOOL __stdcall DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved)
 
 			if (!config.isNoGL)
 			{
-				OpenWindow::OldWindowKeyHook = SetWindowsHookEx(WH_KEYBOARD_LL, OpenWindow::WindowKeyHook, NULL, 0);
+				Window::SetCaptureKeys(TRUE);
 
 				{
 					WNDCLASS wc = {
@@ -107,7 +107,7 @@ BOOL __stdcall DllMain(HMODULE hModule, DWORD fdwReason, LPVOID lpReserved)
 				UnregisterClass(WC_DRAW, hDllModule);
 				GL::Free();
 				ClipCursor(NULL);
-				UnhookWindowsHookEx(OpenWindow::OldWindowKeyHook);
+				Window::SetCaptureKeys(FALSE);
 			}
 		}
 

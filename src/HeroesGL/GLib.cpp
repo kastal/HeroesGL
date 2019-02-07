@@ -292,7 +292,6 @@ namespace GL
 		LoadFunction(buffer, PREFIX_GL, "RenderbufferStorage", (PROC*)&GLRenderbufferStorage);
 		LoadFunction(buffer, PREFIX_GL, "FramebufferRenderbuffer", (PROC*)&GLFramebufferRenderbuffer);
 
-		const GLubyte* extensions = GLGetString(GL_EXTENSIONS);
 		if (GLGetString)
 		{
 			glVersion = 0;
@@ -331,25 +330,19 @@ namespace GL
 						charIdx = 0;
 					}
 				}
-
-				if (glVersion < GL_VER_1_1)
-					glVersion = GL_VER_1_1;
 			}
 			else
 				glVersion = GL_VER_1_1;
 
 			if (glVersion < GL_VER_1_2)
 			{
+				CHAR* extensions = (CHAR*)GLGetString(GL_EXTENSIONS);
 				if (extensions)
-					glCapsClampToEdge = (StrStr((const CHAR*)extensions, "GL_EXT_texture_edge_clamp") || StrStr((const CHAR*)extensions, "GL_SGIS_texture_edge_clamp")) ? GL_CLAMP_TO_EDGE : GL_CLAMP;
-				else
-					glVersion = GL_VER_1_1;
+					glCapsClampToEdge = (StrStr(extensions, "GL_EXT_texture_edge_clamp") || StrStr(extensions, "GL_SGIS_texture_edge_clamp")) ? GL_CLAMP_TO_EDGE : GL_CLAMP;
 			}
 			else
 				glCapsClampToEdge = GL_CLAMP_TO_EDGE;
 		}
-		else
-			glVersion = GL_VER_1_1;
 
 		if (!glVersion)
 			glVersion = GL_VER_1_1;
@@ -465,7 +458,7 @@ namespace GL
 		GLuint shader = GLCreateShader(type);
 
 		const GLchar* source[] = { "#version ", version, "\n", (GLchar*)pData };
-		const GLint lengths[] = { 10, 4, 2, (GLint)SizeofResource(hDllModule, hResource) };
+		const GLint lengths[] = { 9, 3, 1, (GLint)SizeofResource(hDllModule, hResource) };
 		GLShaderSource(shader, 4, source, lengths);
 
 		GLint result;
