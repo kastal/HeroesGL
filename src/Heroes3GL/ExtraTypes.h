@@ -172,6 +172,8 @@ struct ConfigItems
 	HICON icon;
 	HFONT font;
 
+	BOOL singleThread;
+	BOOL singleWindow;
 	BOOL coldCPU;
 
 	struct {

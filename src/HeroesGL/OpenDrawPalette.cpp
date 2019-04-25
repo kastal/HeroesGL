@@ -69,7 +69,7 @@ HRESULT __stdcall OpenDrawPalette::SetEntries(DWORD dwFlags, DWORD dwStartingEnt
 		IDrawSurface* surfaceEntry = this->ddraw->surfaceEntries;
 		while (surfaceEntry)
 		{
-			if (((OpenDrawSurface*)surfaceEntry)->attachedPallete == this)
+			if (((OpenDrawSurface*)surfaceEntry)->attachedPalette == this)
 			{
 				BYTE* idx = ((OpenDrawSurface*)surfaceEntry)->indexBuffer;
 				DWORD* pix = ((OpenDrawSurface*)surfaceEntry)->pixelBuffer;

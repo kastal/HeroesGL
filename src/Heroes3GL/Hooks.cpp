@@ -175,7 +175,7 @@ AddressSpace addressArray[] = {
 
 	// ==============================================================================================================================================
 #pragma region Others
-	0x004F8193, 0x00602149, 0x0067FEB2, 0x00352E33, 0x00601E36, 0x0050D8CF, 0x0050D93B, 0x0050D940, 0x0063D6DC, 0x0063D6C8, 0x0047FE9E, 0x00601B1D, 0x00683A10, 141, LNG_ENGLISH, // Heroes III WoG - v3.58f
+	0x004F8193, 0x00602149, 0x0067FEB2, 0x00352E33, 0x00601E36, 0x0050D8CF, 0x0050D93B, 0x0050D940, 0x0063D6DC, 0x0063D6C8, 0x0047FE9E, 0x00601B1D, 0x00683A10, 141, LNG_ENGLISH, // Heroes III WoG - v3.52f - v3.58f
 	"Heroes of Might and Magic III: In the Wake of Gods",
 
 	0x004F8193, 0x00602149, 0x0067FEB2, 0x00506F4D, 0x00601E36, 0x0050D8CF, 0x0050D93B, 0x0050D940, 0x0063D6DC, 0x0063D6C8, 0x0047FE9E, 0x00601B1D, 0x00683A10, 141, LNG_ENGLISH, // Heroes III MoP - v3.7.2.7
@@ -605,21 +605,23 @@ namespace Hooks
 				info.cbSize = sizeof(MENUITEMINFO);
 				info.fMask = MIIM_TYPE;
 				info.fType = MFT_STRING;
-				info.cch = sizeof(buffer);
 				info.dwTypeData = buffer;
 
+				info.cch = sizeof(buffer);
 				if (config.keys.windowedMode && GetMenuItemInfo(hNew, IDM_RES_FULL_SCREEN, FALSE, &info))
 				{
 					StrPrint(buffer, "%s (F%d)", buffer, config.keys.windowedMode);
 					SetMenuItemInfo(hNew, IDM_RES_FULL_SCREEN, FALSE, &info);
 				}
 
+				info.cch = sizeof(buffer);
 				if (config.keys.aspectRatio && GetMenuItemInfo(hNew, IDM_ASPECT_RATIO, FALSE, &info))
 				{
 					StrPrint(buffer, "%s (F%d)", buffer, config.keys.aspectRatio);
 					SetMenuItemInfo(hNew, IDM_ASPECT_RATIO, FALSE, &info);
 				}
 
+				info.cch = sizeof(buffer);
 				if (config.keys.vSync && GetMenuItemInfo(hNew, IDM_VSYNC, FALSE, &info))
 				{
 					StrPrint(buffer, "%s (F%d)", buffer, config.keys.vSync);
@@ -652,8 +654,8 @@ namespace Hooks
 	BOOL __stdcall EnableMenuItemHook(HMENU hMenu, UINT uIDEnableItem, UINT uEnable)
 	{
 		BOOL found = FALSE;
-		DWORD count = sizeof(menuIds) / sizeof(*menuIds);
 		UINT* menu = menuIds;
+		DWORD count = sizeof(menuIds) / sizeof(UINT);
 		do
 		{
 			if (*menu++ == uIDEnableItem)
@@ -895,6 +897,8 @@ namespace Hooks
 
 		if (config.coldCPU)
 			Sleep(1);
+		else if (glVersion && config.singleThread)
+			Sleep(0);
 
 		return FALSE;
 	}

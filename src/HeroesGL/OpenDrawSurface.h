@@ -37,7 +37,7 @@ class OpenDrawSurface : public IDrawSurface
 public:
 	DWORD index;
 
-	OpenDrawPalette* attachedPallete;
+	OpenDrawPalette* attachedPalette;
 	OpenDrawClipper* attachedClipper;
 
 	BYTE indexBuffer[RES_WIDTH * RES_HEIGHT];

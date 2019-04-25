@@ -53,7 +53,7 @@ OpenDrawSurface::OpenDrawSurface(IDraw* lpDD, DWORD index)
 
 	this->poinetrClip = this->currentClip = this->clipsList;
 
-	this->attachedPallete = NULL;
+	this->attachedPalette = NULL;
 	this->attachedClipper = NULL;
 }
 
@@ -112,7 +112,7 @@ HRESULT __stdcall OpenDrawSurface::Blt(LPRECT lpDestRect, LPDIRECTDRAWSURFACE lp
 		DWORD copyWidth = width;
 		do
 		{
-			*pix++ = *(DWORD*)&this->attachedPallete->entries[*src];
+			*pix++ = *(DWORD*)&this->attachedPalette->entries[*src];
 			*dest++ = *src++;
 		} while (--copyWidth);
 	} while (--copyHeight);
@@ -177,6 +177,6 @@ HRESULT __stdcall OpenDrawSurface::SetClipper(LPDIRECTDRAWCLIPPER lpDDClipper)
 
 HRESULT __stdcall OpenDrawSurface::SetPalette(LPDIRECTDRAWPALETTE lpDDPalette)
 {
-	this->attachedPallete = (OpenDrawPalette*)lpDDPalette;
+	this->attachedPalette = (OpenDrawPalette*)lpDDPalette;
 	return DD_OK;
 }

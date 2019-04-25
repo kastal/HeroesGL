@@ -16,17 +16,17 @@ LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 
 IDM_RUSSIAN MENU
 BEGIN
-    POPUP "&Файл"
-    BEGIN
-        MENUITEM "&Выйти",							IDM_FILE_QUIT
-    END
-    POPUP "&Экран"
-    BEGIN
-        MENUITEM "В &полный экран",			IDM_RES_FULL_SCREEN
-        POPUP "&Фильтрация"
-        BEGIN
-            MENUITEM "&Откл.",						IDM_FILT_OFF
-            MENUITEM "Би&линейная",					IDM_FILT_LINEAR
+	POPUP "&Файл"
+	BEGIN
+		MENUITEM "&Выйти",							IDM_FILE_QUIT
+	END
+	POPUP "&Экран"
+	BEGIN
+		MENUITEM "В &полный экран",			IDM_RES_FULL_SCREEN
+		POPUP "&Фильтрация"
+		BEGIN
+			MENUITEM "&Откл.",						IDM_FILT_OFF
+			MENUITEM "Би&линейная",					IDM_FILT_LINEAR
 			MENUITEM "Би&кубическая",				IDM_FILT_CUBIC
 			MENUITEM SEPARATOR
 			POPUP "&ScaleNx"
@@ -70,21 +70,21 @@ BEGIN
 				MENUITEM "x5",						IDM_FILT_XRBZ_5X
 				MENUITEM "x6",						IDM_FILT_XRBZ_6X
 			END
-        END
-        MENUITEM "Сохр. &пропорции",			IDM_ASPECT_RATIO
-        MENUITEM "Верт. &синхронизация",			IDM_VSYNC
-    END
+		END
+		MENUITEM "Сохр. &пропорции",			IDM_ASPECT_RATIO
+		MENUITEM "Верт. &синхронизация",			IDM_VSYNC
+	END
 	POPUP "П&атчи"
 	BEGIN
 		MENUITEM "&Холодный ЦП",					IDM_PATCH_CPU
 	END
-    POPUP "&Помощь"
-    BEGIN
-        MENUITEM "&Руководство",					IDM_HELP_MANUAL
-        MENUITEM SEPARATOR
+	POPUP "&Помощь"
+	BEGIN
+		MENUITEM "&Руководство",					IDM_HELP_MANUAL
+		MENUITEM SEPARATOR
 		MENUITEM "О &враппере",						IDM_HELP_WRAPPER
 		MENUITEM "О &программе",					IDM_HELP_ABOUT
-    END
+	END
 END
 
 /////////////////////////////////////////////////////////////////////////////
@@ -92,16 +92,28 @@ END
 // Dialog
 //
 
-IDD_RUSSIAN DIALOGEX 22, 17, 162, 90
+IDD_RUSSIAN DIALOGEX 22,17,162,90
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
 FONT 8, "System", 0, 0, 0x1
 BEGIN
-    CTEXT           "Герои Меча и Магии III\nOpenGL враппер",1002,0,6,162,18
-    CTEXT           "Версия 1.27   Сборка 209",IDC_STATIC,0,30,162,8
-    CTEXT           "Copyright © 2019 Verok",1006,0,48,162,8
-	DEFPUSHBUTTON   "OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
-	CONTROL         "verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
-	ICON            "",IDC_STATIC,8,17,20,20
+	CTEXT			"Герои Меча и Магии III\nOpenGL враппер",IDC_STATIC,0,6,162,18
+	CTEXT			"Версия %d.%d%d   Сборка %d",IDC_VERSION,0,30,162,8
+	CTEXT			"Copyright © 2019 Verok",IDC_STATIC,0,48,162,8
+	DEFPUSHBUTTON	"OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
+	CONTROL			"verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
+	ICON			"",IDC_STATIC,8,17,20,20
+END
+
+IDD_RUSSIAN_OLD DIALOGEX 22,17,162,90
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+FONT 8, "System", 0, 0, 0x1
+BEGIN
+	CTEXT			"Герои Меча и Магии III\nOpenGL враппер",IDC_STATIC,0,6,162,18
+	CTEXT			"Версия %d.%d%d   Сборка %d",IDC_VERSION,0,30,162,8
+	CTEXT			"Copyright © 2019 Verok",IDC_STATIC,0,48,162,8
+	DEFPUSHBUTTON	"OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
+	CTEXT			"verokster@gmail.com",IDC_STATIC,48,57,72,12
+	ICON			"",IDC_STATIC,8,17,20,20
 END
 
 #endif    // Russian (Russia) resources
@@ -128,17 +140,17 @@ IDM_MANIFEST            RT_MANIFEST             "module.manifest"
 
 IDM_ENGLISH MENU
 BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Quit",							IDM_FILE_QUIT
-    END
-    POPUP "&Display"
-    BEGIN
-        MENUITEM "Full &Screen",				IDM_RES_FULL_SCREEN
-        POPUP "&Filtering"
-        BEGIN
-            MENUITEM "&Off",						IDM_FILT_OFF
-            MENUITEM "Bi&linear",					IDM_FILT_LINEAR
+	POPUP "&File"
+	BEGIN
+		MENUITEM "&Quit",							IDM_FILE_QUIT
+	END
+	POPUP "&Display"
+	BEGIN
+		MENUITEM "Full &Screen",				IDM_RES_FULL_SCREEN
+		POPUP "&Filtering"
+		BEGIN
+			MENUITEM "&Off",						IDM_FILT_OFF
+			MENUITEM "Bi&linear",					IDM_FILT_LINEAR
 			MENUITEM "Bi&cubic",					IDM_FILT_CUBIC
 			MENUITEM SEPARATOR
 			POPUP "&ScaleNx"
@@ -182,21 +194,21 @@ BEGIN
 				MENUITEM "x5",						IDM_FILT_XRBZ_5X
 				MENUITEM "x6",						IDM_FILT_XRBZ_6X
 			END
-        END
-        MENUITEM "Keep &Aspect Ratio",			IDM_ASPECT_RATIO
-        MENUITEM "Enable &VSync",					IDM_VSYNC
-    END
+		END
+		MENUITEM "Keep &Aspect Ratio",			IDM_ASPECT_RATIO
+		MENUITEM "Enable &VSync",					IDM_VSYNC
+	END
 	POPUP "&Patches"
 	BEGIN
 		MENUITEM "&Cold CPU",						IDM_PATCH_CPU
 	END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&Manual",							IDM_HELP_MANUAL
-        MENUITEM SEPARATOR
+	POPUP "&Help"
+	BEGIN
+		MENUITEM "&Manual",							IDM_HELP_MANUAL
+		MENUITEM SEPARATOR
 		MENUITEM "About &Wrapper",					IDM_HELP_WRAPPER
 		MENUITEM "About &Application",				IDM_HELP_ABOUT
-    END
+	END
 END
 
 /////////////////////////////////////////////////////////////////////////////
@@ -204,16 +216,28 @@ END
 // Dialog
 //
 
-IDD_ENGLISH DIALOGEX 22, 17, 162, 90
+IDD_ENGLISH DIALOGEX 22,17,162,90
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
 FONT 8, "System", 0, 0, 0x1
 BEGIN
-    CTEXT           "Heroes of Might and Magic III\nOpenGL Wrapper",1002,0,6,162,18
-    CTEXT           "Version 1.27   Build 209",IDC_STATIC,0,30,162,8
-    CTEXT           "Copyright © 2019 Verok",1006,0,48,162,8
-	DEFPUSHBUTTON   "OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
-	CONTROL         "verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
-	ICON            "",IDC_STATIC,8,17,20,20
+	CTEXT			"Heroes of Might and Magic III\nOpenGL Wrapper",IDC_STATIC,0,6,162,18
+	CTEXT			"Version %d.%d%d   Build %d",IDC_VERSION,0,30,162,8
+	CTEXT			"Copyright © 2019 Verok",IDC_STATIC,0,48,162,8
+	DEFPUSHBUTTON	"OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
+	CONTROL			"verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
+	ICON			"",IDC_STATIC,8,17,20,20
+END
+
+IDD_ENGLISH_OLD DIALOGEX 22,17,162,90
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
+FONT 8, "System", 0, 0, 0x1
+BEGIN
+	CTEXT			"Heroes of Might and Magic III\nOpenGL Wrapper",IDC_STATIC,0,6,162,18
+	CTEXT			"Version %d.%d%d   Build %d",IDC_VERSION,0,30,162,8
+	CTEXT			"Copyright © 2019 Verok",IDC_STATIC,0,48,162,8
+	DEFPUSHBUTTON	"OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
+	CTEXT			"verokster@gmail.com",IDC_STATIC,48,57,72,12
+	ICON			"",IDC_STATIC,8,17,20,20
 END
 
 /////////////////////////////////////////////////////////////////////////////
@@ -221,37 +245,37 @@ END
 // RCDATA
 //
 
-IDR_STENCIL_VERTEX			RCDATA                  "..\\glsl\\stencil\\vertex.glsl"
-IDR_STENCIL_FRAGMENT		RCDATA                  "..\\glsl\\stencil\\fragment.glsl"
+IDR_STENCIL_VERTEX				RCDATA					"..\\glsl\\stencil\\vertex.glsl"
+IDR_STENCIL_FRAGMENT			RCDATA					"..\\glsl\\stencil\\fragment.glsl"
 
-IDR_LINEAR_VERTEX			RCDATA                  "..\\glsl\\linear\\vertex.glsl"
-IDR_LINEAR_FRAGMENT			RCDATA                  "..\\glsl\\linear\\fragment.glsl"
+IDR_LINEAR_VERTEX				RCDATA					"..\\glsl\\linear\\vertex.glsl"
+IDR_LINEAR_FRAGMENT				RCDATA					"..\\glsl\\linear\\fragment.glsl"
 
-IDR_CUBIC_VERTEX			RCDATA                  "..\\glsl\\cubic\\vertex.glsl"
-IDR_CUBIC_FRAGMENT			RCDATA                  "..\\glsl\\cubic\\fragment.glsl"
+IDR_CUBIC_VERTEX				RCDATA					"..\\glsl\\cubic\\vertex.glsl"
+IDR_CUBIC_FRAGMENT				RCDATA					"..\\glsl\\cubic\\fragment.glsl"
 
-IDR_XSAL_VERTEX				RCDATA                  "..\\glsl\\xsal\\vertex.glsl"
-IDR_XSAL_FRAGMENT			RCDATA                  "..\\glsl\\xsal\\fragment.glsl"
+IDR_XSAL_VERTEX					RCDATA					"..\\glsl\\xsal\\vertex.glsl"
+IDR_XSAL_FRAGMENT				RCDATA					"..\\glsl\\xsal\\fragment.glsl"
 
-IDR_EAGLE_VERTEX			RCDATA                  "..\\glsl\\eagle\\vertex.glsl"
-IDR_EAGLE_FRAGMENT			RCDATA                  "..\\glsl\\eagle\\fragment.glsl"
+IDR_EAGLE_VERTEX				RCDATA					"..\\glsl\\eagle\\vertex.glsl"
+IDR_EAGLE_FRAGMENT				RCDATA					"..\\glsl\\eagle\\fragment.glsl"
 
-IDR_XBRZ_VERTEX				RCDATA                  "..\\glsl\\xbrz\\vertex.glsl"
-IDR_XBRZ_FRAGMENT_2X		RCDATA                  "..\\glsl\\xbrz\\fragment_2x.glsl"
-IDR_XBRZ_FRAGMENT_3X		RCDATA                  "..\\glsl\\xbrz\\fragment_3x.glsl"
-IDR_XBRZ_FRAGMENT_4X		RCDATA                  "..\\glsl\\xbrz\\fragment_4x.glsl"
-IDR_XBRZ_FRAGMENT_5X		RCDATA                  "..\\glsl\\xbrz\\fragment_5x.glsl"
-IDR_XBRZ_FRAGMENT_6X		RCDATA                  "..\\glsl\\xbrz\\fragment_6x.glsl"
+IDR_XBRZ_VERTEX					RCDATA					"..\\glsl\\xbrz\\vertex.glsl"
+IDR_XBRZ_FRAGMENT_2X			RCDATA					"..\\glsl\\xbrz\\fragment_2x.glsl"
+IDR_XBRZ_FRAGMENT_3X			RCDATA					"..\\glsl\\xbrz\\fragment_3x.glsl"
+IDR_XBRZ_FRAGMENT_4X			RCDATA					"..\\glsl\\xbrz\\fragment_4x.glsl"
+IDR_XBRZ_FRAGMENT_5X			RCDATA					"..\\glsl\\xbrz\\fragment_5x.glsl"
+IDR_XBRZ_FRAGMENT_6X			RCDATA					"..\\glsl\\xbrz\\fragment_6x.glsl"
 
-IDR_SCALEHQ_VERTEX_2X		RCDATA                  "..\\glsl\\scalehq\\vertex_2x.glsl"
-IDR_SCALEHQ_FRAGMENT_2X		RCDATA                  "..\\glsl\\scalehq\\fragment_2x.glsl"
-IDR_SCALEHQ_VERTEX_4X		RCDATA                  "..\\glsl\\scalehq\\vertex_4x.glsl"
-IDR_SCALEHQ_FRAGMENT_4X		RCDATA                  "..\\glsl\\scalehq\\fragment_4x.glsl"
+IDR_SCALEHQ_VERTEX_2X			RCDATA					"..\\glsl\\scalehq\\vertex_2x.glsl"
+IDR_SCALEHQ_FRAGMENT_2X			RCDATA					"..\\glsl\\scalehq\\fragment_2x.glsl"
+IDR_SCALEHQ_VERTEX_4X			RCDATA					"..\\glsl\\scalehq\\vertex_4x.glsl"
+IDR_SCALEHQ_FRAGMENT_4X			RCDATA					"..\\glsl\\scalehq\\fragment_4x.glsl"
 
-IDR_SCALENX_VERTEX_2X		RCDATA                  "..\\glsl\\scalenx\\vertex_2x.glsl"
-IDR_SCALENX_FRAGMENT_2X		RCDATA                  "..\\glsl\\scalenx\\fragment_2x.glsl"
-IDR_SCALENX_VERTEX_3X		RCDATA                  "..\\glsl\\scalenx\\vertex_3x.glsl"
-IDR_SCALENX_FRAGMENT_3X		RCDATA                  "..\\glsl\\scalenx\\fragment_3x.glsl"
+IDR_SCALENX_VERTEX_2X			RCDATA					"..\\glsl\\scalenx\\vertex_2x.glsl"
+IDR_SCALENX_FRAGMENT_2X			RCDATA					"..\\glsl\\scalenx\\fragment_2x.glsl"
+IDR_SCALENX_VERTEX_3X			RCDATA					"..\\glsl\\scalenx\\vertex_3x.glsl"
+IDR_SCALENX_FRAGMENT_3X			RCDATA					"..\\glsl\\scalenx\\fragment_3x.glsl"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -259,7 +283,7 @@ IDR_SCALENX_FRAGMENT_3X		RCDATA                  "..\\glsl\\scalenx\\fragment_3x
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2019,2,8,209
+ FILEVERSION 2019,4,24,227
  PRODUCTVERSION 1,2,7,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
@@ -271,22 +295,22 @@ VS_VERSION_INFO VERSIONINFO
  FILETYPE VFT_DLL
  FILESUBTYPE VFT2_UNKNOWN
 BEGIN
-    BLOCK "StringFileInfo"
-    BEGIN
-        BLOCK "040904b0"
-        BEGIN
-            VALUE "FileDescription", "HoMM III - OpenGL wrapper"
-            VALUE "FileVersion", "2019.02.08.209"
-            VALUE "LegalCopyright", "© 2019 Verok (verokster@gmail.com)"
-            VALUE "OriginalFilename", "ddraw.dll"
-            VALUE "ProductVersion", "1.2.7"
-            VALUE "ProductName", "Heroes3GL"
-        END
-    END
-    BLOCK "VarFileInfo"
-    BEGIN
-        VALUE "Translation", 0x409, 1200
-    END
+	BLOCK "StringFileInfo"
+	BEGIN
+		BLOCK "040904b0"
+		BEGIN
+			VALUE "FileDescription", "HoMM III - OpenGL wrapper"
+			VALUE "FileVersion", "2019.04.24.227"
+			VALUE "LegalCopyright", "© 2019 Verok (verokster@gmail.com)"
+			VALUE "OriginalFilename", "ddraw.dll"
+			VALUE "ProductVersion", "1.2.7"
+			VALUE "ProductName", "Heroes3GL"
+		END
+	END
+	BLOCK "VarFileInfo"
+	BEGIN
+		VALUE "Translation", 0x409, 1200
+	END
 END
 
 #endif    // English (United States) resources

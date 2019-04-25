@@ -76,8 +76,8 @@ namespace Window
 		EnableMenuItem(hMenu, IDM_ASPECT_RATIO, MF_BYCOMMAND | (glVersion ? MF_ENABLED : (MF_DISABLED | MF_GRAYED)));
 		CheckMenuItem(hMenu, IDM_ASPECT_RATIO, MF_BYCOMMAND | (glVersion && config.image.aspect ? MF_CHECKED : MF_UNCHECKED));
 
-		EnableMenuItem(hMenu, IDM_VSYNC, MF_BYCOMMAND | (WGLSwapInterval ? MF_ENABLED : (MF_DISABLED | MF_GRAYED)));
-		CheckMenuItem(hMenu, IDM_VSYNC, MF_BYCOMMAND | (WGLSwapInterval && config.image.vSync ? MF_CHECKED : MF_UNCHECKED));
+		EnableMenuItem(hMenu, IDM_VSYNC, MF_BYCOMMAND | (WGLSwapInterval && !config.singleThread ? MF_ENABLED : (MF_DISABLED | MF_GRAYED)));
+		CheckMenuItem(hMenu, IDM_VSYNC, MF_BYCOMMAND | (WGLSwapInterval && !config.singleThread && config.image.vSync ? MF_CHECKED : MF_UNCHECKED));
 
 		CheckMenuItem(hMenu, IDM_FILT_OFF, MF_BYCOMMAND | MF_UNCHECKED);
 
@@ -422,11 +422,40 @@ namespace Window
 			SetWindowLong(hDlg, GWL_EXSTYLE, NULL);
 			EnumChildWindows(hDlg, Hooks::EnumChildProc, NULL);
 
-			CHAR email[50];
-			GetDlgItemText(hDlg, IDC_LNK_EMAIL, email, sizeof(email) - 1);
-			CHAR anchor[256];
-			StrPrint(anchor, "<A HREF=\"mailto:%s\">%s</A>", email, email);
-			SetDlgItemText(hDlg, IDC_LNK_EMAIL, anchor);
+			CHAR path[MAX_PATH];
+			CHAR temp[100];
+
+			GetModuleFileName(hDllModule, path, sizeof(path));
+
+			DWORD hSize;
+			DWORD verSize = GetFileVersionInfoSize(path, &hSize);
+
+			if (verSize)
+			{
+				CHAR* verData = (CHAR*)MemoryAlloc(verSize);
+				{
+					if (GetFileVersionInfo(path, hSize, verSize, verData))
+					{
+						VOID* buffer;
+						UINT size;
+						if (VerQueryValue(verData, "\\", &buffer, &size) && size)
+						{
+							VS_FIXEDFILEINFO* verInfo = (VS_FIXEDFILEINFO*)buffer;
+
+							GetDlgItemText(hDlg, IDC_VERSION, temp, sizeof(temp));
+							StrPrint(path, temp, HIWORD(verInfo->dwProductVersionMS), LOWORD(verInfo->dwProductVersionMS), HIWORD(verInfo->dwProductVersionLS), LOWORD(verInfo->dwFileVersionLS));
+							SetDlgItemText(hDlg, IDC_VERSION, path);
+						}
+					}
+				}
+				MemoryFree(verData);
+			}
+
+			if (GetDlgItemText(hDlg, IDC_LNK_EMAIL, temp, sizeof(temp)))
+			{
+				StrPrint(path, "<A HREF=\"mailto:%s\">%s</A>", temp, temp);
+				SetDlgItemText(hDlg, IDC_LNK_EMAIL, path);
+			}
 
 			break;
 		}
@@ -488,25 +517,30 @@ namespace Window
 		case WM_MOVE:
 		{
 			OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
-			if (ddraw && ddraw->hDraw)
+			if (ddraw)
 			{
-				DWORD stye = GetWindowLong(ddraw->hDraw, GWL_STYLE);
-				if (stye & WS_POPUP)
+				if (ddraw->hDraw && !config.singleWindow)
 				{
-					POINT point = { LOWORD(lParam), HIWORD(lParam) };
-					ScreenToClient(hWnd, &point);
+					DWORD stye = GetWindowLong(ddraw->hDraw, GWL_STYLE);
+					if (stye & WS_POPUP)
+					{
+						POINT point = { LOWORD(lParam), HIWORD(lParam) };
+						ScreenToClient(hWnd, &point);
 
-					RECT rect;
-					rect.left = point.x - LOWORD(lParam);
-					rect.top = point.y - HIWORD(lParam);
-					rect.right = rect.left + 256;
-					rect.bottom = rect.left + 256;
+						RECT rect;
+						rect.left = point.x - LOWORD(lParam);
+						rect.top = point.y - HIWORD(lParam);
+						rect.right = rect.left + 256;
+						rect.bottom = rect.left + 256;
 
-					AdjustWindowRect(&rect, stye, FALSE);
-					SetWindowPos(ddraw->hDraw, NULL, rect.left, rect.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOREPOSITION | SWP_NOOWNERZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING);
+						AdjustWindowRect(&rect, stye, FALSE);
+						SetWindowPos(ddraw->hDraw, NULL, rect.left, rect.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOREPOSITION | SWP_NOOWNERZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING);
+					}
+					else
+						SetWindowPos(ddraw->hDraw, NULL, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOREPOSITION | SWP_NOOWNERZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING);
 				}
-				else
-					SetWindowPos(ddraw->hDraw, NULL, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOREPOSITION | SWP_NOOWNERZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING);
+
+				SetEvent(ddraw->hDrawEvent);
 			}
 
 			return CallWindowProc(OldWindowProc, hWnd, uMsg, wParam, lParam);
@@ -517,7 +551,7 @@ namespace Window
 			OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
 			if (ddraw)
 			{
-				if (ddraw->hDraw)
+				if (ddraw->hDraw && !config.singleWindow)
 					SetWindowPos(ddraw->hDraw, NULL, 0, 0, LOWORD(lParam), HIWORD(lParam), SWP_NOZORDER | SWP_NOMOVE | SWP_NOREDRAW | SWP_NOREPOSITION | SWP_NOOWNERZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING);
 
 				ddraw->viewport.width = LOWORD(lParam);
@@ -690,7 +724,7 @@ namespace Window
 				if (hActCtx && hActCtx != INVALID_HANDLE_VALUE && !ActivateActCtxC(hActCtx, &cookie))
 					cookie = NULL;
 
-				res = DialogBoxParam(hDllModule, MAKEINTRESOURCE(config.language == LNG_ENGLISH ? IDD_ENGLISH : IDD_RUSSIAN), hWnd, (DLGPROC)AboutProc, NULL);
+				res = DialogBoxParam(hDllModule, MAKEINTRESOURCE(config.language == LNG_ENGLISH ? (cookie ? IDD_ENGLISH : IDD_ENGLISH_OLD) : (cookie ? IDD_RUSSIAN : IDD_RUSSIAN_OLD)), hWnd, (DLGPROC)AboutProc, NULL);
 
 				if (cookie)
 					DeactivateActCtxC(0, cookie);

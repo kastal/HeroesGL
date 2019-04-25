@@ -399,21 +399,23 @@ namespace Hooks
 						info.cbSize = sizeof(MENUITEMINFO);
 						info.fMask = MIIM_TYPE;
 						info.fType = MFT_STRING;
-						info.cch = sizeof(buffer);
 						info.dwTypeData = buffer;
 
+						info.cch = sizeof(buffer);
 						if (config.keys.windowedMode && GetMenuItemInfo(hNew, IDM_RES_FULL_SCREEN, FALSE, &info))
 						{
 							StrPrint(buffer, "%s (F%d)", buffer, config.keys.windowedMode);
 							SetMenuItemInfo(hNew, IDM_RES_FULL_SCREEN, FALSE, &info);
 						}
 
+						info.cch = sizeof(buffer);
 						if (config.keys.aspectRatio && GetMenuItemInfo(hNew, IDM_ASPECT_RATIO, FALSE, &info))
 						{
 							StrPrint(buffer, "%s (F%d)", buffer, config.keys.aspectRatio);
 							SetMenuItemInfo(hNew, IDM_ASPECT_RATIO, FALSE, &info);
 						}
 
+						info.cch = sizeof(buffer);
 						if (config.keys.vSync && GetMenuItemInfo(hNew, IDM_VSYNC, FALSE, &info))
 						{
 							StrPrint(buffer, "%s (F%d)", buffer, config.keys.vSync);
@@ -561,8 +563,8 @@ namespace Hooks
 	BOOL __stdcall EnableMenuItemHook(HMENU hMenu, UINT uIDEnableItem, UINT uEnable)
 	{
 		BOOL found = FALSE;
-		DWORD count = sizeof(menuIds) / sizeof(*menuIds);
 		UINT* menu = menuIds;
+		DWORD count = sizeof(menuIds) / sizeof(UINT);
 		do
 		{
 			if (*menu++ == uIDEnableItem)
@@ -582,6 +584,8 @@ namespace Hooks
 
 		if (config.coldCPU)
 			Sleep(1);
+		else if (glVersion && config.singleThread)
+			Sleep(0);
 
 		return FALSE;
 	}

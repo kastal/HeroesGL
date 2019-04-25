@@ -234,7 +234,7 @@ VOID OpenDraw::RenderOld()
 			FpsCounter* fpsCounter = new FpsCounter(FPS_ACCURACY);
 			{
 				BOOL isVSync = FALSE;
-				if (WGLSwapInterval)
+				if (WGLSwapInterval && !config.singleThread)
 					WGLSwapInterval(0);
 
 				DWORD clear = TRUE;
@@ -243,10 +243,10 @@ VOID OpenDraw::RenderOld()
 					OpenDrawSurface* surface = this->attachedSurface;
 					if (surface)
 					{
-						OpenDrawPalette* palette = surface->attachedPallete;
+						OpenDrawPalette* palette = surface->attachedPalette;
 						if (palette)
 						{
-							if (WGLSwapInterval)
+							if (WGLSwapInterval && !config.singleThread)
 							{
 								if (!isVSync)
 								{
@@ -532,7 +532,7 @@ VOID OpenDraw::RenderOld()
 											bmi->bV5BitCount = 8;
 											bmi->bV5Compression = BI_RGB;
 
-											DWORD* src = (DWORD*)surface->attachedPallete->entries;
+											DWORD* src = (DWORD*)surface->attachedPalette->entries;
 											DWORD* dst = (DWORD*)((BYTE*)data + sizeof(BITMAPV5HEADER));
 											DWORD count = 256;
 											do
@@ -653,7 +653,7 @@ VOID OpenDraw::RenderMid()
 							this->isStateChanged = TRUE;
 
 							BOOL isVSync = FALSE;
-							if (WGLSwapInterval)
+							if (WGLSwapInterval && !config.singleThread)
 								WGLSwapInterval(0);
 
 							DWORD clear = TRUE;
@@ -662,10 +662,10 @@ VOID OpenDraw::RenderMid()
 								OpenDrawSurface* surface = this->attachedSurface;
 								if (surface)
 								{
-									OpenDrawPalette* palette = surface->attachedPallete;
+									OpenDrawPalette* palette = surface->attachedPalette;
 									if (palette)
 									{
-										if (WGLSwapInterval)
+										if (WGLSwapInterval && !config.singleThread)
 										{
 											if (!isVSync)
 											{
@@ -884,7 +884,7 @@ VOID OpenDraw::RenderMid()
 														bmi->bV5BitCount = 8;
 														bmi->bV5Compression = BI_RGB;
 
-														DWORD* src = (DWORD*)surface->attachedPallete->entries;
+														DWORD* src = (DWORD*)surface->attachedPalette->entries;
 														DWORD* dst = (DWORD*)((BYTE*)data + sizeof(BITMAPV5HEADER));
 														DWORD count = 256;
 														do
@@ -1051,7 +1051,7 @@ VOID OpenDraw::RenderNew()
 											this->isStateChanged = TRUE;
 
 											BOOL isVSync = FALSE;
-											if (WGLSwapInterval)
+											if (WGLSwapInterval && !config.singleThread)
 												WGLSwapInterval(0);
 
 											DWORD clear = TRUE;
@@ -1060,10 +1060,10 @@ VOID OpenDraw::RenderNew()
 												OpenDrawSurface* surface = this->attachedSurface;
 												if (surface)
 												{
-													OpenDrawPalette* palette = surface->attachedPallete;
+													OpenDrawPalette* palette = surface->attachedPalette;
 													if (palette)
 													{
-														if (WGLSwapInterval)
+														if (WGLSwapInterval && !config.singleThread)
 														{
 															if (!isVSync)
 															{
@@ -1615,7 +1615,7 @@ VOID OpenDraw::RenderNew()
 																			bmi->bV5BitCount = 8;
 																			bmi->bV5Compression = BI_RGB;
 
-																			DWORD* src = (DWORD*)surface->attachedPallete->entries;
+																			DWORD* src = (DWORD*)surface->attachedPalette->entries;
 																			DWORD* dst = (DWORD*)((BYTE*)data + sizeof(BITMAPV5HEADER));
 																			DWORD count = 256;
 																			do
@@ -1700,39 +1700,45 @@ VOID OpenDraw::RenderStart()
 	RECT rect;
 	GetClientRect(this->hWnd, &rect);
 
-	if (this->windowState != WinStateWindowed)
-	{
-		this->hDraw = CreateWindowEx(
-			WS_EX_CONTROLPARENT | WS_EX_TOPMOST,
-			WC_DRAW,
-			NULL,
-			WS_VISIBLE | WS_POPUP,
-			rect.left, rect.top,
-			rect.right - rect.left, rect.bottom - rect.top,
-			this->hWnd,
-			NULL,
-			hDllModule,
-			NULL);
-	}
+	if (config.singleWindow)
+		this->hDraw = this->hWnd;
 	else
 	{
-		this->hDraw = CreateWindowEx(
-			WS_EX_CONTROLPARENT,
-			WC_DRAW,
-			NULL,
-			WS_VISIBLE | WS_CHILD,
-			rect.left, rect.top,
-			rect.right - rect.left, rect.bottom - rect.top,
-			this->hWnd,
-			NULL,
-			hDllModule,
-			NULL);
+		if (this->windowState != WinStateWindowed)
+		{
+			this->hDraw = CreateWindowEx(
+				WS_EX_CONTROLPARENT | WS_EX_TOPMOST,
+				WC_DRAW,
+				NULL,
+				WS_VISIBLE | WS_POPUP,
+				rect.left, rect.top,
+				rect.right - rect.left, rect.bottom - rect.top,
+				this->hWnd,
+				NULL,
+				hDllModule,
+				NULL);
+		}
+		else
+		{
+			this->hDraw = CreateWindowEx(
+				WS_EX_CONTROLPARENT,
+				WC_DRAW,
+				NULL,
+				WS_VISIBLE | WS_CHILD,
+				rect.left, rect.top,
+				rect.right - rect.left, rect.bottom - rect.top,
+				this->hWnd,
+				NULL,
+				hDllModule,
+				NULL);
+		}
+
+		Window::SetCapturePanel(this->hDraw);
+
+		SetClassLongPtr(this->hDraw, GCLP_HBRBACKGROUND, NULL);
+		RedrawWindow(this->hDraw, NULL, NULL, RDW_INVALIDATE);
 	}
 
-	Window::SetCapturePanel(this->hDraw);
-
-	SetClassLongPtr(this->hDraw, GCLP_HBRBACKGROUND, NULL);
-	RedrawWindow(this->hDraw, NULL, NULL, RDW_INVALIDATE);
 	SetClassLongPtr(this->hWnd, GCLP_HBRBACKGROUND, NULL);
 	RedrawWindow(this->hWnd, NULL, NULL, RDW_INVALIDATE);
 
@@ -1744,7 +1750,7 @@ VOID OpenDraw::RenderStart()
 	SECURITY_ATTRIBUTES sAttribs;
 	MemoryZero(&sAttribs, sizeof(SECURITY_ATTRIBUTES));
 	sAttribs.nLength = sizeof(SECURITY_ATTRIBUTES);
-	this->hDrawThread = CreateThread(&sAttribs, 262144, RenderThread, this, HIGH_PRIORITY_CLASS, &threadId);
+	this->hDrawThread = CreateThread(&sAttribs, 256 * 1024, RenderThread, this, NORMAL_PRIORITY_CLASS, &threadId);
 }
 
 VOID OpenDraw::RenderStop()
@@ -1758,12 +1764,15 @@ VOID OpenDraw::RenderStop()
 	CloseHandle(this->hDrawThread);
 	this->hDrawThread = NULL;
 
-	BOOL wasFull = GetWindowLong(this->hDraw, GWL_STYLE) & WS_POPUP;
-	if (DestroyWindow(this->hDraw))
-		this->hDraw = NULL;
+	if (!config.singleWindow)
+	{
+		BOOL wasFull = GetWindowLong(this->hDraw, GWL_STYLE) & WS_POPUP;
+		if (DestroyWindow(this->hDraw))
+			this->hDraw = NULL;
 
-	if (wasFull)
-		GL::ResetContext();
+		if (wasFull)
+			GL::ResetContext();
+	}
 
 	ClipCursor(NULL);
 

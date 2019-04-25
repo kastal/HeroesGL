@@ -9,6 +9,7 @@
 #define LNG_RUSSIAN						1
 #define IDC_BTN_OK						1
 #define IDC_LNK_EMAIL					2
+#define IDC_VERSION						3
 
 #define IDR_STENCIL_VERTEX              30
 #define IDR_STENCIL_FRAGMENT            31
@@ -45,7 +46,9 @@
 #define IDM_ENGLISH                     100
 #define IDM_RUSSIAN                     101
 #define IDD_ENGLISH						200
-#define IDD_RUSSIAN						201
+#define IDD_ENGLISH_OLD					201
+#define IDD_RUSSIAN						202
+#define IDD_RUSSIAN_OLD					203
 
 #define IDM_FILT_OFF                    20000
 #define IDM_FILT_LINEAR                 20001
