@@ -179,6 +179,7 @@ struct ConfigItems
 	BOOL singleThread;
 	BOOL singleWindow;
 	BOOL coldCPU;
+	BOOL pointerFix;
 
 	struct {
 		BOOL aspect;

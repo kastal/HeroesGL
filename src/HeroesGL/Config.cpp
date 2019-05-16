@@ -101,6 +101,9 @@ namespace Config
 			config.coldCPU = FALSE;
 			Config::Set(CONFIG_WRAPPER, "ColdCPU", config.coldCPU);
 
+			config.pointerFix = TRUE;
+			Config::Set(CONFIG_WRAPPER, "PointerFix", config.pointerFix);
+
 			config.image.aspect = TRUE;
 			Config::Set(CONFIG_WRAPPER, "ImageAspect", config.image.aspect);
 
@@ -146,7 +149,10 @@ namespace Config
 			Config::Set(CONFIG_KEYS, "VSync", "");
 		}
 		else
+		{
 			config.coldCPU = (BOOL)Config::Get(CONFIG_WRAPPER, "ColdCPU", FALSE);
+			config.pointerFix = (BOOL)Config::Get(CONFIG_WRAPPER, "PointerFix", TRUE);
+		}
 
 		if (!config.isNoGL)
 		{

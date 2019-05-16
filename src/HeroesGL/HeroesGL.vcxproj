@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-	<VCProjectVersion>16.0</VCProjectVersion>
+    <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{5E8DD992-42B3-4645-9810-E4D7D7FB3096}</ProjectGuid>
     <RootNamespace>HeroesGL</RootNamespace>
     <ProjectName>HeroesGL</ProjectName>
@@ -148,7 +148,8 @@
       <AssemblyDebug>false</AssemblyDebug>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <BaseAddress>0x60000000</BaseAddress>
-      <MergeSections>.text=.rdata</MergeSections>
+      <MergeSections>
+      </MergeSections>
       <SectionAlignment>4096</SectionAlignment>
       <ModuleDefinitionFile>$(ProjectDir)\module.def</ModuleDefinitionFile>
       <EntryPointSymbol>DllMain</EntryPointSymbol>

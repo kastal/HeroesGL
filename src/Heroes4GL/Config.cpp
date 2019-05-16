@@ -27,6 +27,8 @@
 
 ConfigItems config;
 
+CHAR keysBuffer[4096];
+
 namespace Config
 {
 	VOID __fastcall Load(HMODULE hModule, AddressSpace* hookSpace)
@@ -266,6 +268,27 @@ namespace Config
 			config.keys.aspectRatio = 5;
 			config.keys.vSync = 0;
 		}
+	}
+
+	BOOL __fastcall Check(const CHAR* app, const CHAR* key)
+	{
+		if (GetPrivateProfileString(app, NULL, NULL, keysBuffer, sizeof(keysBuffer), config.file))
+		{
+			CHAR* ptr = keysBuffer;
+			while (*ptr)
+			{
+				if (!StrCompareInsensitive(ptr, key))
+					return TRUE;
+
+				ptr = StrChar(ptr, NULL);
+				if (!ptr)
+					return FALSE;
+
+				++ptr;
+			}
+		}
+
+		return FALSE;
 	}
 
 	INT __fastcall Get(const CHAR* app, const CHAR* key, INT default)

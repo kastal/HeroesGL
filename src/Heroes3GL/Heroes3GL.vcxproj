@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-	<VCProjectVersion>16.0</VCProjectVersion>
+    <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{62a3e190-3331-4f08-9a9f-24315d6a805e}</ProjectGuid>
     <RootNamespace>Heroes3GL</RootNamespace>
     <ProjectName>Heroes3GL</ProjectName>
@@ -147,7 +147,8 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AssemblyDebug>false</AssemblyDebug>
       <BaseAddress>0x60000000</BaseAddress>
-      <MergeSections>.text=.rdata</MergeSections>
+      <MergeSections>
+      </MergeSections>
       <SectionAlignment>4096</SectionAlignment>
       <ModuleDefinitionFile>$(ProjectDir)\module.def</ModuleDefinitionFile>
       <OutputFile>D:\Games\Heroes 3\ddraw$(TargetExt)</OutputFile>

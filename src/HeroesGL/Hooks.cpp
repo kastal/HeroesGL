@@ -684,9 +684,9 @@ namespace Hooks
 	}
 
 #pragma region Mouse Pointers
-	DWORD monoEntries[2] = { 0x00000000, 0x00ffffff };
+	const DWORD monoEntries[2] = { 0x00000000, 0x00ffffff };
 
-	DWORD palEntries[256] = {
+	const DWORD palEntries[256] = {
 		0x00000000,
 		0x00800000,
 		0x00008000,
@@ -993,110 +993,282 @@ namespace Hooks
 
 	HBITMAP __stdcall CreateBitmapIndirectHook(BITMAP* pbm)
 	{
+		HBITMAP hBmp = NULL;
 		HDC hDc = GetDC(hWnd);
 		if (hDc)
 		{
-			HBITMAP hBmp = NULL, hBmp1 = NULL, hBmp2 = NULL;
-			VOID* colorData1, *colorData2;
-
-			DWORD width = (DWORD)MathRound(scale.cx * pbm->bmWidth);
-
-			DWORD height;
-			if (hookSpace->color_pointer)
-				height = (DWORD)MathRound(scale.cy * pbm->bmHeight);
-			else
-				height = (DWORD)(MathRound(scale.cy * pbm->bmHeight * 0.5f)) << 1;
-
-			DWORD size = sizeof(BITMAPINFOHEADER) + 256 * sizeof(DWORD);
-			BITMAPINFO* bmi = (BITMAPINFO*)MemoryAlloc(size);
+			if (GetDeviceCaps(hDc, BITSPIXEL) == 32)
 			{
-				MemoryZero(bmi, size);
+				VOID* colorData;
+				DWORD width = (DWORD)MathRound(scale.cx * pbm->bmWidth);
+				DWORD height = (DWORD)MathRound(scale.cy * (pbm->bmBitsPixel != 8 ? pbm->bmHeight / 2 : pbm->bmHeight));
 
-				BITMAPINFOHEADER* bmiHeader = &bmi->bmiHeader;
-				bmiHeader->biSize = sizeof(BITMAPINFOHEADER);
-				bmiHeader->biPlanes = pbm->bmPlanes;
-				bmiHeader->biXPelsPerMeter = 1;
-				bmiHeader->biYPelsPerMeter = 1;
-				bmiHeader->biCompression = BI_RGB;
-
-				if (pbm->bmBitsPixel == 8)
 				{
-					bmiHeader->biBitCount = 8;
-					bmiHeader->biClrUsed = 256;
-					MemoryCopy(bmi->bmiColors, palEntries, 256 * sizeof(DWORD));
-				}
-				else
-				{
-					bmiHeader->biBitCount = 1;
-					bmiHeader->biClrUsed = 2;
-					MemoryCopy(bmi->bmiColors, monoEntries, 2 * sizeof(DWORD));
-				}
-
-				bmiHeader->biWidth = pbm->bmWidth;
-				bmiHeader->biHeight = -pbm->bmHeight;
-				hBmp1 = CreateDIBSection(hDc, bmi, 0, &colorData1, 0, 0);
-
-				bmiHeader->biWidth = width;
-				bmiHeader->biHeight = height;
-				hBmp2 = CreateDIBSection(hDc, bmi, 0, &colorData2, 0, 0);
-			}
-			MemoryFree(bmi);
-
-			if (hBmp1 && hBmp2)
-			{
-				if (pbm->bmBitsPixel == 8)
-					MemoryCopy(colorData1, pbm->bmBits, pbm->bmWidth * pbm->bmHeight);
-				else
-					MemoryCopy(colorData1, pbm->bmBits, (DWORD)MathCeil(0.125f * pbm->bmWidth * pbm->bmHeight));
-
-				BOOL stretched = FALSE;
-				HDC hDc1 = CreateCompatibleDC(hDc);
-				if (hDc1)
-				{
-					SelectObject(hDc1, hBmp1);
-
-					HDC hDc2 = CreateCompatibleDC(hDc);
-					if (hDc2)
+					DWORD size = sizeof(BITMAPINFOHEADER);
+					BITMAPINFO* bmi = (BITMAPINFO*)MemoryAlloc(size);
 					{
-						SelectObject(hDc2, hBmp2);
-						stretched = StretchBlt(hDc2, 0, 0, width, height, hDc1, 0, 0, pbm->bmWidth, pbm->bmHeight, SRCCOPY);
+						MemoryZero(bmi, size);
 
-						DeleteDC(hDc2);
+						BITMAPINFOHEADER* bmiHeader = &bmi->bmiHeader;
+						bmiHeader->biSize = sizeof(BITMAPINFOHEADER);
+						bmiHeader->biPlanes = pbm->bmPlanes;
+						bmiHeader->biXPelsPerMeter = 1;
+						bmiHeader->biYPelsPerMeter = 1;
+						bmiHeader->biCompression = BI_RGB;
+						bmiHeader->biBitCount = 32;
+
+						bmiHeader->biWidth = width;
+						bmiHeader->biHeight = -*(LONG*)&height;
+						hBmp = CreateDIBSection(hDc, bmi, 0, &colorData, 0, 0);
+					}
+					MemoryFree(bmi);
+
+					if (hBmp)
+					{
+						BYTE* src = (BYTE*)pbm->bmBits;
+
+						FLOAT* buffer = (FLOAT*)MemoryAlloc(pbm->bmWidth * pbm->bmHeight * sizeof(FLOAT) * sizeof(DWORD));
+						{
+							FLOAT* dst = buffer;
+							DWORD count = pbm->bmWidth * pbm->bmHeight;
+							DWORD checkHeight = pbm->bmHeight;
+							if (pbm->bmBitsPixel == 8)
+							{
+								do
+								{
+									DWORD index = *src++;
+									DWORD color = palEntries[index];
+
+									BYTE* c = (BYTE*)& color;
+
+									*dst++ = (FLOAT)* c++ / 255.0f;
+									*dst++ = (FLOAT)* c++ / 255.0f;
+									*dst++ = (FLOAT)* c / 255.0f;
+
+									*dst++ = !index ? 0.0f : 1.0f;
+								} while (--count);
+							}
+							else
+							{
+								count >>= 1;
+								checkHeight >>= 1;
+
+								BYTE*xor = src + count / 8;
+
+								BYTE andMask = *src++;
+								BYTE xorMask = *xor++;
+								DWORD countMask = 8;
+
+								do
+								{
+									FLOAT value = (xorMask & 0x80) ? 1.0f : 0.0f;
+									*dst++ = value;
+									*dst++ = value;
+									*dst++ = value;
+
+									value = (andMask & 0x80) ? 0.0f : 1.0f;
+									*dst++ = value;
+
+									if (--countMask)
+									{
+										andMask <<= 1;
+										xorMask <<= 1;
+									}
+									else
+									{
+										countMask = 8;
+										andMask = *src++;
+										xorMask = *xor++;
+									}
+								} while (--count);
+							}
+
+							BYTE* dest = (BYTE*)colorData;
+							for (DWORD j = 0; j < height; ++j)
+							{
+								FLOAT y = (FLOAT)j / scale.cy;
+
+								FLOAT f = (FLOAT)MathFloor(y);
+								FLOAT yFract = y - f;
+								yFract = yFract * yFract * (3.0f - 2.0f * yFract);
+
+								INT y0 = (INT)f;
+								if (y0 < 0)
+									y0 = 0;
+
+								INT y1 = (INT)MathCeil(y);
+								if (y1 >= (INT)checkHeight)
+									y1 = (INT)checkHeight - 1;
+
+								for (DWORD i = 0; i < width; ++i)
+								{
+									FLOAT x = (FLOAT)i / scale.cx;
+
+									FLOAT f = (FLOAT)MathFloor(x);
+									FLOAT xFract = x - f;
+									xFract = xFract * xFract * (3.0f - 2.0f * xFract);
+
+									INT x0 = (INT)f;
+									if (x0 < 0)
+										x0 = 0;
+
+									INT x1 = (INT)MathCeil(x);
+									if (x1 >= (INT)pbm->bmWidth)
+										x1 = (INT)pbm->bmWidth - 1;
+
+									FLOAT * p0 = buffer + (y0 * pbm->bmWidth + x0) * sizeof(DWORD);
+									FLOAT * p1 = buffer + (y0 * pbm->bmWidth + x1) * sizeof(DWORD);
+
+									FLOAT * p2 = buffer + (y1 * pbm->bmWidth + x0) * sizeof(DWORD);
+									FLOAT * p3 = buffer + (y1 * pbm->bmWidth + x1) * sizeof(DWORD);
+
+									DWORD k = sizeof(DWORD);
+									do
+									{
+										FLOAT p01 = (*p1 - *p0) * xFract + *p0;
+										FLOAT p23 = (*p3 - *p2) * xFract + *p2;
+
+										FLOAT p = (p23 - p01) * yFract + p01;
+
+										*dest++ = (BYTE)MathRound(p * 255.0f);
+
+										++p0; ++p1; ++p2; ++p3;
+									} while (--k);
+								}
+							}
+						}
+						MemoryFree(buffer);
+					}
+				}
+			}
+			else
+			{
+				HBITMAP hBmp1 = NULL, hBmp2 = NULL;
+				VOID* colorData1, * colorData2;
+
+				DWORD width = (DWORD)MathRound(scale.cx * pbm->bmWidth);
+
+				DWORD height;
+				if (hookSpace->color_pointer)
+					height = (DWORD)MathRound(scale.cy * pbm->bmHeight);
+				else
+					height = (DWORD)(MathRound(scale.cy * pbm->bmHeight * 0.5f)) << 1;
+
+				DWORD size = sizeof(BITMAPINFOHEADER) + 256 * sizeof(DWORD);
+				BITMAPINFO* bmi = (BITMAPINFO*)MemoryAlloc(size);
+				{
+					MemoryZero(bmi, size);
+
+					BITMAPINFOHEADER* bmiHeader = &bmi->bmiHeader;
+					bmiHeader->biSize = sizeof(BITMAPINFOHEADER);
+					bmiHeader->biPlanes = pbm->bmPlanes;
+					bmiHeader->biXPelsPerMeter = 1;
+					bmiHeader->biYPelsPerMeter = 1;
+					bmiHeader->biCompression = BI_RGB;
+
+					if (pbm->bmBitsPixel == 8)
+					{
+						bmiHeader->biBitCount = 8;
+						bmiHeader->biClrUsed = 256;
+						MemoryCopy(bmi->bmiColors, palEntries, 256 * sizeof(DWORD));
+					}
+					else
+					{
+						bmiHeader->biBitCount = 1;
+						bmiHeader->biClrUsed = 2;
+						MemoryCopy(bmi->bmiColors, monoEntries, 2 * sizeof(DWORD));
 					}
 
-					DeleteDC(hDc1);
-				}
+					bmiHeader->biWidth = pbm->bmWidth;
+					bmiHeader->biHeight = -pbm->bmHeight;
+					hBmp1 = CreateDIBSection(hDc, bmi, 0, &colorData1, 0, 0);
 
-				if (stretched)
+					bmiHeader->biWidth = width;
+					bmiHeader->biHeight = height;
+					hBmp2 = CreateDIBSection(hDc, bmi, 0, &colorData2, 0, 0);
+				}
+				MemoryFree(bmi);
+
+				if (hBmp1 && hBmp2)
 				{
-					DeleteObject(hBmp1);
-					hBmp = hBmp2;
+					if (pbm->bmBitsPixel == 8)
+						MemoryCopy(colorData1, pbm->bmBits, pbm->bmWidthBytes * pbm->bmHeight);
+					else
+						MemoryCopy(colorData1, pbm->bmBits, (DWORD)MathCeil(pbm->bmWidthBytes* pbm->bmHeight));
+
+					BOOL stretched = FALSE;
+					HDC hDc1 = CreateCompatibleDC(hDc);
+					if (hDc1)
+					{
+						SelectObject(hDc1, hBmp1);
+
+						HDC hDc2 = CreateCompatibleDC(hDc);
+						if (hDc2)
+						{
+							SelectObject(hDc2, hBmp2);
+							stretched = StretchBlt(hDc2, 0, 0, width, height, hDc1, 0, 0, pbm->bmWidth, pbm->bmHeight, SRCCOPY);
+
+							DeleteDC(hDc2);
+						}
+
+						DeleteDC(hDc1);
+					}
+
+					if (stretched)
+					{
+						DeleteObject(hBmp1);
+						hBmp = hBmp2;
+					}
+					else
+					{
+						DeleteObject(hBmp2);
+						hBmp = hBmp1;
+					}
 				}
 				else
 				{
-					DeleteObject(hBmp2);
-					hBmp = hBmp1;
+					if (hBmp1)
+						DeleteObject(hBmp1);
+
+					if (hBmp2)
+						DeleteObject(hBmp2);
 				}
 			}
-			else
-			{
-				if (hBmp1)
-					DeleteObject(hBmp1);
 
-				if (hBmp2)
-					DeleteObject(hBmp2);
-			}
-
-			return hBmp;
+			ReleaseDC(hWnd, hDc);
 		}
-		else
-			return NULL;
+
+		return hBmp;
 	}
 
 	HICON __stdcall CreateIconIndirectHook(PICONINFO piconinfo)
 	{
 		piconinfo->xHotspot = (DWORD)MathRound(scale.cx * piconinfo->xHotspot);
 		piconinfo->yHotspot = (DWORD)MathRound(scale.cy * piconinfo->yHotspot);
+
+		HDC hDc = GetDC(hWnd);
+		if (hDc)
+		{
+			INT bpp = GetDeviceCaps(hDc, BITSPIXEL);
+			ReleaseDC(hWnd, hDc);
+
+			if (bpp == 32)
+			{
+				if (hookSpace->game_version == 2)
+					piconinfo->hbmColor = piconinfo->hbmMask;
+				
+				DWORD width = (DWORD)MathRound(scale.cx * 32);
+				DWORD height = (DWORD)MathRound(scale.cy * 32);
+
+				if (piconinfo->hbmMask = CreateBitmap(width, height, 1, 1, NULL))
+				{
+					HICON hIcon = CreateIconIndirect(piconinfo);
+					DeleteObject(piconinfo->hbmMask);
+					return hIcon;
+				}
+			}
+		}
+
 		return CreateIconIndirect(piconinfo);
 	}
 #pragma endregion
@@ -1537,7 +1709,7 @@ namespace Hooks
 							PatchFunction(&file, "BeginPaint", BeginPaintHook);
 						}
 
-						if (hookSpace->icons_list)
+						if (hookSpace->icons_list && config.pointerFix)
 						{
 							PatchFunction(&file, "CreateBitmapIndirect", CreateBitmapIndirectHook);
 							PatchFunction(&file, "CreateIconIndirect", CreateIconIndirectHook);
@@ -1581,7 +1753,7 @@ namespace Hooks
 					hookSpace->checkChangeCursor += baseOffset;
 				}
 
-				if (hookSpace->icons_list && hookSpace->color_pointer)
+				if (hookSpace->icons_list && hookSpace->color_pointer && config.pointerFix)
 				{
 					PatchDWord(hookSpace->color_pointer, TRUE);
 					if (hookSpace->color_pointer_nop)

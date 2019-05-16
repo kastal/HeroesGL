@@ -591,49 +591,94 @@ namespace Hooks
 	}
 
 #pragma region Registry
+	struct {
+		BOOL type;
+		HKEY path;
+		BOOL calc;
+		CHAR sub[256];
+		CHAR cls[16];
+	} regKey;
+	
 	LSTATUS __stdcall RegCreateKeyExHook(HKEY hKey, LPCSTR lpSubKey, DWORD Reserved, LPSTR lpClass, DWORD dwOptions, REGSAM samDesired, const LPSECURITY_ATTRIBUTES lpSecurityAttributes, PHKEY phkResult, LPDWORD lpdwDisposition)
 	{
-		return config.isExist ? ERROR_SUCCESS : RegCreateKeyEx(hKey, lpSubKey, Reserved, lpClass, dwOptions, samDesired, lpSecurityAttributes, phkResult, lpdwDisposition);
+		regKey.type = TRUE;
+		regKey.path = hKey;
+		StrCopy(regKey.sub, lpSubKey);
+		MemoryCopy(regKey.cls, lpClass, sizeof(regKey.cls));
+
+		return ERROR_SUCCESS;
 	}
 
 	LSTATUS __stdcall RegOpenKeyExHook(HKEY hKey, LPCSTR lpSubKey, DWORD ulOptions, REGSAM samDesired, PHKEY phkResult)
 	{
-		return config.isExist ? ERROR_SUCCESS : RegOpenKeyEx(hKey, lpSubKey, ulOptions, samDesired, phkResult);
+		regKey.type = FALSE;
+		regKey.path = hKey;
+		StrCopy(regKey.sub, lpSubKey);
+
+		return ERROR_SUCCESS;
 	}
 
 	LSTATUS __stdcall RegCloseKeyHook(HKEY hKey)
 	{
-		return config.isExist ? ERROR_SUCCESS : RegCloseKey(hKey);
+		return ERROR_SUCCESS;
 	}
 
 	LSTATUS __stdcall RegQueryValueExHook(HKEY hKey, LPCSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData)
 	{
 		DWORD size = *lpcbData;
 
-		if (!config.isExist)
+		if (!Config::Check(CONFIG_APP, lpValueName))
 		{
-			LSTATUS res = RegQueryValueEx(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
+			DWORD dwDisposition;
 
-			if (size == sizeof(DWORD))
-				Config::Set(CONFIG_APP, lpValueName, *(INT*)lpData);
-			else
-				Config::Set(CONFIG_APP, lpValueName, (CHAR*)lpData);
+			LSTATUS res = regKey.type ?
+				RegCreateKeyEx(regKey.path, regKey.sub, NULL, regKey.cls, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, &dwDisposition) :
+				RegOpenKeyEx(regKey.path, regKey.sub, NULL, KEY_EXECUTE, &hKey);
 
-			return res;
+			if (!res)
+			{
+				res = RegQueryValueEx(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
+				RegCloseKey(hKey);
+
+				if (size)
+				{
+					if (size == sizeof(DWORD))
+						Config::Set(CONFIG_APP, lpValueName, *(INT*)lpData);
+					else
+						Config::Set(CONFIG_APP, lpValueName, (CHAR*)lpData);
+				}
+
+				return res;
+			}
 		}
 		else
 		{
-			if (size == sizeof(DWORD))
+			if (!size)
 			{
-				*(INT*)lpData = Config::Get(CONFIG_APP, lpValueName, *(INT*)lpData);
-				if (lpType)
-					*lpType = REG_DWORD;
+				*lpType = REG_SZ;
+
+				CHAR buff[256];
+				Config::Get(CONFIG_APP, lpValueName, "", buff, sizeof(buff));
+				*lpcbData = StrLength(buff) + 1;
+
+				regKey.calc = TRUE;
 			}
 			else
 			{
-				Config::Get(CONFIG_APP, lpValueName, "", (CHAR*)lpData, *lpcbData);
-				if (lpType)
-					*lpType = *lpcbData ? REG_BINARY : REG_SZ;
+				if (!regKey.calc && size == sizeof(DWORD))
+				{
+					*(INT*)lpData = Config::Get(CONFIG_APP, lpValueName, *(INT*)lpData);
+					if (lpType)
+						* lpType = REG_DWORD;
+				}
+				else
+				{
+					Config::Get(CONFIG_APP, lpValueName, "", (CHAR*)lpData, *lpcbData);
+					if (lpType)
+						* lpType = *lpcbData ? REG_BINARY : REG_SZ;
+				}
+
+				regKey.calc = FALSE;
 			}
 
 			return ERROR_SUCCESS;

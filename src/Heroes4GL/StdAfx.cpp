@@ -42,7 +42,9 @@ CEIL MathCeil;
 FLOOR MathFloor;
 ROUND MathRound;
 SPRINTF StrPrint;
+STRLEN StrLength;
 STRCMP StrCompare;
+STRICMP StrCompareInsensitive;
 STRCPY StrCopy;
 STRCAT StrCat;
 STRCHR StrChar;
@@ -149,7 +151,9 @@ VOID LoadMsvCRT()
 		if (!MathRound)
 			MathRound = round;
 
+		StrLength = (STRLEN)GetProcAddress(hLib, "strlen");
 		StrCompare = (STRCMP)GetProcAddress(hLib, "strcmp");
+		StrCompareInsensitive = (STRICMP)GetProcAddress(hLib, "_stricmp");
 		StrCopy = (STRCPY)GetProcAddress(hLib, "strcpy");
 		StrCat = (STRCAT)GetProcAddress(hLib, "strcat");
 		StrChar = (STRCHR)GetProcAddress(hLib, "strchr");
