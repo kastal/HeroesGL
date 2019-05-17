@@ -548,6 +548,8 @@ namespace Window
 
 		case WM_SIZE:
 		{
+			if (wParam == SIZE_MINIMIZED) return NULL;
+
 			Hooks::ScalePointer((FLOAT)LOWORD(lParam) / (FLOAT)RES_WIDTH, (FLOAT)HIWORD(lParam) / (FLOAT)RES_HEIGHT);
 
 			OpenDraw* ddraw = Main::FindOpenDrawByWindow(hWnd);
@@ -906,6 +908,17 @@ namespace Window
 			case IDM_FILT_XRBZ_6X:
 			{
 				SelectXBRZMode(hWnd, 6, TRUE);
+				return NULL;
+			}
+
+			case IDM_RES_1280_960:
+			{
+				RECT R, r;
+				GetWindowRect(hWnd, &R);
+				GetClientRect(hWnd, &r);
+				r.right = 1280 + (R.right - R.left - r.right);
+				r.bottom = 960 + (R.bottom - R.top - r.bottom);
+				SetWindowPos(hWnd, 0, 0, 0, r.right, r.bottom, SWP_NOMOVE | SWP_NOREPOSITION | SWP_NOZORDER);
 				return NULL;
 			}
 

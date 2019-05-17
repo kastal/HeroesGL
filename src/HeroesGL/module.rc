@@ -16,57 +16,58 @@ LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 
 IDM_RUSSIAN MENU
 BEGIN
-	POPUP "&Экран"
+	POPUP "&ГќД™Д‘Е•Г­"
 	BEGIN
-		POPUP "&Разрешение"
+		POPUP "&ДђЕ•Г§Д‘ДєЕ™ДєГ­ДЌДє"
 		BEGIN
-			MENUITEM "&640 x 480",					IDM_RES_640_480
-			MENUITEM "&800 x 600",					IDM_RES_800_600
-			MENUITEM "&1024 x 768",					IDM_RES_1024_768
-			MENUITEM "1&280 x 1024",				IDM_RES_1280_1024
+			MENUITEM "640 x &480",					IDM_RES_640_480
+			MENUITEM "800 x &600",					IDM_RES_800_600
+			MENUITEM "1024 x &768",					IDM_RES_1024_768
+			MENUITEM "1280 x &960",					IDM_RES_1280_960
+			MENUITEM "1280 x &1024",				IDM_RES_1280_1024
 			MENUITEM SEPARATOR
-			MENUITEM "В &полный экран",		IDM_RES_FULL_SCREEN
+			MENUITEM "Г‚ &ДЏГ®Г«Г­Е±Г© ГЅД™Д‘Е•Г­",		IDM_RES_FULL_SCREEN
 		END
-		POPUP "&Фильтрация"
+		POPUP "&Г”ДЌГ«ГјЕ€Д‘Е•Г¶ДЌЛ™"
 		BEGIN
-			MENUITEM "&Откл.",						IDM_FILT_OFF
-			MENUITEM "Би&линейная",					IDM_FILT_LINEAR
-			MENUITEM "Би&кубическая",				IDM_FILT_CUBIC
+			MENUITEM "&ГЋЕ€Д™Г«.",						IDM_FILT_OFF
+			MENUITEM "ГЃДЌ&Г«ДЌГ­ДєГ©Г­Е•Л™",					IDM_FILT_LINEAR
+			MENUITEM "ГЃДЌ&Д™ГіГЎДЌГ·ДєЕ„Д™Е•Л™",				IDM_FILT_CUBIC
 			MENUITEM SEPARATOR
 			POPUP "&ScaleNx"
 			BEGIN
-				MENUITEM "+ Би&линейная",			IDM_FILT_SCALENX_LINEAR
-				MENUITEM "+ Би&кубическая",			IDM_FILT_SCALENX_CUBIC
+				MENUITEM "+ ГЃДЌ&Г«ДЌГ­ДєГ©Г­Е•Л™",			IDM_FILT_SCALENX_LINEAR
+				MENUITEM "+ ГЃДЌ&Д™ГіГЎДЌГ·ДєЕ„Д™Е•Л™",			IDM_FILT_SCALENX_CUBIC
 				MENUITEM SEPARATOR
 				MENUITEM "x2",						IDM_FILT_SCALENX_2X
 				MENUITEM "x3",						IDM_FILT_SCALENX_3X
 			END
 			POPUP "Super &Eagle"
 			BEGIN
-				MENUITEM "+ Би&линейная",			IDM_FILT_EAGLE_LINEAR
-				MENUITEM "+ Би&кубическая",			IDM_FILT_EAGLE_CUBIC
+				MENUITEM "+ ГЃДЌ&Г«ДЌГ­ДєГ©Г­Е•Л™",			IDM_FILT_EAGLE_LINEAR
+				MENUITEM "+ ГЃДЌ&Д™ГіГЎДЌГ·ДєЕ„Д™Е•Л™",			IDM_FILT_EAGLE_CUBIC
 				MENUITEM SEPARATOR
 				MENUITEM "x2",						IDM_FILT_EAGLE_2X
 			END
 			POPUP "2x&SaI"
 			BEGIN
-				MENUITEM "+ Би&линейная",			IDM_FILT_XSAL_LINEAR
-				MENUITEM "+ Би&кубическая",			IDM_FILT_XSAL_CUBIC
+				MENUITEM "+ ГЃДЌ&Г«ДЌГ­ДєГ©Г­Е•Л™",			IDM_FILT_XSAL_LINEAR
+				MENUITEM "+ ГЃДЌ&Д™ГіГЎДЌГ·ДєЕ„Д™Е•Л™",			IDM_FILT_XSAL_CUBIC
 				MENUITEM SEPARATOR
 				MENUITEM "x2",						IDM_FILT_XSAL_2X
 			END
 			POPUP "Scale&HQ"
 			BEGIN
-				MENUITEM "+ Би&линейная",			IDM_FILT_SCALEHQ_LINEAR
-				MENUITEM "+ Би&кубическая",			IDM_FILT_SCALEHQ_CUBIC
+				MENUITEM "+ ГЃДЌ&Г«ДЌГ­ДєГ©Г­Е•Л™",			IDM_FILT_SCALEHQ_LINEAR
+				MENUITEM "+ ГЃДЌ&Д™ГіГЎДЌГ·ДєЕ„Д™Е•Л™",			IDM_FILT_SCALEHQ_CUBIC
 				MENUITEM SEPARATOR
 				MENUITEM "x2",						IDM_FILT_SCALEHQ_2X
 				MENUITEM "x4",						IDM_FILT_SCALEHQ_4X
 			END
 			POPUP "&xBRz"
 			BEGIN
-				MENUITEM "+ Би&линейная",			IDM_FILT_XRBZ_LINEAR
-				MENUITEM "+ Би&кубическая",			IDM_FILT_XRBZ_CUBIC
+				MENUITEM "+ ГЃДЌ&Г«ДЌГ­ДєГ©Г­Е•Л™",			IDM_FILT_XRBZ_LINEAR
+				MENUITEM "+ ГЃДЌ&Д™ГіГЎДЌГ·ДєЕ„Д™Е•Л™",			IDM_FILT_XRBZ_CUBIC
 				MENUITEM SEPARATOR
 				MENUITEM "x2",						IDM_FILT_XRBZ_2X
 				MENUITEM "x3",						IDM_FILT_XRBZ_3X
@@ -75,19 +76,19 @@ BEGIN
 				MENUITEM "x6",						IDM_FILT_XRBZ_6X
 			END
 		END
-		MENUITEM "Сохр. &пропорции",			IDM_ASPECT_RATIO
-		MENUITEM "Верт. &синхронизация",			IDM_VSYNC
+		MENUITEM "ЕѓГ®Е‘Д‘. &ДЏД‘Г®ДЏГ®Д‘Г¶ДЌДЌ",			IDM_ASPECT_RATIO
+		MENUITEM "Г‚ДєД‘Е€. &Е„ДЌГ­Е‘Д‘Г®Г­ДЌГ§Е•Г¶ДЌЛ™",			IDM_VSYNC
 	END
-	POPUP "П&атчи"
+	POPUP "ДЋ&Е•Е€Г·ДЌ"
 	BEGIN
-		MENUITEM "&Холодный ЦП",					IDM_PATCH_CPU
+		MENUITEM "&ЕђГ®Г«Г®Г¤Г­Е±Г© Г–ДЋ",					IDM_PATCH_CPU
 	END
-	POPUP "&Помощь"
+	POPUP "&ДЋГ®Д›Г®ЕЇГј"
 	BEGIN
-		MENUITEM "&Руководство",					IDM_HELP_MANUAL
+		MENUITEM "&ДђГіД™Г®ГўГ®Г¤Е„Е€ГўГ®",					IDM_HELP_MANUAL
 		MENUITEM SEPARATOR
-		MENUITEM "О &враппере",						IDM_HELP_WRAPPER
-		MENUITEM "О &программе",					IDM_HELP_ABOUT
+		MENUITEM "ГЋ &ГўД‘Е•ДЏДЏДєД‘Дє",						IDM_HELP_WRAPPER
+		MENUITEM "ГЋ &ДЏД‘Г®ДѓД‘Е•Д›Д›Дє",					IDM_HELP_ABOUT
 	END
 END
 
@@ -100,9 +101,9 @@ IDD_RUSSIAN DIALOGEX 22,17,162,90
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
 FONT 8, "System", 0, 0, 0x1
 BEGIN
-	CTEXT			"Герои Меча и Магии I - II\nOpenGL враппер",IDC_STATIC,0,6,162,18
-	CTEXT			"Версия %d.%d%d   Сборка %d",IDC_VERSION,0,30,162,8
-	CTEXT			"Copyright © 2019 Verok",IDC_STATIC,0,48,162,8
+	CTEXT			"Д‚ДєД‘Г®ДЌ ДљДєГ·Е• ДЌ ДљЕ•ДѓДЌДЌ I - II\nOpenGL ГўД‘Е•ДЏДЏДєД‘",IDC_STATIC,0,6,162,18
+	CTEXT			"Г‚ДєД‘Е„ДЌЛ™ %d.%d%d   ЕѓГЎГ®Д‘Д™Е• %d",IDC_VERSION,0,30,162,8
+	CTEXT			"Copyright В© 2019 Verok",IDC_STATIC,0,48,162,8
 	DEFPUSHBUTTON	"OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
 	CONTROL			"verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
 	ICON			"",IDC_STATIC,8,17,20,20
@@ -112,9 +113,9 @@ IDD_RUSSIAN_OLD DIALOGEX 22,17,162,90
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP
 FONT 8, "System", 0, 0, 0x1
 BEGIN
-	CTEXT			"Герои Меча и Магии I - II\nOpenGL враппер",IDC_STATIC,0,6,162,18
-	CTEXT			"Версия %d.%d%d   Сборка %d",IDC_VERSION,0,30,162,8
-	CTEXT			"Copyright © 2019 Verok",IDC_STATIC,0,48,162,8
+	CTEXT			"Д‚ДєД‘Г®ДЌ ДљДєГ·Е• ДЌ ДљЕ•ДѓДЌДЌ I - II\nOpenGL ГўД‘Е•ДЏДЏДєД‘",IDC_STATIC,0,6,162,18
+	CTEXT			"Г‚ДєД‘Е„ДЌЛ™ %d.%d%d   ЕѓГЎГ®Д‘Д™Е• %d",IDC_VERSION,0,30,162,8
+	CTEXT			"Copyright В© 2019 Verok",IDC_STATIC,0,48,162,8
 	DEFPUSHBUTTON	"OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
 	CTEXT			"verokster@gmail.com",IDC_STATIC,48,57,72,12
 	ICON			"",IDC_STATIC,8,17,20,20
@@ -148,12 +149,13 @@ BEGIN
 	BEGIN
 		POPUP "&Resolution"
 		BEGIN
-			MENUITEM "&640 x 480",                  IDM_RES_640_480
-			MENUITEM "&800 x 600",                  IDM_RES_800_600
-			MENUITEM "&1024 x 768",                 IDM_RES_1024_768
-			MENUITEM "1&280 x 1024",                IDM_RES_1280_1024
+			MENUITEM "640 x &480",                  IDM_RES_640_480
+			MENUITEM "800 x &600",                  IDM_RES_800_600
+			MENUITEM "1024 x &768",                 IDM_RES_1024_768
+			MENUITEM "1280 x &960",                 IDM_RES_1280_960
+			MENUITEM "1280 x &1024",				IDM_RES_1280_1024
 			MENUITEM SEPARATOR
-			MENUITEM "Full &Screen",           IDM_RES_FULL_SCREEN
+			MENUITEM "Full &Screen",				IDM_RES_FULL_SCREEN
 		END
 		POPUP "&Filtering"
 		BEGIN
@@ -230,7 +232,7 @@ FONT 8, "System", 0, 0, 0x1
 BEGIN
 	CTEXT			"Heroes of Might and Magic I - II\nOpenGL Wrapper",IDC_STATIC,0,6,162,18
 	CTEXT			"Version %d.%d%d   Build %d",IDC_VERSION,0,30,162,8
-	CTEXT			"Copyright © 2019 Verok",IDC_STATIC,0,48,162,8
+	CTEXT			"Copyright В© 2019 Verok",IDC_STATIC,0,48,162,8
 	DEFPUSHBUTTON	"OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
 	CONTROL			"verokster@gmail.com",IDC_LNK_EMAIL,"SysLink",WS_TABSTOP,48,57,72,12
 	ICON			"",IDC_STATIC,8,17,20,20
@@ -242,7 +244,7 @@ FONT 8, "System", 0, 0, 0x1
 BEGIN
 	CTEXT			"Heroes of Might and Magic I - II\nOpenGL Wrapper",IDC_STATIC,0,6,162,18
 	CTEXT			"Version %d.%d%d   Build %d",IDC_VERSION,0,30,162,8
-	CTEXT			"Copyright © 2019 Verok",IDC_STATIC,0,48,162,8
+	CTEXT			"Copyright В© 2019 Verok",IDC_STATIC,0,48,162,8
 	DEFPUSHBUTTON	"OK",IDC_BTN_OK,65,72,32,14,WS_GROUP
 	CTEXT			"verokster@gmail.com",IDC_STATIC,48,57,72,12
 	ICON			"",IDC_STATIC,8,17,20,20
@@ -309,7 +311,7 @@ BEGIN
 		BEGIN
 			VALUE "FileDescription", "HoMM I & II - OpenGL wrapper"
 			VALUE "FileVersion", "2019.05.16.293"
-			VALUE "LegalCopyright", "© 2019 Verok (verokster@gmail.com)"
+			VALUE "LegalCopyright", "В© 2019 Verok (verokster@gmail.com)"
 			VALUE "OriginalFilename", "wing32.dll"
 			VALUE "ProductVersion", "1.2.8"
 			VALUE "ProductName", "HeroesGL"

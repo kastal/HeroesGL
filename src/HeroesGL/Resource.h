@@ -90,9 +90,11 @@
 #define IDM_RES_1024_768                40007
 #define IDM_RES_1280_1024               40008
 #define IDM_RES_FULL_SCREEN             40009
+
 #define IDM_HELP_MANUAL                 40052
 #define IDM_HELP_ABOUT                  40053
 #define IDM_PATCH_CPU                   20070
+#define IDM_RES_1280_960                20071
 
 // Next default values for new objects
 // 

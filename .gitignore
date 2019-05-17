@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+.vs
+/src/HeroesGL/Release
+/src/HeroesGL/HeroesGL.vcxproj.user
